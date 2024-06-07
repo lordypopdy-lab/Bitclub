@@ -1,12 +1,12 @@
 {
-    "name": "cointex",
-    "short_name": "cointex",
+    "name": "Bitclub",
+    "short_name": "Bitclub",
     "lang": "en-US",
-    "start_url": ".",
+    "start_url": "http://localhost:3000/home",
     "display": "standalone",
     "background_color": "#11150F",
     "theme_color": "#25C866",
-    "description": "cointex crypto app",
+    "description": "Bitclub crypto app",
     "icons": [
       {
         "src": "/images/logo/40.png",
