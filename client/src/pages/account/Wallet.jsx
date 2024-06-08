@@ -142,7 +142,7 @@ const Wallet = () => {
                         </ul>
                     </div>
                 </div>
-                <div className="bg-menuDark tf-container">
+                {/* <div className="bg-menuDark tf-container">
                     <div className="pt-12 pb-12 mt-4">
                         <div className="d-flex justify-content-between align-items-center">
                             <h5>Latest recipient</h5>
@@ -182,7 +182,7 @@ const Wallet = () => {
                             </li>
                         </ul>
                     </div>
-                </div>
+                </div> */}
                 <div className="bg-menuDark tf-container">
                     <div className="tf-tab pt-12 mt-4">
                         <div className="tab-slide">
@@ -200,68 +200,58 @@ const Wallet = () => {
                             <div className="tab-pane fade active show" id="history" role="tabpanel">
                                 <ul>
                                     <li>
-                                        <a href="/ChoosePayment" className="coin-item style-1 gap-12 bg-surface">
-                                            <img src="/src/images/coin/coin-1.jpg" alt="img" className="img" />
-                                            <div className="content">
-                                                <div className="title">
-                                                    <p className="mb-4 text-large">Bitcoin</p>
-                                                    <span className="text-secondary">11:34 AM</span>
-                                                </div>
-                                                <div className="box-price">
-                                                    <p className="text-small mb-4"><span className="text-primary">+</span> BTC 0.0056</p>
-                                                    <p className="text-end"><span className="text-red">-</span> $950.50</p>
-                                                </div>
+                                        <div className="accent-box-v5 p-0 bg-menuDark active" style={{ width: '100%' }}>
+                                        <a href="/ContractOne" className="coin-item style-1 gap-12 bg-surface">
+                                            <span className="icon-box bg-transparent bg-icon1"><i className="icon-book"></i></span>
+                                            <div className="mt-12">
+                                                <a href="#" className="text-small">Contract <span style={{color: '#25C866'}}>Class One</span></a>
+                                                <p className="mt-4">Click Create and set up your collection.
+                                                    Add contract status, a description, price & contract icons, and set a secondary sales fee. <span style={{color: '#25C866'}}>Contract level one+</span></p>
                                             </div>
-                                        </a>
+                                            </a>
+                                        </div>
                                     </li>
                                     <li className="mt-8">
-                                        <a href="/ChoosePayment" className="coin-item style-1 gap-12 bg-surface">
-                                            <img src="/src/images/coin/coin-2.jpg" alt="img" className="img" />
-                                            <div className="content">
-                                                <div className="title">
-                                                    <p className="mb-4 text-large">Withdraw</p>
-                                                    <span className="text-secondary">1:12 PM</span>
-                                                </div>
-
-                                                <p className="text-small"><span className="text-red">-</span> 2,700.00</p>
+                                    <div className="accent-box-v5 p-0 bg-menuDark" style={{ width: '100%' }}>
+                                        <a href="/ContractTwo" className="coin-item style-1 gap-12 bg-surface">
+                                            <span className="icon-box bg-transparent bg-icon1"><i className="icon-book"></i></span>
+                                            <div className="mt-12">
+                                            <a href="#" className="text-small">Contract <span style={{color: '#25C866'}}>Class two</span></a>
+                                                <p className="mt-4">Click Create and set up your collection.
+                                                    Add contract status, a description, price & contract icons, and set a secondary sales fee. <span style={{color: '#25C866'}}>Contract level two+</span></p>
                                             </div>
-                                        </a>
+                                            </a>
+                                        </div>
                                     </li>
                                     <li className="mt-8">
-                                        <a href="/ChoosePayment" className="coin-item style-1 gap-12 bg-surface">
-                                            <img src="/src/images/coin/coin-3.jpg" alt="img" className="img" />
-                                            <div className="content">
-                                                <div className="title">
-                                                    <p className="mb-4 text-large">Ethereum</p>
-                                                    <span className="text-secondary">12:00 AM</span>
-                                                </div>
-                                                <div className="box-price">
-                                                    <p className="text-small mb-4"><span className="text-primary">+</span> ETH 1,498</p>
-                                                    <p className="text-end"><span className="text-red">-</span> $12948,68</p>
-                                                </div>
+                                    <div className="accent-box-v5 p-0 bg-menuDark" style={{ width: '100%' }}>
+                                        <a href="/ContractThree" className="coin-item style-1 gap-12 bg-surface">
+                                        <span className="icon-box bg-transparent bg-icon2"><i className="icon-wallet-money"></i></span>
+                                            <div className="mt-12">
+                                            <a href="#" className="text-small">Contract <span style={{color: '#25C866'}}>Class three</span></a>
+                                                <p className="mt-4">Click Create and set up your collection.
+                                                    Add contract status, a description, price & contract icons, and set a secondary sales fee. <span style={{color: '#ab00e7'}}>Contract level three+</span></p>
                                             </div>
-                                        </a>
+                                            </a>
+                                        </div>
                                     </li>
                                     <li className="mt-8">
-                                        <a href="/ChoosePayment" className="coin-item style-1 gap-12 bg-surface">
-                                            <img src="/src/images/coin/coin-4.jpg" alt="img" className="img" />
-                                            <div className="content">
-                                                <div className="title">
-                                                    <p className="mb-4 text-large">Anchor</p>
-                                                    <span className="text-secondary">12:00 AM</span>
-                                                </div>
-                                                <div className="box-price">
-                                                    <p className="text-small mb-4"><span className="text-primary">+</span> ETH 1,498</p>
-                                                    <p className="text-end"><span className="text-red">-</span> $12948,68</p>
-                                                </div>
+                                    <div className="accent-box-v5 p-0 bg-menuDark" style={{ width: '100%' }}>
+                                        <a href="/ContractFour" className="coin-item style-1 gap-12 bg-surface">
+                                            <span className="icon-box bg-transparent bg-icon2"><i className="icon-wallet-money"></i></span>
+                                            <div className="mt-12">
+                                            <a href="#" className="text-small">Contract <span style={{color: '#25C866'}}>Class four</span></a>
+                                                <p className="mt-4">Click Create and set up your collection.
+                                                    Add contract status, a description, price & contract icons, and set a secondary sales fee. <span style={{color: '#ab00e7'}}>Contract level four+</span></p>
                                             </div>
-                                        </a>
+                                            </a>
+                                        </div>
                                     </li>
                                 </ul>
                             </div>
                             <div className="tab-pane fade" id="market" role="tabpanel">
                                 <ul>
-                                <FadeLoader
+                                    <FadeLoader
                                         color="#36d7b7"
                                         loading={loading}
                                         speedMultiplier={3}

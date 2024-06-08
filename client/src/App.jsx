@@ -32,6 +32,10 @@ import TradeExchange from './pages/account/TradeExchange';
 import CameraDone from './pages/account/CameraDone';
 import VerifyIDScan from './pages/profile/VerifyIDScan';
 import ChangeName from './pages/settings/ChangeName';
+import ContractOne from './pages/account/ContractOne';
+import ContractTwo from './pages/account/ContractTwo';
+import ContractFour from './pages/account/ContractFour';
+import ContractThree from './pages/account/ContractThree';
 import TellUsMore from './pages/settings/TellUsMore';
 import SellQuantity from './pages/account/SellQuantity';
 import AccountFreez from './pages/settings/AccountFreez';
@@ -89,6 +93,10 @@ const router = createBrowserRouter(
             <Route path='/CameraScan' element={<CameraScan />} />
             <Route path='/CameraDone' element={<CameraDone />} />
             <Route path='/TellUsMore' element={<TellUsMore />} />
+            <Route path='/ContractTwo' element={<ContractTwo />} />
+            <Route path='/ContractFour' element={<ContractFour />} />
+            <Route path='/ContractThree' element={<ContractThree />} />
+            <Route path='/ContractOne' element={<ContractOne />} />
             <Route path='/assetsRatings' element = {<AssetsRatings />} />
             <Route path='/Verification' element={<Verification />} />
             <Route path='/CameraSuccess' element={<CameraSuccess />} />

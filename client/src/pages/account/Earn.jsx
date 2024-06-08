@@ -260,7 +260,7 @@ const Earn = () => {
                                 </SwiperSlide>
                                 <SwiperSlide>
                                     <div className="accent-box-v5 bg-menuDark">
-                                        <span className="icon-box bg-icon2"><i className="icon-wallet-money"></i></span>
+                                        <span className="icon-box bg-icon2"><i className="icon-earn2 "></i></span>
                                         <div className="mt-12">
                                             <a href="#" className="text-small">Create Your Collection</a>
                                             <p className="mt-4">Click Create and set up your collection.
