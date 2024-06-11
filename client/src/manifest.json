@@ -2,7 +2,7 @@
     "name": "Bitclub",
     "short_name": "Bitclub",
     "lang": "en-US",
-    "start_url": "http://localhost:3000/home",
+    "start_url": "http://localhost:3000",
     "display": "standalone",
     "background_color": "#11150F",
     "theme_color": "#25C866",
