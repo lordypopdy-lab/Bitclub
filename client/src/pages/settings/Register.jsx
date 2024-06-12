@@ -51,7 +51,7 @@ const Register = () => {
                 <div className="tf-container">
                     <form onSubmit={registerUser} className="mt-32 mb-16">
 
-                        <h2 className="text-center">Register Cointex</h2>
+                        <h2 className="text-center">Register Bitclub.</h2>
                         <fieldset className="mt-40">
                             <label className="label-ip">
                                 <p className="mb-8 text-small">Name</p>

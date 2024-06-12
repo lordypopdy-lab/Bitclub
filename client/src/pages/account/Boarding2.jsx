@@ -31,8 +31,8 @@ const Boarding2 = () => {
               </svg>
             </div>
             <div className="content mb-32">
-              <h2 className="text-center">A Fantastic Experience with Cointex!</h2>
-              <p className="mt-8 text-center text-large">Explore the diverse features of Cointex. Send and receive funds, track transaction history, create new wallets, and much more. </p>
+              <h2 className="text-center">A Fantastic Experience with Bitclub!</h2>
+              <p className="mt-8 text-center text-large">Explore the diverse features of Bitclub. Send and receive funds, track transaction history, create new wallets, and much more. </p>
               <a href="Login" className="tf-btn primary md mt-40">Get Started </a>
               <p className="mt-20 text-center mb-35">By creating an account, you’re agree to out <a href="#notiPrivacy" className="text-white" data-bs-toggle="modal">Privacy policy</a>  and <a href="#notiPrivacy" className="text-white" data-bs-toggle="modal">Term of use</a> </p>
             </div>

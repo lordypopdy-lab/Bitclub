@@ -5,7 +5,6 @@ import FadeLoader from 'react-spinners/FadeLoader';
 import toast from 'react-hot-toast';
 const ContractOne = () => {
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
     const [connect, setConnect] = useState(false);
     const [walletBalance, setWalletBalance] = useState(null);
     const [contractPrice, setContractPrice] = useState(null);
@@ -13,9 +12,8 @@ const ContractOne = () => {
     const [trx_rate, set_trx_rate] = useState(null);
     const [provider, setProvider] = useState(null);
     const [signer, setSigner] = useState(null);
+    const [current_bal, setCurrent_bal] = useState(null);
     const [usd_details, setUsdDetails] = useState({
-        current_balance: '',
-        usdc_price: '',
         eth_price: '',
         eth_last_change: ''
     })
@@ -24,28 +22,51 @@ const ContractOne = () => {
     useEffect(() => {
         setLoading(true);
         try {
-            axios.get('/tokens').then(({ data }) => {
-                if (data) {
-                    setUsdDetails({
-                        eth_price: data.tokens[1].current_price,
-                        eth_last_change: data.tokens[1].price_change_percentage_24h
-                    })
-                    const USD_PRICE = data.tokens[1].current_price;
-                    set_trx_rate(USD_PRICE);
-                    setLoading(false);
-                    console.log(data);
+            if (window.ethereum) {
+                axios.get('/tokens').then(({ data }) => {
+                    if (data) {
+                        setUsdDetails({
+                            eth_price: data.tokens[1].current_price,
+                            eth_last_change: data.tokens[1].price_change_percentage_24h
+                        })
+                        const USD_PRICE = data.tokens[1].current_price;
+                        set_trx_rate(USD_PRICE);
+                        setLoading(false);
+                        console.log(data);
+                    }
+                })
+
+                const Connect = async () => {
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    await provider.send('eth_requestAccounts', []);
+                    const signer = provider.getSigner();
+                    const USER_ADDRESS = signer.getAddress();
+                    const GET_BALANCE = await provider.getBalance(USER_ADDRESS);
+                    const FORMATED_BALANCE = ethers.utils.formatEther(GET_BALANCE);
+
+                    setWalletBalance(FORMATED_BALANCE);
+
+                    //CONTRACT PRICE
+                    const CONTRACT_PRICE = 0.1133869899;
+                    setContractPrice(CONTRACT_PRICE);
                 }
-            })
+                Connect();
+            } else {
+                toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
+                console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
+            }
         } catch (error) {
             toast.error("Error fetching API refresh App");
             console.log(error);
         }
     }, [])
 
+
+
     const connectMetaMask = async () => {
         setLoading(true);
-        if (window.ethereum) {
-            try {
+        try {
+            if (window.ethereum) {
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
                 await provider.send('eth_requestAccounts', []);
                 const signer = provider.getSigner();
@@ -53,11 +74,23 @@ const ContractOne = () => {
                 const GET_BALANCE = await provider.getBalance(USER_ADDRESS);
                 const FORMATED_BALANCE = ethers.utils.formatEther(GET_BALANCE);
 
+                axios.get('/tokens').then(({ data }) => {
+                    if (data) {
+                        setUsdDetails({
+                            eth_price: data.tokens[1].current_price,
+                            eth_last_change: data.tokens[1].price_change_percentage_24h
+                        })
+                        setLoading(false);
+                        console.log(data);
+                    }
+                })
+
                 //CONTRACT PRICE
-                const CONTRACT_PRICE = 0.223869899;
+                const CONTRACT_PRICE = 0.1133869899;
 
                 if (FORMATED_BALANCE >= CONTRACT_PRICE) {
                     const rate = trx_rate * CONTRACT_PRICE;
+                    toast.success('Wallet Connected!')
                     set_trx_rate(trx_rate);
                     setPriceInUsdc(rate)
                     setContractPrice(CONTRACT_PRICE);
@@ -65,24 +98,24 @@ const ContractOne = () => {
                     setConnect(true);
                     setSigner(signer);
                     setWalletBalance(FORMATED_BALANCE);
-                    setUsdDetails({
-                        current_balance: FORMATED_BALANCE - CONTRACT_PRICE,
-                        usdc_price: rate
-                    })
+                    setCurrent_bal(FORMATED_BALANCE - CONTRACT_PRICE);
                     setLoading(false);
                     console.log(rate);
                     console.log(FORMATED_BALANCE);
                 } else {
                     setContractPrice(-1);
+                    setLoading(false);
                 }
-            } catch (error) {
-                toast.error('User denied account access or error');
-                console.error('User denied account access or error', error);
+
+            } else {
+                toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
+                console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
             }
-        } else {
-            toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
-            console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
+        } catch (error) {
+            toast.error('User denied account access or error');
+            console.error('User denied account access or error', error);
         }
+
     }
 
     const maxBalance = async () => {
@@ -90,6 +123,10 @@ const ContractOne = () => {
             connectMetaMask();
             setLoading(false);
         }
+    }
+
+    const startContractOne = async () => {
+        alert("Activation Succesful!");
     }
 
     const e = localStorage.getItem('email');
@@ -112,7 +149,7 @@ const ContractOne = () => {
                                 <ul className="nav nav-tabs wallet-tabs" role="tablist" >
                                     <li className="item-slide-effect"></li>
                                     <li className="nav-item active" role="presentation">
-                                        <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#link">Convert & Link</button>
+                                        <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#link">Connect & Start Contract</button>
                                     </li>
                                     <li className="nav-item" role="presentation">
                                         <button className="nav-link" data-bs-toggle="tab" data-bs-target="#order">Limit order</button>
@@ -142,7 +179,7 @@ const ContractOne = () => {
                                                     </div>
                                                     <div className="box-price text-end">
                                                         {walletBalance == 0 || contractPrice < 0 ? <span className=" mb-50 d-flex text-danger">Not enough ETH balance in wallet</span> : <h3 className="mb-4">{contractPrice}</h3>}
-                                                        <br />{priceInUsdc == null ? 0 : <span >${priceInUsdc}</span>}
+                                                        <br />{priceInUsdc == null ? 0 : <span >${priceInUsdc.toFixed(2)}</span>}
                                                     </div>
                                                 </div>
                                             </div>
@@ -153,7 +190,7 @@ const ContractOne = () => {
                                                 <p className="text-white">Receive</p>
                                                 <span className="d-flex align-items-center gap-4">
                                                     <i className="icon-wallet fs-24"></i>
-                                                    {usd_details.current_balance}
+                                                    {current_bal}
                                                 </span>
                                             </div>
                                             <FadeLoader
@@ -170,18 +207,19 @@ const ContractOne = () => {
                                                         <span>Ethereum</span>
                                                     </div>
                                                     <div className="box-price text-end">
-                                                        <h3 className="mb-4">{priceInUsdc == null ? 0 : <span >${priceInUsdc}</span>}</h3>
-                                                        <p>${usd_details.eth_price} <span className="text-primary">(+{usd_details.eth_last_change})</span></p>
+                                                        <h3 className="mb-4">{priceInUsdc == null ? 0 : <span >${priceInUsdc.toFixed(2)}</span>}</h3>
+                                                        <p>${usd_details.eth_price} <span className="text-primary">({usd_details.eth_last_change})</span></p>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    {connect == false ? <a href="javascript:void(0);" className="tf-btn lg mt-20 secondary" data-bs-toggle="modal" data-bs-target="#connectWallet">Connect Wallet</a> : <a href="#success" className="tf-btn lg mt-20 primary" data-bs-toggle="modal">Approve</a>}
-                                    <ul className="mt-20 accent-box line-border">
+                                    {connect == false ? <a href="javascript:void(0);" className="tf-btn lg mt-20 secondary" data-bs-toggle="modal" data-bs-target="#connectWallet">Connect Wallet</a> : <a onClick={startContractOne} className="tf-btn lg mt-20 primary" data-bs-toggle="modal">Pay</a>}
+                                    <ul className="mt-10 accent-box line-border">
+                                        <h3 className='text-primary'>Contract report</h3><hr />
                                         <li className="trade-list-item">
                                             <p className="d-flex align-items-center text-small gap-4">Reference <i className="icon-question fs-16 text-secondary"></i> </p>
-                                            <p className="d-flex gap-8 text-white">1 ETH = 1.876,515984 USDC <i className="icon-clockwise2 fs-16"></i></p>
+                                            <p className="d-flex gap-8 text-white">{contractPrice !== null && contractPrice.toFixed(5)} ETH = {priceInUsdc !== null && priceInUsdc.toFixed(2)} USDC <i className="icon-clockwise2 fs-16"></i></p>
                                         </li>
                                         <li className="trade-list-item mt-16">
                                             <p className="d-flex align-items-center text-small gap-4">Estimated network charges</p>
@@ -206,7 +244,7 @@ const ContractOne = () => {
                                 <div className="tab-pane fade" id="order" role="tabpanel">
                                     <div className="trade-box">
                                         <div className="accent-box bg-menuDark">
-                                            <p className="text-small text-white">Sell</p>
+                                            <p className="text-small text-white">Pay</p>
                                             <div className="coin-item style-1 gap-8 mt-20">
                                                 <img src="/src/images/coin/coin-6.jpg" alt="img" className="img" />
                                                 <div className="content">
@@ -215,15 +253,15 @@ const ContractOne = () => {
                                                         <span>Ethereum</span>
                                                     </div>
                                                     <div className="box-price text-end">
-                                                        <h3 className="mb-4">5</h3>
-                                                        <span>$9.357,1</span>
+                                                        <h3 className="mb-4">{contractPrice !== null && contractPrice}</h3>
+                                                        <span>${priceInUsdc !== null && priceInUsdc.toFixed(2)}</span>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="round-swap"><i className="icon icon-clockwise"></i></div>
                                         <div className="accent-box bg-menuDark mt-8">
-                                            <p className="text-small text-white">Pay</p>
+                                            <p className="text-small text-white">Receive</p>
                                             <div className="coin-item style-1 gap-8 mt-20">
                                                 <img src="/src/images/coin/coin-5.jpg" alt="img" className="img" />
                                                 <div className="content">
@@ -232,8 +270,8 @@ const ContractOne = () => {
                                                         <span>Ethereum</span>
                                                     </div>
                                                     <div className="box-price text-end">
-                                                        <h3 className="mb-4">6,25</h3>
-                                                        <p>$6,24 (-99,93%)</p>
+                                                        <h3 className="mb-4">{priceInUsdc == null ? 0 : <span >${priceInUsdc.toFixed(2)}</span>}</h3>
+                                                        <p>${usd_details.eth_price} <span className="text-primary">({usd_details.eth_last_change})</span></p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -241,15 +279,15 @@ const ContractOne = () => {
                                     </div>
                                     <ul className="mt-4 accent-box bg-menuDark">
                                         <li className="trade-list-item">
-                                            <p className="text-xsmall">Sell WETH at exchange rate (-99,93%)</p>
+                                            {usd_details.eth_last_change > 1 ? <p className="text-xsmall">ETH at exchange rate (<span className='text-primary'>{usd_details.eth_last_change}</span>)</p> : <p className="text-xsmall">ETH at exchange rate (<span className='text-danger'>{usd_details.eth_last_change}</span>)</p>}
                                             <p className="text-xsmall text-primary">Use market price</p>
                                         </li>
                                         <li className="mt-16">
                                             <div className="pb-4 line-bt d-flex justify-content-between">
-                                                <p className="text-button text-white">1,25</p>
+                                                <p className="text-button text-white">${trx_rate}</p>
                                                 <p className="d-flex align-items-center gap-8 text-white text-small">USDC <i className="icon-clockwise2 fs-12 text-secondary"></i></p>
                                             </div>
-                                            <p className="mt-4 text-xsmall">Market: 1 WETH = 1.870,921609 USDC</p>
+                                            <p className="mt-4 text-xsmall">Market: 1 ETH = {trx_rate} USDC</p>
 
                                         </li>
                                         <li className="mt-16">
@@ -260,7 +298,7 @@ const ContractOne = () => {
                                         </li>
 
                                     </ul>
-                                    <a href="#" className="mt-20 tf-btn lg dark text-secondary">Not enough ETH balance in wallet</a>
+                                    {walletBalance == 0 || contractPrice < 0 ? <a href="#" className="mt-20 tf-btn lg dark text-secondary">Not enough ETH balance in wallet</a> : <a href="#" className="mt-20 tf-btn lg dark text-secondary">ETH: {walletBalance !== null && walletBalance}</a>}
                                 </div>
                             </div>
 
@@ -269,8 +307,8 @@ const ContractOne = () => {
                             <a href="#" className="trade-money-box">
                                 <p>ETH/USDC</p>
                                 <p className="d-flex align-items-center gap-8">
-                                    <span>1.876,251425</span>
-                                    <span className="text-red">-2,62</span>
+                                    <span>{usd_details.eth_price !== '' && usd_details.eth_price}</span>
+                                    {usd_details.eth_last_change !== '' && usd_details.eth_last_change ? <span className="text-red">{usd_details.eth_last_change}</span> : <span className="text-red">loading...</span>}
                                     <i className="icon-arr-right fs-12"></i>
                                 </p>
                             </a>
@@ -341,9 +379,10 @@ const ContractOne = () => {
                                     <li className="accent-box-v3 bg-surface tf-list-item-v3" data-bs-toggle="modal" data-bs-target="#inflation">
                                         <div className="content">
                                             <h5><a href="#">MetaMask wallet</a></h5>
-                                            <p className="mt-8 text-small text">Create an MPC wallet with your platform account.</p>
+                                            <p className="mt-8 text-small text">Connect with an existing wallet with your platform account.</p>
                                         </div>
-                                        <span className="icon icon-mpc"></span>
+                                        <img style={{ height: '50px', width: '50px', borderRadius: '10%' }} src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMwAAADACAMAAAB/Pny7AAABO1BMVEX2hRt2PRb////kdhvNYRbidhvArZ7XwbMWFhbkdR/neBsjNEfxgRv1dwD71b9yOxYICgw6NTIADRYAAADhehplOhdtOBbabRjjbADsfRvUZxhoNRZuLgDYcBr8iBtxMwDhZQD77OTkcgugUxiGRRfNahrCZBnk3NgWMkiTTBepVxj88+3439Htq4ZqJQBoHwD1fwC0WiHVx77gXADywabpk17qnGeCUjbmfi7t6OZlFgCadmS2Xhh7RSKDU0D6waBeQT0AK0rZtqCriXfLnoS3n42rRwDpk1Tfgz6ZSAbMWgDtpXiOZEx6QyxwMRaQaVvnh0+wlo7GtbCgf3ZXAAC+azH6jTn2kUb5pmeiVCqWUS9ySDpKPEE0NkStZC+dXjQAJUw7IhdLLhpgPSIjKCqThXyAc2tYUErYlm9AEdHQAAATvklEQVR4nNWdaWPTSBKGdSAbK8Keg7Ul35av2LJDYhzHBpOEsGy8axhIZplhSGB2dw7m//+C7dZlHd3q0sHAvJ+SWEc9quqqvuRwgqNnFx3hr6jJ3587P3LOD6tHB/+4LHaMz2NRQhmT+eYfB3XnVxfm+gFf+ue/pOnkr+OfTnGr/mtU4h8N7T+4MC9aPF/uDVT1cl78K7inUzy7bKvrXpnn68/sv7kwj3ikEj+WdFXaziefyUSoimfHkqo3ushinm+9tP/qwFybMAhn1NdkVd9s51+ue4yzxUbXRbnfK1lGfzezPnBgTlu8TdMbyKKIjn29/TLdU1xsJF2URHHM2yx8y44zG2b1Hb/TWEY4sq7ry7MvzT3GdInsEiVJlro7g1un1qc2TK7lgan1GogGSVYfXn5J7ikuH6qyhCTKA77ssfiJFWc2zCsvDDpuIFo4ot6Wp5MvwT/GZIpskUyJ0rhc8hpsx5kFMzzl/SqPJZsGuQdl68/Mg4rjpaqKNorc6Nb85rZerXYwOT6o8qjv0GD3LKfFzxdvk+Ji2dYlW6I46JWD5j653sE8boVpemtxh4Oy9eX0sxRTozjduE5BkhtjPsTC169cmOFpGAblvW5jR4Oym7o8nv7Z7ilOj5eqvkOR5P6oFLaVbz1eOTA5AgvG6XlCzeSRl8d/YjE15q+XspcEZ7EeicXOZybM93XiAUgDRRT9PGph++d0RSeLgu4jwSxdMgrPH+RsGGKUWaqNZFkM8KgPpU9eTA2UhwMkCEXq1WiGmvkMw1xTHWOFWhAH8yw+3dDH6BRRfzhAgovLINzwPa6ZmTDG1UHEQSV+IIVoREltf6KhT2cylXZ52OOWxjiKhX+QM2GGJ9QoM2lKvqy2Kz6qenyWcTE1UNdeDzsFF5f+KJKFb71YYZhZlGNMnNGARIN5llkOfSZnW38e9sCsKVnM45ohgjGeRTQZm4YfazQc/XU2Qx+juN0Es5dbXMQuz2LhD54jmBXrKJNmJJJp8NCnkH7oM9luUN+eSIKLfo/NwreeIJjZIwANulhfo9Bg/xQ2KdxjzJcFmeIUJG1QYqMg/XvFCY+ZUWbRlNdU52CednsxLybR/LLdFqkkqOkHu8g01Z9xBsgxWOURMavteO4lkkqLLjuLMVv+Thwsyiya3iBcQD3SuCTSolikNaC1ODrgCL1/Og2/JhRQV7KSgEWhRxhq+V1Yc7HU4mAtxsUhF1BbSWDojkFdZGJ3n66YMGaoZRpnVBhRXBNGYdEw8Q43Cyg9q8VnUaghJgEKZVoY3JGmhlr8OKPAeKYr48DEaP+Oyjwtq8mxYWQyi7QuxwwxEyZmm7FUG5OzmpSJY1B3fwQslAEYVpeZQjNqZBJnpOaPC2UCt2CYJ4lOw1mNmAdiwpBafmMdv7XYMMCuGUFjUh6I55pwlOHpyqQsLS73IClMadQP08RLAYQYo80lAVTnhvC+WYiGX4eGBSlhPIsu8XXACclhcEc6NAKNE2fB5i/LCVu+pTonPElQaVzVQgU0jmuCLP1ECdlR6wUnPEuWnG2VSoGOdBwY38wrXnRJYwl/8Jxzl2YT0wSyGry3qflYGoy5JKYeDTkhRQawVB75ejdwGNnLkiKLOTArTlglLJseGmtJ14kzaArQPIsulTRZzJI5O7OKM9Ykq8R3JS22a3ZRhvpiqVn4+mM8oxk51QzF6e1mooCuUZwoE7U4A32qHuTM6dnEfQCPcAF1Qg0G4zhGFrvlDFis6VlhmDrMTJW7To6GxZnm9MVSt3xLLXPifPgiI5peP0acWVGG55JSZmRb9ccmzIo9cw6TOxMFgdEke9ElG7+Y683mylkGGcCSPRMFiDPsGDTQTzaiJOnBNXsZMKbsmSgAjDmXlKpf6Vd9aMHMTjK7pLn9Tga4RsPTlVlkZFutExtm+CqbDGBr1JDZvc1kc0l0mbsaMIxB3weQRGW+z4RRxHWWt0RdZrzfxNzUcJUpDBrlrFn5TMqu5Vs6uHZgrrO9MJ6JakbDZFRcdtptN4nYopFMZT7aNVJW1cVR68XQgVllmwHwvA2jyRC2jKVS/Xt3V1PETqAkwqUzGkaTWXsUYupgt99MuMrwumgcjSpNdJhpeK4vUxrPTsDr1KNNV2gsgOdto8smGvvIaecvfDqZ7WBWwQ2niVXirZU1Jgw6ZJxZevZuOM1g5Gyr1GtogDGNNfBRgLsVAGpdGTbM7DSrbnOpJ4IGaPZBciOj+6JO8yurb5YrZZTLSqWuu8wRnc7coxqjrJxTf3mNZ2deZOQX39JtNMxuXireSn+UHjy2RpqZ0KA05t05DIPBSS2TgUCLv1pZvebcy/QJoNQbwKecvQeKgwxY6qduR1OYPUnrnOB6OhgG0fRT++bA7Jo5b2kYKZNzbRRYfobDYBz6Fl+QAi8DpZwJLHeDi05xYERZS9dTKw29MMazNEsB/qafAAYdni4NmPvNnfFM8iVn3mz64R2PcWHkdPPNB8+cIcDsNBULadE5elZTCR+PF2hSGMEf2D0A4TpNZqZtdozqzxC3rspJ92WYqr+cOXMAyWnKlF008WES75gxWU7dOQBh9l1Cmhp112ZUmFE2FcsSdKNsmMVbZ4aPEtHU6NsCE8CggpNsiNN6ufLVmVU9CU012RZH+llykr5N60TwF01hFXtzQ8SOwMQwSWZtW0+EIMws1pJTqRx4vy4rGLzMwZdjTatZc2YemNV1jDBDJL3uehC9/zwpDEpqg3W3V4rBU+evDQ/M8Htwr7lcK43WfUlp0t9zsGxKCoN6ak2tMRiP0J2ANrXqV543aA3g/Gy5xncHDU1pNhkGpYFBXm02m8r9xrpbq8HqaP2x4QmzDqBDg0jGfU3hzDlxYo8kKxhn5U25PxiVAP5pnXjDDAXav6OPr9VK4wa3m9tnmZMOxnOy0uiWa4zq82AVyGZ56oCmxJdKowEKrWYMc9LBeNMHuq+27pVK9F51+NtNhOekSMNTJ71uX2v611uYQZYWJtDpRjyDUc8yJ6R6LlRnBCG0HaBURiBrFFzBlSMAS9QYQGHDhJ8F4umPEVAoZbeuBALMyjdEK5f50XgghUlAT1aM6pwxkrqlcJ3CKQ6nbN63s76+Y/HCCMMXDk25hl0iE0lgTzbKMyAY8vnIIKm/HvFuyq4/XpFhrOXAUq3WG/fvKxQSIEtqGGoXApmlNfpd3kxx9VdDgQKDxjWIZN1A14lYYIXZkhomahDR5BStMe7V7HEMGUbIQZbwYaJ3zqBXYFnCyW9mQgRM8ZB9hdQwQM+wdxU3f+hEwbxlrN/DLckABrDV6ywCxviBBaNI6WGgvmW/W3T4NgKmyHwWYEOygGEG2uGPEzrMluUYcIRkA8Pe63VGhTHeMtq/IsqRLwRnC4Puxdruebg1aDBFRpNRKqYKYsG+laMMYMKXK5j3iqbxx5kP5oyVmCt3/KpWHImSzxykCJiAxELBvU6l6r9DgWHRYZEC02FFGXLNHaaqWJHPVMQ2Y7EvVmFlpMOpQYZhRRmSDDDAgaLZocCvUWHWzcMfJmSYs3usUzmlAPAN46HCYVgtButekQjDjjIkEUxDhwFfoQB4TcobZx6YCWjXewFKkxqmUgA4BsVZhwQzBzgGtRooDdUSDXY+YgG9v+aJsx2MsQXBINfAaAq03KwVgCwQxyCYKQGmw0xllpBrCoAmXE0Hg1mgr0gRYIrsXGYKuwbgm3QwmAX6/uouznYwkFxmCruG7ZtKBAzzUWAWsGN24wAXxoCyWK4hGVS9M/jpqOraQzNGds+tHv00ID0VkwX+YvFhCGYOjDIOP1oSTbW6fnf+9MYxjv5kkWcdo8+fnr9bh7o1JgvYMSjOJkEYcJThgUCYplo9enm+v7/33nZNFQKz3t/b3zs/OfLTVM2rx/hGnsNtEAbuGLvV+Ggq45tbZNje3r7jmkgY65jKjXnG3u3Nkcc7FksMx3DNHwIw0FxmynaNQ1OtHJ2/38eGIdPeHzkmUZ6t4sIc7VlC/jw/cvr+Nkus7xU4nPhhYkQZ57rGNAqh3Nokpl5W7binwYj2U6jc7E7a37dxbJY4jkGu2fph4pyLZN8SB/9P7596UPb2b4+sKIuCMRvN0XvfeU/fv+u7LPG+WKT5ow8GMPnnk+OaQuPmPXqsPqveVUEw1dM971k4edw0xCSOQdcsemHYk38BOTDN5vLDCW4xLs/+7RoCU0XBufPK/vvz0w/3m03nsjGtaU49MMaPcWE09654me7Nzze3+0607b+zSkUUTOVO9cTOGOi829Of39w3lxmTOYY7vPSsNrMn/0LyPUK8rIUcZPHsnw8AMOtz89ine+c/f+i7C6bJHIOSc3EHA+v9+6QFbttsKsvBB8yzv//TnYiyZ8O8Qy55un/6oX9f8SwEJXMMcs2ZC8Oc/CPZFH6GyKj7yzen+/+5ZcIUBrf/2Tt5E1rSil9jLB0unLc0INMyYWnEgEAXUvo3R0yYo5O+QljSMq+Z4Nv4rDgzYZiTf3SjiFe2slIUjNgkLzImdAzqbM5tGNC0TFhaRFOVGTAUg5WEjsFx1rFgEuQy1yrKZxoDhnJHJaljUJxNLBjA5B9RGh1GYcBEnJbsyZqDZy5xlHF4RpBaERLDJHOMtbiBYCYJTzddQ/soGobWj1SS1BhbzQ6GiTFgDkqkwsiRMLTHryV2jBlnXKKKubs57UEqkTDUyc7kjuHuvUUwneQsKJoyhknwHamu7hlcmihDd6c+yUgY6uUSpjJT94pczAFzUPTlsQgYasNIw8IdvuWEewpEmkb+O/XScgRMxLaaWDcP6JATJD24YEqQWHVU8Ys676hFwNBXbgJy7xpc/SVqyQlTFbIkT51bpk3WKfFhNJl2kwpk64A65YRJG3CgKFJoqrRvzImCobBQH1nEyyAetScoNesgGMo6BH5mxPas0HZXKLTj6f6HbT5SUWo2tpA4E0XyOoQZACTrImBIrjQ31FFgQEEmqguzOwOLM3Kg2Tci2K3RYEjJTDMfvkx8YFWYee2i2dEE7u0h3qlgfxg2XKMkOoXQ/mXILRjSzY5mZwGLM+Kt3A9DfqB5Jvz33XZcUsOsAFmOzSGAMAfCkNb+6N+fqUBhvPtPEweZ2J7bw2bgBjBSSHu/zyDQFigdrWB3zrcfL7FjRN0eNk8uYdmZEGj+CuA3Ewbj/xaBkO/BLBt7QgOanNHNomH8OZrScfP9Ofhv1IIwsHIp4vJv2PNmc6hnQoEWKgExv+O8wLh+AQqju5OAk01SmnAUxBkqhrevBi8PZtlM3LnmYyhMsIkSasAu1JpkuW4hWBrIzeB9turWnWsWpnAY/7MjHWGn3uZ9irQmlUWUkgWZqM896zNLMIyfhnyIGWqDv/3yN5J+4RtNYohh+TwDzWTo+S096zMGuNH4Syct2WhNZfTfb2j635j+mqeHBVouRVz+O541zRiNxusaCozevvzlm2/u0vTN3ZNLlULjeVLAPpl5w613gfYsBoznhsRso6ubi/y3VBSkr37NX/zYJt7Sc+0YFolzL4wRB2Z3xzCMrMvH+Vk+Gubut/n87AL/97yQXLeDy6Vol3/PpoZlDJpdsQlGgq4vjy8QSj7HhME4lwU9aDL10pEwx/4dGqBpDZfGcY1/POui5PNXDJhc3sI5XgbcU6H6PArmzA8zeRjjZDfQvI8PoSxslHz+NwbMlXXYLP/3xdLnHWdvUSxr9I4fRgg5PEpyIVhmZH35x0Xe1e8MmN+cA2f5i8XSExWF+EGGqowQgAH3nK3zq34YVfKi5PMfGTC/ew+++EN3b16IH2SoxxyEKQKnNRxVPcGgyn6UfP7rr6JhPvoP3+FYu75isYjt0LZGIyZMwYGRVf2PfFC/RrLc/epj8ISLhY1TjRtkCEYIwgjQaQ1HFbOuyXJhm5+FYKKj7O7dX0NnzPILCb8XVI0bZHjCLAQTN87QM6zo0pKEAoDJhc+ZoVQg65WYmcwTZd7t8zE9gwKtsNlekFBYNRPpOek0hLOpxA0yURXCMAZ4WsOUrqr9P8gozJqJdEU+EaWChkrrhFIMOSbAgKfPTJL2ZjufDAnBYopRZpB+o5x5PSzOt8u2Cn+w7TkJpgiE0dvq5dnE/F/awxwZ5+O3X0Xr7u/E83I5/Eq8MZlMNyq5Vx2WOiHBQKY1ZHSPred/ths5Is7Hb7+OVrDQ2CjuV3sYRqe4UNuAx6tfEl/TMhidTQTyUD8L/rvpHAnn7u+5aH38moSSD1x7MtUfshykkt85i2o0uo46X4si6R9Nzwg4v+UZMLlgm8F/GxKubhSP0TiBNPJxYCivNlLiTNd1aXMccomrYS6Ew0IhHk9isXimrzfYCqJxG8/3G3hhjHAnQNZVfXM8nXdCtwjR5BLDWL+vom7RmW/R0IeQ41TaG7TB6TNUSiQEMmH+F/PVLGBhDBj711kkC5ZRnE8vZTUApM49h/jfOl/uypWqqqiUFCNdsrvR0G8jGMb5jRZigdtMcBHy8ljTskSYzmvrMJS31OOzItslO62uvVYCYdyfmW7xAU03bSdpqwvq9wEIC92s7rK3lEBpZh47QTDuj7OY90JFaL5ApVsWJXXq/cAPM9fbD5dnsNAK4wAQSIrhFq8mU/lhW/R+HUAAprP1fRhXM7blIc3Yl6VrPvU9eI52XCIN2cb7lYe1fKCyhfG2HJBb4rbMaGUMEyvUrjN1i/AJYIQVJJeZbknY8unKHkYwYM7J2i3CJ4EBJel8tq3F0ieBYbecT+AWpP8DRznuZTwYok0AAAAASUVORK5CYII=" alt="logo" srcset="" />
+
                                     </li>
                                     <li className="mt-8 accent-box-v3 bg-surface tf-list-item-v3" data-bs-toggle="modal" data-bs-target="#inflation">
                                         <div className="content">
@@ -406,8 +445,8 @@ const ContractOne = () => {
                             <div className="box-detail-chart">
                                 <div className="top">
                                     <h3 className="d-flex align-items-center gap-8">ETH/USDC <i className="icon-clockwise2 fs-16 text-secondary"></i></h3>
-                                    <h2 className="mt-4">1.845,9128</h2>
-                                    <p className="mt-4"><a className="text-red">-0,92</a>&emsp;Last 24 hours</p>
+                                    <h2 className="mt-4">${priceInUsdc !== null && priceInUsdc.toFixed(2)}</h2>
+                                    {usd_details.eth_last_change !== null && usd_details.eth_last_change > 1 ? <p className="mt-4"><a className="text-primary">{usd_details.eth_last_change}</a>&emsp;Last 24 hours</p> : <p className="mt-4"><a className="text-red">{usd_details.eth_last_change}</a>&emsp;Last 24 hours</p>}
                                 </div>
                                 <div className="content">
                                     <div className="tab-content mt-8 mb-16">

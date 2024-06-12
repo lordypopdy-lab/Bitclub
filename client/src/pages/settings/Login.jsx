@@ -50,7 +50,7 @@ const Login = () => {
             <div className="pt-45 pb-20">
                 <div className="tf-container">
                     <div className="mt-32">
-                        <h2 className="text-center">Login Cointex</h2>
+                        <h2 className="text-center">Login Bitclub.</h2>
                         <ul className="mt-40 socials-login">
                             <li className="mt-12"><a href="Home" className="tf-btn md social dark"><img src="/src/images/logo/fb.jpg" alt="img" /> Continue with Facebook</a></li>
                             <li className="mt-12"><a href="Home" className="tf-btn md social dark"><img src="/src/images/logo/google.jpg" alt="img" /> Continue with Google</a></li>
