@@ -3,6 +3,9 @@ const { hashPassword, comparePassword } = require('../helpers/auth');
 const jwt = require('jsonwebtoken');
 const { WebSocket } = require('ws');
 const axios = require('axios');
+const {ethers} = require('ethers');
+
+
 
 const registerUser = async (req, res) => {
     try {

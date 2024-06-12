@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -17,6 +18,10 @@ import 'swiper/css/free-mode';
 import 'swiper/css/pagination';
 
 const Home = () => {
+
+    const [balance, setBalance] = useState(null);
+    const [accountList, setAccountList] = useState(null);
+
     const [loading, setLoading] = useState(false);
     const [list1, setList1] = useState(null);
     const [list2, setList2] = useState(null);
@@ -260,6 +265,51 @@ const Home = () => {
                                     </li>
                                 )
                             })
+
+                            const connectMetaMask = async () => {
+                                if (window.ethereum) {
+                                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                                    await provider.send('eth_requestAccounts', []);
+                                    const signer = provider.getSigner();
+                                    const USER_ADDRESS = signer.getAddress();
+                                    const GET_BALANCE = await provider.getBalance(USER_ADDRESS);
+                                    const FORMATED_BALANCE = ethers.utils.formatEther(GET_BALANCE);
+
+                                    const ACCOUNT_LISTS = await provider.listAccounts();
+                                    console.log(ACCOUNT_LISTS)
+                                    const acc_list = ACCOUNT_LISTS.map((ACCOUNT_LIST, index) => {
+                                        const handleCopy = async () => {
+                                            try {
+                                                await navigator.clipboard.writeText(ACCOUNT_LIST);
+                                                toast.success('Copied!');
+                                            } catch (error) {
+                                                toast.error('Fail to Copy!');
+                                            }
+                                        }
+                                        return (
+                                            <>
+                                                <li key={index} data-bs-dismiss="modal">
+                                                    <div className="d-flex justify-content-between align-items-center gap-8 text-large item-check active dom-value">Account {index}</div>
+                                                    <div className="mb-1">
+                                                        <span className="text-secondary" style={{ fontSize: '14px' }}>{ACCOUNT_LIST.slice(0, 30)}...</span> <i title="Copy" onClick={handleCopy} style={{ fontSize: '22px', cursor: 'pointer' }} className="icon icon-copy text-primary"></i>
+                                                    </div>
+                                                </li>
+                                            </>
+                                        )
+                                    })
+                                    setAccountList(acc_list);
+
+                                    const BALANCE_IN_USDC = data.tokens[1].current_price;
+                                    const BALANCE_IN_USDC_CONVERTED = BALANCE_IN_USDC * FORMATED_BALANCE;
+                                    setBalance(BALANCE_IN_USDC_CONVERTED);
+
+                                } else {
+                                    toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
+                                    console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
+                                }
+                            }
+                            connectMetaMask();
+
                             setList1(tokenList1.slice(60, 80));
                             setList2(tokenList2.slice(0, 9));
                             setList3(tokenList3.slice(0, 9))
@@ -308,7 +358,7 @@ const Home = () => {
                 <div className="bg-menuDark tf-container">
                     <div className="pt-12 pb-12 mt-4">
                         <h5><span className="text-primary">My Wallet</span> - <a href="#" className="choose-account" data-bs-toggle="modal" data-bs-target="#accountWallet"><span className="dom-text">Account 1 </span> &nbsp;<i className="icon-select-down"></i></a> </h5>
-                        <h1 className="mt-16"><a href="#">$2159,34</a></h1>
+                        {balance == null ? <h1 className="mt-16"><a href="#">$0.00</a></h1> : <h1 className="mt-16"><a href="#">${balance !== null && balance.toFixed(2)}</a></h1>}
                         <ul className="mt-16 grid-4 m--16">
                             <li>
                                 <a href="/ChoosePayment" className="tf-list-item d-flex flex-column gap-8 align-items-center">
@@ -337,17 +387,17 @@ const Home = () => {
                         </ul>
                     </div>
                 </div>
-                    <div className="bg-menuDark tf-container">
+                <div className="bg-menuDark tf-container">
                     <Swiper
-                    slidesPerView={2.7}
-                    spaceBetween={12}
-                    freeMode={true}
-                    pagination={{
-                        clickable: true,
-                    }}
-                    modules={[FreeMode]}
-                    className="mySwiper"
-                >
+                        slidesPerView={2.7}
+                        spaceBetween={12}
+                        freeMode={true}
+                        pagination={{
+                            clickable: true,
+                        }}
+                        modules={[FreeMode]}
+                        className="mySwiper"
+                    >
                         <div className="pt-12 pb-12 mt-4">
                             <h5>Market</h5>
                             <div className="swiper" >
@@ -418,13 +468,13 @@ const Home = () => {
                         </div>
 
                         {/* </div> */}
-                        </Swiper>
-                    </div>
-        
+                    </Swiper>
+                </div>
+
                 <div className="bg-menuDark tf-container">
                     <div className="pt-12 pb-12 mt-4">
                         <div className="wrap-filter-swiper">
-                            <h5><a href="/assetsRatings" className="cryptex-rating"><i className="icon-star"></i>Cryptex Rating</a></h5>
+                            <h5><a href="/assetsRatings" className="cryptex-rating"><i className="icon-star"></i>Bitclub Rating</a></h5>
                             {/* <!-- <div className="swiper swiper-wrapper-r market-swiper" data-space-between="20" data-preview="auto"> --> */}
                             <div className="swiper-wrapper1 menu-tab-v3 mt-12" role="tablist">
                                 <div className="swiper-slide1 nav-link active" data-bs-toggle="tab" data-bs-target="#favorites" role="tab" aria-controls="favorites" aria-selected="true">
@@ -555,8 +605,7 @@ const Home = () => {
                             <span className="icon-cancel" data-bs-dismiss="modal"></span>
                         </div>
                         <ul className="mt-20 pb-16">
-                            <li data-bs-dismiss="modal"><div className="d-flex justify-content-between align-items-center gap-8 text-large item-check active dom-value">Account 1 <i className="icon icon-check-circle"></i> </div></li>
-                            <li className="mt-4" data-bs-dismiss="modal"><div className="d-flex  justify-content-between gap-8 text-large item-check dom-value">Account 2<i className="icon icon-check-circle"></i></div></li>
+                            {accountList !== null && accountList}
                         </ul>
                     </div>
 
@@ -660,7 +709,7 @@ const Home = () => {
                                     <li>
                                         <a href="#" className="noti-item bg-menuDark">
                                             <div className="pb-8 line-bt d-flex">
-                                                <p className="text-button fw-6">Cointex to just tick size and trading amount precision of spots/margins and perpetual swaps</p>
+                                                <p className="text-button fw-6">Bitclub to just tick size and trading amount precision of spots/margins and perpetual swaps</p>
                                                 <i className="dot-lg bg-primary"></i>
                                             </div>
                                             <span className="d-block mt-8">5 minutes ago</span>
@@ -669,7 +718,7 @@ const Home = () => {
                                     <li className="mt-12">
                                         <a href="#" className="noti-item bg-menuDark">
                                             <div className="pb-8 line-bt d-flex">
-                                                <p className="text-button fw-6">Cointex to adjust components of several indexes</p>
+                                                <p className="text-button fw-6">Bitclub to adjust components of several indexes</p>
                                                 <i className="dot-lg bg-primary"></i>
                                             </div>
                                             <span className="d-block mt-8">5 minutes ago</span>
@@ -678,7 +727,7 @@ const Home = () => {
                                     <li className="mt-12">
                                         <a href="#" className="noti-item bg-menuDark">
                                             <div className="pb-8 line-bt d-flex">
-                                                <p className="text-button fw-6">Cointex to just tick size and trading amount precision of spots/margins and perpetual swaps</p>
+                                                <p className="text-button fw-6">Bitclub to just tick size and trading amount precision of spots/margins and perpetual swaps</p>
                                                 <i className="dot-lg bg-primary"></i>
                                             </div>
                                             <span className="d-block mt-8">5 minutes ago</span>
@@ -687,7 +736,7 @@ const Home = () => {
                                     <li className="mt-12">
                                         <a href="#" className="noti-item bg-menuDark">
                                             <div className="pb-8 line-bt">
-                                                <p className="text-button fw-6 text-secondary">Cointex to adjust components of several indexes</p>
+                                                <p className="text-button fw-6 text-secondary">Bitclub to adjust components of several indexes</p>
                                             </div>
                                             <span className="d-block mt-8 text-secondary">1 day ago</span>
                                         </a>
@@ -695,7 +744,7 @@ const Home = () => {
                                     <li className="mt-12">
                                         <a href="#" className="noti-item bg-menuDark">
                                             <div className="pb-8 line-bt">
-                                                <p className="text-button fw-6 text-secondary">Cryptex wallet uses Achain network service</p>
+                                                <p className="text-button fw-6 text-secondary">Bitclub wallet uses Achain network service</p>
                                             </div>
                                             <span className="d-block mt-8 text-secondary">1 day ago</span>
                                         </a>
@@ -703,7 +752,7 @@ const Home = () => {
                                     <li className="mt-12">
                                         <a href="#" className="noti-item bg-menuDark">
                                             <div className="pb-8 line-bt">
-                                                <p className="text-button fw-6 text-secondary">Cointex to adjust components of several indexes</p>
+                                                <p className="text-button fw-6 text-secondary">Bitclub to adjust components of several indexes</p>
                                             </div>
                                             <span className="d-block mt-8 text-secondary">1 day ago</span>
                                         </a>
@@ -721,7 +770,7 @@ const Home = () => {
                 <div className="modal-dialog modal-dialog-centered" role="document">
                     <div className="modal-content modal-sm">
                         <div className="p-16 line-bt text-center">
-                            <h4>“Cointex” Would Like To Send You Notifications</h4>
+                            <h4>“Bitclub” Would Like To Send You Notifications</h4>
                             <p className="mt-8 text-large">Notifications may include alerts, sounds, and icon badges. These can be configured in Settings.</p>
                         </div>
                         <div className="grid-2">

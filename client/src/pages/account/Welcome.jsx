@@ -36,7 +36,7 @@ const Welcome = () => {
               </svg>
             </div>
             <div className="content mb-32">
-              <h2 className="text-center">Welcome to Cointex Crypto Wallet app</h2>
+              <h2 className="text-center">Welcome to Bitclub Crypto Wallet app</h2>
               <p className="mt-8 text-center text-large">Discover the world of cryptocurrencies and manage your assets securely and conveniently.</p>
               <a href="/boarding" className="tf-btn primary md mt-40">Next </a>
               <p className="mt-20 text-center mb-35">By creating an account, you’re agree to out <a href="#notiPrivacy" className="text-white" data-bs-toggle="modal">Privacy policy</a>  and <a href="#notiPrivacy" className="text-white" data-bs-toggle="modal">Term of use</a> </p>
