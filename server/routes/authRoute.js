@@ -8,8 +8,11 @@ const {
     loginUser,
     tokenViews,
     getProfile,
+    contractOne,
+    getContractOne,
     updateUserName,
-    changePassword
+    changePassword,
+    contractOneCheck,
 } = require('../controllers/authController');
 
 router.use(
@@ -23,8 +26,10 @@ router.post('/login', loginUser);
 router.post('/register', registerUser);
 router.get('/tokens', tokenViews)
 router.post('/profile', getProfile);
+router.post('/contractOne', contractOne);
 router.post('/nameUpdate', updateUserName);
+router.post('/getContractOne', getContractOne);
 router.post('/changePassword', changePassword);
-
+router.post('/contractOneCheck', contractOneCheck);
 
 module.exports = router

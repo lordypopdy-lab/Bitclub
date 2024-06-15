@@ -10,13 +10,6 @@ const userSchema = new Schema({
     password: String
 });
 
-const contract1 = new Schema({
-    price: Number,
-    balance: Number
-})
-
-// const contract1Model = mongoose.model("contracts", contract1);
-
 const userModel = mongoose.model("User", userSchema);
 
 module.exports = userModel

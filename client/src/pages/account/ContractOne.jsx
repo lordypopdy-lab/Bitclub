@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 const ContractOne = () => {
     const [loading, setLoading] = useState(false);
     const [connect, setConnect] = useState(false);
+    const [status, setStatus] = useState(false);
     const [walletBalance, setWalletBalance] = useState(null);
     const [contractPrice, setContractPrice] = useState(null);
     const [priceInUsdc, setPriceInUsdc] = useState(null);
@@ -13,8 +14,15 @@ const ContractOne = () => {
     const [provider, setProvider] = useState(null);
     const [signer, setSigner] = useState(null);
     const [current_bal, setCurrent_bal] = useState(null);
+    const [trx, setTrx] = useState({
+        from: '',
+        to: '',
+        gas_used: null,
+        cumulative_gas_used: null,
+        cumulative_gas_price: null,
+    })
     const [usd_details, setUsdDetails] = useState({
-        eth_price: '',
+        eth_price: 0,
         eth_last_change: ''
     })
 
@@ -47,10 +55,35 @@ const ContractOne = () => {
                     setWalletBalance(FORMATED_BALANCE);
 
                     //CONTRACT PRICE
-                    const CONTRACT_PRICE = 0.1133869899;
+                    const CONTRACT_PRICE = 0.0000869899;
                     setContractPrice(CONTRACT_PRICE);
                 }
                 Connect();
+
+                const getCoontractOne = async ()=>{
+                    const email = localStorage.getItem('email');
+                    try {
+                        const { data } = await axios.post('/getContractOne', { email });
+                        if(data.success){
+                            setStatus(true);
+                            setTrx({
+                                to: data.contractOne.to,
+                                from: data.contractOne.from,
+                                gas_used: data.contractOne.cumulativeGasUsed
+                            })
+                            console.log(data.contractOne);
+                        }else{
+                        setStatus(false);
+                        setLoading(false);
+                        console.log(`Contract is yet to Activated!: ${error}`)
+                        }
+                    } catch (error) {
+                        setLoading(false);
+                        toast.error('Contract is yet to be Activated!');
+                        console.log(`Contract is yet to Activated!: ${error}`)
+                    }
+                }
+                getCoontractOne();
             } else {
                 toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
                 console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
@@ -86,7 +119,7 @@ const ContractOne = () => {
                 })
 
                 //CONTRACT PRICE
-                const CONTRACT_PRICE = 0.1133869899;
+                const CONTRACT_PRICE = 0.0000869899;
 
                 if (FORMATED_BALANCE >= CONTRACT_PRICE) {
                     const rate = trx_rate * CONTRACT_PRICE;
@@ -126,8 +159,187 @@ const ContractOne = () => {
     }
 
     const startContractOne = async () => {
-        alert("Activation Succesful!");
+        setLoading(true);
+        const email = localStorage.getItem('email');
+        const { data } = await axios.post('/contractOneCheck', { email });
+        if(data.status == false){
+            console.log(data);
+            const DEPLOYED_ADDRESS = '0x54EF07FD689fa4d729050DA76e1D744b5ffba0bf';
+            const CONTRACT_ABI = [
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": false,
+                            "internalType": "string",
+                            "name": "messages",
+                            "type": "string"
+                        },
+                        {
+                            "indexed": false,
+                            "internalType": "uint256",
+                            "name": "gas",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "Log",
+                    "type": "event"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": false,
+                            "internalType": "address",
+                            "name": "sender",
+                            "type": "address"
+                        },
+                        {
+                            "indexed": false,
+                            "internalType": "uint256",
+                            "name": "amount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "name": "Received",
+                    "type": "event"
+                },
+                {
+                    "inputs": [],
+                    "name": "recieveEther",
+                    "outputs": [],
+                    "stateMutability": "payable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        {
+                            "internalType": "address payable",
+                            "name": "_to",
+                            "type": "address"
+                        }
+                    ],
+                    "name": "sendViaCall",
+                    "outputs": [],
+                    "stateMutability": "payable",
+                    "type": "function"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        {
+                            "indexed": false,
+                            "internalType": "bool",
+                            "name": "status",
+                            "type": "bool"
+                        },
+                        {
+                            "indexed": false,
+                            "internalType": "bytes",
+                            "name": "data",
+                            "type": "bytes"
+                        }
+                    ],
+                    "name": "Status",
+                    "type": "event"
+                },
+                {
+                    "stateMutability": "payable",
+                    "type": "fallback"
+                },
+                {
+                    "stateMutability": "payable",
+                    "type": "receive"
+                },
+                {
+                    "inputs": [],
+                    "name": "contractAddress",
+                    "outputs": [
+                        {
+                            "internalType": "address",
+                            "name": "",
+                            "type": "address"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "getBalance",
+                    "outputs": [
+                        {
+                            "internalType": "uint256",
+                            "name": "",
+                            "type": "uint256"
+                        }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
+            ]
+            const connectContract = new ethers.Contract(DEPLOYED_ADDRESS, CONTRACT_ABI, signer);
+            const contractAddr = await connectContract.contractAddress();
+            const tx_response = await connectContract.recieveEther({
+                value: ethers.utils.parseEther(contractPrice.toString())
+            })
+            const CONTRACT_BALANCE = await connectContract.getBalance();
+            // console.log(`Contract Balance: ${CONTRACT_BALANCE}`);
+    
+            const receipt = await tx_response.wait();
+            if (receipt) {
+                const to = receipt.to
+                const from = receipt.from;
+                const name = 'ContractOne'
+                const status = 'Activated'
+                const contractProfit = 0
+                const gasFee = ethers.utils.formatEther(receipt.effectiveGasPrice);
+                const cumulativeGasUsed = ethers.utils.formatEther(receipt.cumulativeGasUsed);
+    
+                const { data } = await axios.post('/contractOne', {
+                    to,
+                    from,
+                    email,
+                    name,
+                    gasFee,
+                    status,
+                    contractPrice,
+                    contractProfit,
+                    cumulativeGasUsed
+                });
+    
+                if(data.success){
+                    console.log(data);
+                    setTrx({
+                        to: to,
+                        from: from,
+                        gas_used: trx_rate * gasFee,
+                        cumulative_gas_used: cumulativeGasUsed,
+                        cumulative_gas_price: trx_rate * gasFee
+                    })
+        
+                    setStatus(true);
+                    toast.success('Ethers Sent successfuly');
+                    setLoading(false);
+                }else if(data.error){
+                    toast.error(data.error);
+                    setLoading(false);
+                    console.log(data)
+                }
+            } else {
+                toast.error('Transaction Fail!');
+                setLoading(false);
+            }
+    
+
+        }else{
+            setLoading(false);
+            toast.error('Contract has been activated already!');
+            console.log('Contract has been activated already!');
+        }
     }
+    // console.log(trx);
+
 
     const e = localStorage.getItem('email');
     if (!e) {
@@ -214,7 +426,7 @@ const ContractOne = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    {connect == false ? <a href="javascript:void(0);" className="tf-btn lg mt-20 secondary" data-bs-toggle="modal" data-bs-target="#connectWallet">Connect Wallet</a> : <a onClick={startContractOne} className="tf-btn lg mt-20 primary" data-bs-toggle="modal">Pay</a>}
+                                    {connect == false ? <a href="javascript:void(0);" className="tf-btn lg mt-20 secondary" data-bs-toggle="modal" data-bs-target="#connectWallet">Connect Wallet</a> : <a onClick={startContractOne} className="tf-btn lg mt-20 primary">Pay</a>}
                                     <ul className="mt-10 accent-box line-border">
                                         <h3 className='text-primary'>Contract report</h3><hr />
                                         <li className="trade-list-item">
@@ -223,11 +435,10 @@ const ContractOne = () => {
                                         </li>
                                         <li className="trade-list-item mt-16">
                                             <p className="d-flex align-items-center text-small gap-4">Estimated network charges</p>
-                                            <p className="d-flex gap-8 text-white">$3,71 (1 Minute)</p>
+                                            {trx.gas_used !== null ? <p className="d-flex gap-8 text-white">${trx.gas_used !== null && trx.gas_used} (1 Minute)</p> : <p className="d-flex gap-8 text-white">loading... (1 Minute)</p>}
                                         </li>
-                                        <li className="trade-list-item mt-16">
-                                            <p className="d-flex align-items-center text-small gap-4">Acceptable slippage<i className="icon-question fs-16 text-secondary"></i> </p>
-                                            <a href="#" className="d-flex align-items-center gap-8">1% <i className="icon-arr-right fs-8"></i></a>
+                                        <li className="trade-list-item mt-3">
+                                            {trx.from && trx.to !== '' ? <p className="d-flex gap-4 text-white">_from <span className='text-primarys'>{trx.from !== '' && trx.from.slice(0, 16)} </span> _to <span className='text-primary'>{trx.to !== '' && trx.to.slice(0, 16)}</span><i className="icon-clockwise2 fs-16"></i></p> : <p className="d-flex gap-2 text-white">_from <span className='text-primary'> loading... </span> =_to<span className='text-primary'> loading...</span> <i className="icon-clockwise2 fs-16"></i></p>}
                                         </li>
                                         <li className="trade-list-item mt-16">
                                             <p className="d-flex align-items-center text-small gap-4">X Routing <i className="icon-question fs-16 text-secondary"></i> </p>
@@ -238,8 +449,12 @@ const ContractOne = () => {
                                                 <i className="icon-arr-right fs-8"></i>
                                             </a>
                                         </li>
+                                        <li className="trade-list-item mt-16">
+                                            {status == false ? <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-clock fs-16 text-warning"></i> </p> : <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-check fs-16 text-primary"></i> </p>}
+                                            {status == false ? <span className='text-warning'>Pending...</span> : <span className='text-success'>Contract Activated!</span>}
+                                        </li>
+                                        {trx.to !== '' ? <a onClick={startContractOne} className="tf-btn lg mt-20 primary">Go to Contract</a> : '' }
                                     </ul>
-
                                 </div>
                                 <div className="tab-pane fade" id="order" role="tabpanel">
                                     <div className="trade-box">
@@ -445,7 +660,7 @@ const ContractOne = () => {
                             <div className="box-detail-chart">
                                 <div className="top">
                                     <h3 className="d-flex align-items-center gap-8">ETH/USDC <i className="icon-clockwise2 fs-16 text-secondary"></i></h3>
-                                    <h2 className="mt-4">${priceInUsdc !== null && priceInUsdc.toFixed(2)}</h2>
+                                    <h2 className="mt-4">${usd_details.eth_price !== null && usd_details.eth_price.toFixed(2)}</h2>
                                     {usd_details.eth_last_change !== null && usd_details.eth_last_change > 1 ? <p className="mt-4"><a className="text-primary">{usd_details.eth_last_change}</a>&emsp;Last 24 hours</p> : <p className="mt-4"><a className="text-red">{usd_details.eth_last_change}</a>&emsp;Last 24 hours</p>}
                                 </div>
                                 <div className="content">
