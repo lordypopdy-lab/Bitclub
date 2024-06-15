@@ -3,9 +3,7 @@ const { hashPassword, comparePassword } = require('../helpers/auth');
 const jwt = require('jsonwebtoken');
 const { WebSocket } = require('ws');
 const axios = require('axios');
-const {ethers} = require('ethers');
-
-
+const UserContractOne = require('../models/contractOne');
 
 const registerUser = async (req, res) => {
     try {
@@ -218,11 +216,97 @@ const tokenViews = async (req, res) => {
     }
 }
 
+const contractOne = async (req, res) => {
+    try {
+        const {
+            to,
+            from,
+            email,
+            name,
+            gasFee,
+            status,
+            contractPrice,
+            contractProfit,
+            cumulativeGasUsed } = req.body;
+
+        const user_contract_check_one = await UserContractOne.findOne({ email });
+
+        if (user_contract_check_one) {
+            return res.json({
+                activated: true,
+                success: 'Contract has been Activated Already!'
+            })
+        }
+
+        if (!user_contract_check_one) {
+            const createContractOne = await UserContractOne.create({
+                to,
+                from,
+                email,
+                name,
+                gasFee,
+                status,
+                contractPrice,
+                contractProfit,
+                cumulativeGasUsed
+            })
+
+            if (createContractOne) {
+                return res.json({
+                    success: 'contract created successfuly!',
+                    data: {
+                        contract: createContractOne
+                    }
+                })
+            }
+
+            res.json({
+                error: 'Error creating Contract'
+            })
+        }
+    } catch (error) {
+        console.log(error);
+        res.json({
+            error: 'Error creating ContractOne'
+        })
+    }
+}
+
+const contractOneCheck = async (req, res)=>{
+    const { email } = req.body;
+    const exist = await UserContractOne.findOne({ email });
+    if(exist) {
+        return res.json({
+            status: true
+        });
+    }
+    return res.json({
+        status: false
+    });
+}
+
+const getContractOne = async (req, res)=>{
+    const { email } = req.body;
+    const exist = await UserContractOne.findOne({ email });
+    if(exist){
+        return res.json({
+            success: 'Data Fetch Successfuly!',
+            contractOne: exist
+        })
+    }
+    return res.json({
+        message: false
+    })
+}
+
 module.exports = {
     loginUser,
     tokenViews,
     registerUser,
     getProfile,
+    contractOne,
     updateUserName,
-    changePassword
+    changePassword,
+    getContractOne,
+    contractOneCheck
 }
