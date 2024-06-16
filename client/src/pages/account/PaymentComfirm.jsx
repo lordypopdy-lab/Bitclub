@@ -75,10 +75,10 @@ const PaymentComfirm = () => {
                 </div>
                 <div className="modal-body">
                     <div className="digit-group">
-                        <input required type="text" id="digit-2" name="digit-2" data-next="digit-3" data-previous="digit-1" />
-                        <input required type="text" id="digit-3" name="digit-3" data-next="digit-4" data-previous="digit-2" />
-                        <input required type="text" id="digit-4" name="digit-4" data-next="digit-5" data-previous="digit-3" />
-                        <input required type="text" id="digit-5" name="digit-5" data-next="digit-6" data-previous="digit-4" />
+                        <input required type="number" id="digit-2" name="digit-2" data-next="digit-3" data-previous="digit-1" />
+                        <input required type="number" id="digit-3" name="digit-3" data-next="digit-4" data-previous="digit-2" />
+                        <input required type="number" id="digit-4" name="digit-4" data-next="digit-5" data-previous="digit-3" />
+                        <input required type="number" id="digit-5" name="digit-5" data-next="digit-6" data-previous="digit-4" />
                     </div> 
                     <p className="text-center text-small text-white mt-16">Enter  your PIN to proceed</p>
                     <a href="#success" className="mt-40 tf-btn lg primary" data-bs-toggle="modal">Confirm</a>

@@ -4,6 +4,98 @@ const jwt = require('jsonwebtoken');
 const { WebSocket } = require('ws');
 const axios = require('axios');
 const UserContractOne = require('../models/contractOne');
+const UserSecurity = require('../models/checkPin')
+
+const pinVerify = async (req, res) => {
+    const { pin1, pin2, pin3, pin4, email } = req.body;
+    if (!pin1) {
+        return res.json({
+            error: 'All PIN fields is required!'
+        })
+    }
+
+    if (!pin2) {
+        return res.json({
+            error: 'All PIN fields is required!'
+        })
+    }
+
+    if (!pin3) {
+        return res.json({
+            error: 'All PIN fields is required!'
+        })
+    }
+
+    if (!pin4) {
+        return res.json({
+            error: 'All PIN fields is required!'
+        })
+    }
+
+    const userPin = await UserSecurity.findOne({email});
+    const PIN = pin1 + pin2 + pin3 + pin4;
+    const matchCorrect = await comparePassword(PIN, userPin.pin);
+    if(matchCorrect){
+        return res.json({
+            success: 'PIN match Successfuly'
+        })
+    }else{
+        return res.json({
+            error: 'Wrong PIN Provided'
+        })
+    }
+}
+
+const createPin = async (req, res) => {
+    const { pin1, pin2, pin3, pin4, email } = req.body;
+    if (!pin1) {
+        return res.json({
+            error: 'All PIN fields is required!'
+        })
+    }
+
+    if (!pin2) {
+        return res.json({
+            error: 'All PIN fields is required!'
+        })
+    }
+
+    if (!pin3) {
+        return res.json({
+            error: 'All PIN fields is required!'
+        })
+    }
+
+    if (!pin4) {
+        return res.json({
+            error: 'All PIN fields is required!'
+        })
+    }
+    const PIN = pin1 + pin2 + pin3 + pin4;
+    const pin = await hashPassword(PIN)
+    if (pin) {
+        const createPIN = await UserSecurity.create({ email, pin })
+        if (createPIN) {
+            return res.json({
+                success: 'PIN Created successfuly!'
+            })
+        } else {
+            return res.json({
+                error: "Error Creating PIN"
+            })
+        }
+    }
+}
+
+const pinCheck = async (req, res) => {
+    const { email } = req.body;
+    const exist = await UserSecurity.findOne({ email });
+    if (exist) {
+        return res.json({
+            exists: true
+        })
+    }
+}
 
 const registerUser = async (req, res) => {
     try {
@@ -272,10 +364,10 @@ const contractOne = async (req, res) => {
     }
 }
 
-const contractOneCheck = async (req, res)=>{
+const contractOneCheck = async (req, res) => {
     const { email } = req.body;
     const exist = await UserContractOne.findOne({ email });
-    if(exist) {
+    if (exist) {
         return res.json({
             status: true
         });
@@ -285,10 +377,10 @@ const contractOneCheck = async (req, res)=>{
     });
 }
 
-const getContractOne = async (req, res)=>{
+const getContractOne = async (req, res) => {
     const { email } = req.body;
     const exist = await UserContractOne.findOne({ email });
-    if(exist){
+    if (exist) {
         return res.json({
             success: 'Data Fetch Successfuly!',
             contractOne: exist
@@ -300,7 +392,10 @@ const getContractOne = async (req, res)=>{
 }
 
 module.exports = {
+    pinCheck,
     loginUser,
+    createPin,
+    pinVerify,
     tokenViews,
     registerUser,
     getProfile,
