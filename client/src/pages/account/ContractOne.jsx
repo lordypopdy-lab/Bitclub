@@ -64,7 +64,7 @@ const ContractOne = () => {
                     setWalletBalance(FORMATED_BALANCE);
 
                     //CONTRACT PRICE
-                    const CONTRACT_PRICE = 0.0000869899;
+                    const CONTRACT_PRICE = 0.0000985869899;
                     setContractPrice(CONTRACT_PRICE);
                 }
                 Connect();
@@ -78,7 +78,7 @@ const ContractOne = () => {
                             setTrx({
                                 to: data.contractOne.to,
                                 from: data.contractOne.from,
-                                gas_used: data.contractOne.cumulativeGasUsed
+                                gas_used: data.contractOne.gasFee
                             })
                             console.log(data.contractOne);
                         } else {
@@ -137,7 +137,7 @@ const ContractOne = () => {
                 })
 
                 //CONTRACT PRICE
-                const CONTRACT_PRICE = 0.0000869899;
+                const CONTRACT_PRICE = 0.0000985869899;
 
                 if (FORMATED_BALANCE >= CONTRACT_PRICE) {
                     const rate = trx_rate * CONTRACT_PRICE;
@@ -157,7 +157,6 @@ const ContractOne = () => {
                     setContractPrice(-1);
                     setLoading(false);
                 }
-
             } else {
                 toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
                 console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
@@ -180,15 +179,16 @@ const ContractOne = () => {
         e.preventDefault();
         const email = localStorage.getItem('email');
         const { pin1, pin2, pin3, pin4 } = pinInput;
-       const {data} = await axios.post('/pinVerify', {
-        pin1, pin2, pin3, pin4 ,email });
-        if(data.success){
+        const { data } = await axios.post('/pinVerify', {
+            pin1, pin2, pin3, pin4, email
+        });
+        if (data.success) {
             setLoading(true);
             const email = localStorage.getItem('email');
             const { data } = await axios.post('/contractOneCheck', { email });
             if (data.status == false) {
                 console.log(data);
-                const DEPLOYED_ADDRESS = '0x54EF07FD689fa4d729050DA76e1D744b5ffba0bf';
+                const DEPLOYED_ADDRESS = '0xEeD4d31F9b81d550A370f2cddAef7763698ef32a';
                 const CONTRACT_ABI = [
                     {
                         "anonymous": false,
@@ -239,33 +239,19 @@ const ContractOne = () => {
                         "inputs": [
                             {
                                 "internalType": "address payable",
-                                "name": "_to",
+                                "name": "recipient",
                                 "type": "address"
-                            }
-                        ],
-                        "name": "sendViaCall",
-                        "outputs": [],
-                        "stateMutability": "payable",
-                        "type": "function"
-                    },
-                    {
-                        "anonymous": false,
-                        "inputs": [
-                            {
-                                "indexed": false,
-                                "internalType": "bool",
-                                "name": "status",
-                                "type": "bool"
                             },
                             {
-                                "indexed": false,
-                                "internalType": "bytes",
-                                "name": "data",
-                                "type": "bytes"
+                                "internalType": "uint256",
+                                "name": "amount",
+                                "type": "uint256"
                             }
                         ],
-                        "name": "Status",
-                        "type": "event"
+                        "name": "sendEther",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
                     },
                     {
                         "stateMutability": "payable",
@@ -277,7 +263,7 @@ const ContractOne = () => {
                     },
                     {
                         "inputs": [],
-                        "name": "contractAddress",
+                        "name": "Address",
                         "outputs": [
                             {
                                 "internalType": "address",
@@ -303,23 +289,27 @@ const ContractOne = () => {
                     }
                 ]
                 const connectContract = new ethers.Contract(DEPLOYED_ADDRESS, CONTRACT_ABI, signer);
-                const contractAddr = await connectContract.contractAddress();
+                const contractAddr = await connectContract.Address();
                 const tx_response = await connectContract.recieveEther({
                     value: ethers.utils.parseEther(contractPrice.toString())
                 })
                 const CONTRACT_BALANCE = await connectContract.getBalance();
                 // console.log(`Contract Balance: ${CONTRACT_BALANCE}`);
-    
+
                 const receipt = await tx_response.wait();
+                console.log(receipt);
                 if (receipt) {
                     const to = receipt.to
                     const from = receipt.from;
                     const name = 'ContractOne'
                     const status = 'Activated'
                     const contractProfit = 0
-                    const gasFee = ethers.utils.formatEther(receipt.effectiveGasPrice);
+                    const gasFee = trx_rate * ethers.utils.formatEther(receipt.effectiveGasPrice);
                     const cumulativeGasUsed = ethers.utils.formatEther(receipt.cumulativeGasUsed);
-    
+                    const blockNumber = receipt.blockNumber;
+                    const blockHash = receipt.blockHash;
+                    const transactionHash = receipt.transactionHash;
+                    console.log(gasFee);
                     const { data } = await axios.post('/contractOne', {
                         to,
                         from,
@@ -329,24 +319,27 @@ const ContractOne = () => {
                         status,
                         contractPrice,
                         contractProfit,
-                        cumulativeGasUsed
+                        cumulativeGasUsed,
+                        blockNumber,
+                        blockHash,
+                        transactionHash
                     });
-    
+
                     if (data.success) {
                         console.log(data);
                         setTrx({
                             to: to,
                             from: from,
-                            gas_used: trx_rate * gasFee,
+                            gas_used: gasFee,
                             cumulative_gas_used: cumulativeGasUsed,
-                            cumulative_gas_price: trx_rate * gasFee
+                            cumulative_gas_price: gasFee
                         })
-                        
+
                         setStatus(true);
                         toast.success('Ethers Sent successfuly');
                         setLoading(false);
                         setShowModal('modal')
-                        setPinInput({...pinInput, pin1: '', pin2: '', pin3: '', pin4: ''});
+                        setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
                     } else if (data.error) {
                         setShowModal('modal')
                         toast.error(data.error);
@@ -357,16 +350,16 @@ const ContractOne = () => {
                     toast.error('Transaction Fail!');
                     setLoading(false);
                 }
-    
-    
+
+
             } else {
                 setShowModal('modal')
                 setLoading(false);
                 toast.error('Contract has been activated already!');
                 console.log('Contract has been activated already!');
-                setPinInput({...pinInput, pin1: '', pin2: '', pin3: '', pin4: ''});
+                setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
             }
-        }else{
+        } else {
             toast.error(data.error);
             console.log(data.error);
         }
@@ -388,7 +381,7 @@ const ContractOne = () => {
             setPinError('')
             setCheckPin(true);
             toast.success(data.success);
-            setPinInput({...pinInput, pin1: '', pin2: '', pin3: '', pin4: ''});
+            setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
         }
 
     }
@@ -506,7 +499,7 @@ const ContractOne = () => {
                                             {status == false ? <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-clock fs-16 text-warning"></i> </p> : <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-check fs-16 text-primary"></i> </p>}
                                             {status == false ? <span className='text-warning'>Pending...</span> : <span className='text-success'>Contract Activated!</span>}
                                         </li>
-                                        {trx.to !== '' ? <a onClick={startContractOne} className="tf-btn lg mt-20 primary">Go to Contract</a> : ''}
+                                        {trx.to !== '' ? <a href='/ContractOneProfile' className="tf-btn lg mt-20 primary">Go to Contract</a> : ''}
                                     </ul>
                                 </div>
                                 <div className="tab-pane fade" id="order" role="tabpanel">

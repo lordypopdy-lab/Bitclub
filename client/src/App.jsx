@@ -43,6 +43,7 @@ import SecurityCenter from './pages/settings/SecurityCenter';
 import AssetsRatings from './pages/account/AssetsRatings';
 import ChangePassword from './pages/settings/ChangePassword';
 import VerificationDone from './pages/profile/VerificationDone';
+import ContractOneProfile from './pages/account/ContractOneProfile';
 import AddressVerification from './pages/account/AddressVerification';
 import PersonalVerification from './pages/account/PersonalVerification';
 import VerificationComfirm from './pages/profile/VerificationComfirm';
@@ -51,6 +52,8 @@ import IdentityVerification from './pages/profile/IdentityVerification';
 import ChooseVerification from './pages/profile/ChooseVerification';
 import NewPasswordSucces from './pages/settings/NewPasswordSucces';
 import ExchangeTradeApprove from './pages/account/ExchangeTradeApprove';
+import WithdrawContractOne from './contractOneTrx/WithdrawContractOne';
+
 import axios from 'axios';
 import { Toaster } from 'react-hot-toast';
 import { UserContextProvider } from '../context/UserContext';
@@ -111,6 +114,8 @@ const router = createBrowserRouter(
             <Route path='/SecurityCenter' element={<SecurityCenter />} />
             <Route path='/ChangePassword' element={<ChangePassword />} />
             <Route path='/VerificationDone' element={<VerificationDone />} />
+            <Route path='/withdarawContractOne' element={<WithdrawContractOne />} />
+            <Route path='/ContractOneProfile' element={<ContractOneProfile />} />
             <Route path='/AddressVerification' element={<AddressVerification />} />
             <Route path='/PersonalVerification' element={<PersonalVerification />} />
             <Route path='/VerificationComfirm' element={<VerificationComfirm />} />

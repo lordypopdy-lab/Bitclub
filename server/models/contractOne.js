@@ -9,11 +9,14 @@ const contractOneShema = new Schema({
         unique: true
     },
     name: String,
-    gasFee: String,
+    gasFee: Number,
     status: String,
     contractPrice: Number,
     contractProfit: Number,
-    cumulativeGasUsed: Number
+    cumulativeGasUsed: Number,
+    blockNumber : Number,
+    blockHash : String,
+    transactionHash: String
 })
 
 const ContractOneModel = mongoose.model('UserContractOne', contractOneShema);
