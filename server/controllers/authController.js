@@ -32,14 +32,14 @@ const pinVerify = async (req, res) => {
         })
     }
 
-    const userPin = await UserSecurity.findOne({email});
+    const userPin = await UserSecurity.findOne({ email });
     const PIN = pin1 + pin2 + pin3 + pin4;
     const matchCorrect = await comparePassword(PIN, userPin.pin);
-    if(matchCorrect){
+    if (matchCorrect) {
         return res.json({
             success: 'PIN match Successfuly'
         })
-    }else{
+    } else {
         return res.json({
             error: 'Wrong PIN Provided'
         })
@@ -319,7 +319,10 @@ const contractOne = async (req, res) => {
             status,
             contractPrice,
             contractProfit,
-            cumulativeGasUsed } = req.body;
+            cumulativeGasUsed,
+            blockNumber,
+            blockHash,
+            transactionHash } = req.body;
 
         const user_contract_check_one = await UserContractOne.findOne({ email });
 
@@ -340,7 +343,10 @@ const contractOne = async (req, res) => {
                 status,
                 contractPrice,
                 contractProfit,
-                cumulativeGasUsed
+                cumulativeGasUsed,
+                blockNumber,
+                blockHash,
+                transactionHash
             })
 
             if (createContractOne) {

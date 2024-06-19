@@ -169,6 +169,7 @@ const Earn = () => {
             setLoading(false);
         }
     }, [])
+
     const e = localStorage.getItem('email');
     if (!e) {
         location.href = '/login';
@@ -218,6 +219,40 @@ const Earn = () => {
 
     }
 
+    const toContractOne = async()=>{
+        const email = localStorage.getItem('email');
+        try {
+            const { data } = await axios.post('/getContractOne', { email });
+            if (data.success) {
+              setLoading(false);
+              location.href = '/ContractOneProfile'
+            } else {
+              setLoading(false);
+              location.href = '/ContractOne'
+            }
+          } catch (error) {
+            setLoading(false);
+            console.log(`Contract is yet to Activated!: ${error}`)
+          }
+    }
+
+    const toContractTwo = async()=>{
+        const email = localStorage.getItem('email');
+        // try {
+        //     const { data } = await axios.post('/getContractOne', { email });
+        //     if (data.success) {
+        //       setLoading(false);
+        //       location.href = '/ContractOneProfile'
+        //     } else {
+        //       setLoading(false);
+        //       location.href = '/ContractOne'
+        //     }
+        //   } catch (error) {
+        //     setLoading(false);
+        //     console.log(`Contract is yet to Activated!: ${error}`)
+        //   }
+    }
+
     return (
         <>
 
@@ -249,23 +284,27 @@ const Earn = () => {
                         <div className="swiper">
                             <div className="swiper-wrapper">
                                 <SwiperSlide>
-                                    <div className="accent-box-v5 bg-menuDark active">
-                                        <span className="icon-box bg-icon1"><i className="icon-book"></i></span>
-                                        <div className="mt-12">
-                                            <a href="#" className="text-small">Set up your wallet</a>
-                                            <p className="mt-4">Click Create and set up your collection.
-                                                Add social links, a description, profile & banner images, and set a secondary sales fee.</p>
+                                <div className="accent-box-v5 p-0 bg-icon2 bg-menuDark active">
+                                        <a onClick={toContractOne} className="coin-item style-1 gap-12 bg-surface">
+                                            <div className="mt-1">
+                                            <span className="icon-box bg-transparent bg-icon1"><i className="icon-book"></i></span>
+                                            <a href="#" className="text-small">Contract <span style={{color: '#25C866'}}>Class One</span></a>
+                                                <p className="mt-4">Click Create and set up your collection.
+                                                    Add contract status, a description, price & contract icons, and set a secondary sales fee. <span style={{color: '#25C866'}}>Contract level One+</span></p>
+                                            </div>
+                                            </a>
                                         </div>
-                                    </div>
                                 </SwiperSlide>
                                 <SwiperSlide>
                                     <div className="accent-box-v5 bg-menuDark">
-                                        <span className="icon-box bg-icon2"><i className="icon-earn2 "></i></span>
-                                        <div className="mt-12">
-                                            <a href="#" className="text-small">Create Your Collection</a>
-                                            <p className="mt-4">Click Create and set up your collection.
-                                                Add social links, a description, profile & banner images, and set a secondary sales fee.</p>
-                                        </div>
+                                    <a onClick={toContractTwo} className="coin-item style-1 gap-12 bg-surface">
+                                            <span className="icon-box bg-transparent bg-icon1"><i className="icon-book"></i></span>
+                                            <div className="mt-12">
+                                            <a href="#" className="text-small">Contract <span style={{color: '#25C866'}}>Class two</span></a>
+                                                <p className="mt-4">Click Create and set up your collection.
+                                                    Add contract status, a description, price & contract icons, and set a secondary sales fee. <span style={{color: '#25C866'}}>Contract level two+</span></p>
+                                            </div>
+                                            </a>
                                     </div>
                                 </SwiperSlide>
                             </div>

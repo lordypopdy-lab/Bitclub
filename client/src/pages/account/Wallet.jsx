@@ -10,7 +10,6 @@ import FadeLoader from 'react-spinners/FadeLoader';
 const Wallet = () => {
     const [loading, setLoading] = useState(false);
     const [list1, setList1] = useState(null);
-
     const [balance, setBalance] = useState(null);
     const [accountList, setAccountList] = useState(null);
 
@@ -133,6 +132,24 @@ const Wallet = () => {
     if (!e) {
         location.href = '/login';
     }
+
+    const toContractOne = async()=>{
+        const email = localStorage.getItem('email');
+        try {
+            const { data } = await axios.post('/getContractOne', { email });
+            if (data.success) {
+              setLoading(false);
+              location.href = '/ContractOneProfile'
+            } else {
+              setLoading(false);
+              location.href = '/ContractOne'
+            }
+          } catch (error) {
+            setLoading(false);
+            console.log(`Contract is yet to Activated!: ${error}`)
+          }
+    }
+
     return (
         <>
             {/* <!-- preloade --> */}
@@ -250,7 +267,7 @@ const Wallet = () => {
                                 <ul>
                                     <li>
                                         <div className="accent-box-v5 p-0 bg-menuDark active" style={{ width: '100%' }}>
-                                        <a href="/ContractOne" className="coin-item style-1 gap-12 bg-surface">
+                                        <a onClick={toContractOne} className="coin-item style-1 gap-12 bg-surface">
                                             <span className="icon-box bg-transparent bg-icon1"><i className="icon-book"></i></span>
                                             <div className="mt-12">
                                                 <a href="#" className="text-small">Contract <span style={{color: '#25C866'}}>Class One</span></a>
