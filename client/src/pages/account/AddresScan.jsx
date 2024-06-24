@@ -4,7 +4,7 @@ const AddresScan = () => {
   $(document).ready(function () {
     window.setTimeout(function(){
         location.href = "/CameraDone";
-    },5000) 
+    },10000) 
 });
 const e = localStorage.getItem('email');
 if(!e){
