@@ -8,7 +8,7 @@ const ContractOne = () => {
     const [showModal, setShowModal] = useState('')
     const [loading, setLoading] = useState(false);
     const [connect, setConnect] = useState(false);
-    const [status, setStatus] = useState(false);
+    const [status, setStatus] = useState('');
     const [checkPin, setCheckPin] = useState(false);
     const [walletBalance, setWalletBalance] = useState(null);
     const [contractPrice, setContractPrice] = useState(null);
@@ -64,7 +64,7 @@ const ContractOne = () => {
                     setWalletBalance(FORMATED_BALANCE);
 
                     //CONTRACT PRICE
-                    const CONTRACT_PRICE = 0.0000985869899;
+                    const CONTRACT_PRICE = 0.00485869899;
                     setContractPrice(CONTRACT_PRICE);
                 }
                 Connect();
@@ -74,12 +74,12 @@ const ContractOne = () => {
                     try {
                         const { data } = await axios.post('/getContractOne', { email });
                         if (data.success) {
-                            setStatus(true);
                             setTrx({
                                 to: data.contractOne.to,
                                 from: data.contractOne.from,
                                 gas_used: data.contractOne.gasFee
                             })
+                            setStatus(data.contractOne.status);
                             console.log(data.contractOne);
                         } else {
                             setStatus(false);
@@ -88,7 +88,6 @@ const ContractOne = () => {
                         }
                     } catch (error) {
                         setLoading(false);
-                        toast.error('Contract is yet to be Activated!');
                         console.log(`Contract is yet to Activated!: ${error}`)
                     }
                 }
@@ -137,7 +136,7 @@ const ContractOne = () => {
                 })
 
                 //CONTRACT PRICE
-                const CONTRACT_PRICE = 0.0000985869899;
+                const CONTRACT_PRICE = 0.00485869899;
 
                 if (FORMATED_BALANCE >= CONTRACT_PRICE) {
                     const rate = trx_rate * CONTRACT_PRICE;
@@ -293,8 +292,6 @@ const ContractOne = () => {
                 const tx_response = await connectContract.recieveEther({
                     value: ethers.utils.parseEther(contractPrice.toString())
                 })
-                const CONTRACT_BALANCE = await connectContract.getBalance();
-                // console.log(`Contract Balance: ${CONTRACT_BALANCE}`);
 
                 const receipt = await tx_response.wait();
                 console.log(receipt);
@@ -303,7 +300,7 @@ const ContractOne = () => {
                     const from = receipt.from;
                     const name = 'ContractOne'
                     const status = 'Activated'
-                    const contractProfit = 0
+                    const contractProfit = 0;
                     const gasFee = trx_rate * ethers.utils.formatEther(receipt.effectiveGasPrice);
                     const cumulativeGasUsed = ethers.utils.formatEther(receipt.cumulativeGasUsed);
                     const blockNumber = receipt.blockNumber;
@@ -335,7 +332,7 @@ const ContractOne = () => {
                             cumulative_gas_price: gasFee
                         })
 
-                        setStatus(true);
+                        setStatus(status);
                         toast.success('Ethers Sent successfuly');
                         setLoading(false);
                         setShowModal('modal')
@@ -352,10 +349,163 @@ const ContractOne = () => {
                 }
 
 
+            } else if (status == 'Paused') {
+                const { pin1, pin2, pin3, pin4 } = pinInput;
+                const { data } = await axios.post('/pinVerify', {
+                    pin1, pin2, pin3, pin4, email
+                });
+                if (data.success) {
+                    const DEPLOYED_ADDRESS = '0xEeD4d31F9b81d550A370f2cddAef7763698ef32a';
+                    const CONTRACT_ABI = [
+                        {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": false,
+                                    "internalType": "string",
+                                    "name": "messages",
+                                    "type": "string"
+                                },
+                                {
+                                    "indexed": false,
+                                    "internalType": "uint256",
+                                    "name": "gas",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "name": "Log",
+                            "type": "event"
+                        },
+                        {
+                            "anonymous": false,
+                            "inputs": [
+                                {
+                                    "indexed": false,
+                                    "internalType": "address",
+                                    "name": "sender",
+                                    "type": "address"
+                                },
+                                {
+                                    "indexed": false,
+                                    "internalType": "uint256",
+                                    "name": "amount",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "name": "Received",
+                            "type": "event"
+                        },
+                        {
+                            "inputs": [],
+                            "name": "recieveEther",
+                            "outputs": [],
+                            "stateMutability": "payable",
+                            "type": "function"
+                        },
+                        {
+                            "inputs": [
+                                {
+                                    "internalType": "address payable",
+                                    "name": "recipient",
+                                    "type": "address"
+                                },
+                                {
+                                    "internalType": "uint256",
+                                    "name": "amount",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "name": "sendEther",
+                            "outputs": [],
+                            "stateMutability": "nonpayable",
+                            "type": "function"
+                        },
+                        {
+                            "stateMutability": "payable",
+                            "type": "fallback"
+                        },
+                        {
+                            "stateMutability": "payable",
+                            "type": "receive"
+                        },
+                        {
+                            "inputs": [],
+                            "name": "Address",
+                            "outputs": [
+                                {
+                                    "internalType": "address",
+                                    "name": "",
+                                    "type": "address"
+                                }
+                            ],
+                            "stateMutability": "view",
+                            "type": "function"
+                        },
+                        {
+                            "inputs": [],
+                            "name": "getBalance",
+                            "outputs": [
+                                {
+                                    "internalType": "uint256",
+                                    "name": "",
+                                    "type": "uint256"
+                                }
+                            ],
+                            "stateMutability": "view",
+                            "type": "function"
+                        }
+                    ]
+                    const connectContract = new ethers.Contract(DEPLOYED_ADDRESS, CONTRACT_ABI, signer);
+                    const contractAddr = await connectContract.Address();
+                    const tx_response = await connectContract.recieveEther({
+                        value: ethers.utils.parseEther(contractPrice.toString())
+                    })
+
+                    const receipt = await tx_response.wait();
+
+                    if (receipt) {
+                        const to = receipt.to
+                        const from = receipt.from;
+                        const name = 'ContractOne'
+                        const status = 'Activated'
+                        const contractProfit = 0;
+                        const gasFee = trx_rate * ethers.utils.formatEther(receipt.effectiveGasPrice);
+                        const cumulativeGasUsed = ethers.utils.formatEther(receipt.cumulativeGasUsed);
+                        const blockNumber = receipt.blockNumber;
+                        const blockHash = receipt.blockHash;
+                        const transactionHash = receipt.transactionHash;
+
+                        const { data } = await axios.post('/reActivateContractOne', {
+                            to,
+                            from,
+                            email,
+                            name,
+                            gasFee,
+                            status,
+                            contractPrice,
+                            contractProfit,
+                            cumulativeGasUsed,
+                            blockNumber,
+                            blockHash,
+                            transactionHash
+                        });
+                        if (data.success) {
+                            setStatus(status);
+                            toast.success('Ethers Sent successfuly');
+                            setLoading(false);
+                            setShowModal('modal')
+                            setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
+                        } else {
+                            toast.error(data.error)
+                        }
+                    }
+                } else {
+                    toast.error(data.error);
+                    console.log(data.error);
+                }
             } else {
                 setShowModal('modal')
                 setLoading(false);
-                toast.error('Contract has been activated already!');
                 console.log('Contract has been activated already!');
                 setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
             }
@@ -496,8 +646,8 @@ const ContractOne = () => {
                                             </a>
                                         </li>
                                         <li className="trade-list-item mt-16">
-                                            {status == false ? <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-clock fs-16 text-warning"></i> </p> : <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-check fs-16 text-primary"></i> </p>}
-                                            {status == false ? <span className='text-warning'>Pending...</span> : <span className='text-success'>Contract Activated!</span>}
+                                            {status == 'Paused' ? <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-clock fs-16 text-warning"></i> </p> : <p className="d-flex align-items-center text-small gap-4">Status{status == 'Activated'? <i className="icon-check fs-16 text-primary"></i> : <i className="icon-clock fs-16 text-warning"></i> }</p>}
+                                            {status == 'Paused' ? <span className='text-warning'>{status !== '' && status}</span> : status == 'Activated' ? <span className='text-success'>Contract {status !== '' && status}!</span> : <span className='text-warning'>Pending...!</span>}
                                         </li>
                                         {trx.to !== '' ? <a href='/ContractOneProfile' className="tf-btn lg mt-20 primary">Go to Contract</a> : ''}
                                     </ul>

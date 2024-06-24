@@ -27,7 +27,7 @@ const Register = () => {
                 localStorage.setItem('pin', data.password);
                 localStorage.setItem('email', email);
                 toast.success("Register successful!");
-                location.href = '/home'
+                location.href = '/login'
             }
         } catch (error) {
             toast.error(error.message);

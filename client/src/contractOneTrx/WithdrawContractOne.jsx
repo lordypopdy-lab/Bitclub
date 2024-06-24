@@ -5,6 +5,10 @@ import FadeLoader from 'react-spinners/FadeLoader';
 import toast from 'react-hot-toast';
 
 const WithdrawContractOne = () => {
+  const e = localStorage.getItem('email');
+  if (!e) {
+    location.href = '/login';
+  }
 
   const [showModal, setShowModal] = useState('')
   const [provider, setProvider] = useState(null);
@@ -82,111 +86,112 @@ const WithdrawContractOne = () => {
           const FORMATED_BALANCE = ethers.utils.formatEther(GET_BALANCE);
 
           const DEPLOYED_ADDRESS = '0xEeD4d31F9b81d550A370f2cddAef7763698ef32a';
-        const CONTRACT_ABI = [
-          {
-            "anonymous": false,
-            "inputs": [
-              {
-                "indexed": false,
-                "internalType": "string",
-                "name": "messages",
-                "type": "string"
-              },
-              {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "gas",
-                "type": "uint256"
-              }
-            ],
-            "name": "Log",
-            "type": "event"
-          },
-          {
-            "anonymous": false,
-            "inputs": [
-              {
-                "indexed": false,
-                "internalType": "address",
-                "name": "sender",
-                "type": "address"
-              },
-              {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-              }
-            ],
-            "name": "Received",
-            "type": "event"
-          },
-          {
-            "inputs": [],
-            "name": "recieveEther",
-            "outputs": [],
-            "stateMutability": "payable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "address payable",
-                "name": "recipient",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-              }
-            ],
-            "name": "sendEther",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "stateMutability": "payable",
-            "type": "fallback"
-          },
-          {
-            "stateMutability": "payable",
-            "type": "receive"
-          },
-          {
-            "inputs": [],
-            "name": "Address",
-            "outputs": [
-              {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-          },
-          {
-            "inputs": [],
-            "name": "getBalance",
-            "outputs": [
-              {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-          }
-        ]
+          const CONTRACT_ABI = [
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": false,
+                  "internalType": "string",
+                  "name": "messages",
+                  "type": "string"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "uint256",
+                  "name": "gas",
+                  "type": "uint256"
+                }
+              ],
+              "name": "Log",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": false,
+                  "internalType": "address",
+                  "name": "sender",
+                  "type": "address"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "Received",
+              "type": "event"
+            },
+            {
+              "inputs": [],
+              "name": "recieveEther",
+              "outputs": [],
+              "stateMutability": "payable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address payable",
+                  "name": "recipient",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "sendEther",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "stateMutability": "payable",
+              "type": "fallback"
+            },
+            {
+              "stateMutability": "payable",
+              "type": "receive"
+            },
+            {
+              "inputs": [],
+              "name": "Address",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "getBalance",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            }
+          ]
 
           const connectContract = new ethers.Contract(DEPLOYED_ADDRESS, CONTRACT_ABI, signer);
 
           const contractAddr = await connectContract.Address();
           const CONTRACT_BALANCE = await connectContract.getBalance();
-          console.log(`Contract Balance: ${CONTRACT_BALANCE}`);
+          const test = ethers.utils.formatEther(CONTRACT_BALANCE)
+          console.log(`Contract Balance: $${trx_rate * test}`);
           console.log(`Contract Address: ${contractAddr}`);
 
           setSigner(signer);
@@ -203,8 +208,6 @@ const WithdrawContractOne = () => {
     }
   }, [])
 
-  const convertedPrice = trx_rate * trx.contractPrice;
-  const convertedProfit = trx.ContractProfit;
 
   //COPY FROM FUNCTION
   const copyFrom = async () => {
@@ -229,157 +232,191 @@ const WithdrawContractOne = () => {
   }
 
   //GET TOTAL WITHDRAWAL
-  const TOTAL_W = convertedPrice;
-  console.log(TOTAL_W.toFixed(2))
+  const CONTRACT_PRICE = trx.contractPrice + trx.ContractProfit;
+  const convertedPrice = trx_rate * trx.contractPrice;
+  const convertedProfit = trx_rate * trx.ContractProfit;
+  const addedBalance = convertedPrice + convertedProfit;
 
   //TRX
   const withdrawlFunction = async (e) => {
+    const email = localStorage.getItem('email');
     setLoading(true);
     e.preventDefault();
     if (userAddress !== '') {
-
-      const email = localStorage.getItem('email');
-      const { pin1, pin2, pin3, pin4 } = pinInput;
-      const { data } = await axios.post('/pinVerify', {
-        pin1, pin2, pin3, pin4, email
-      });
-      if (data.success) {
-        const DEPLOYED_ADDRESS = '0xEeD4d31F9b81d550A370f2cddAef7763698ef32a';
-        const CONTRACT_ABI = [
-          {
-            "anonymous": false,
-            "inputs": [
-              {
-                "indexed": false,
-                "internalType": "string",
-                "name": "messages",
-                "type": "string"
-              },
-              {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "gas",
-                "type": "uint256"
-              }
-            ],
-            "name": "Log",
-            "type": "event"
-          },
-          {
-            "anonymous": false,
-            "inputs": [
-              {
-                "indexed": false,
-                "internalType": "address",
-                "name": "sender",
-                "type": "address"
-              },
-              {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-              }
-            ],
-            "name": "Received",
-            "type": "event"
-          },
-          {
-            "inputs": [],
-            "name": "recieveEther",
-            "outputs": [],
-            "stateMutability": "payable",
-            "type": "function"
-          },
-          {
-            "inputs": [
-              {
-                "internalType": "address payable",
-                "name": "recipient",
-                "type": "address"
-              },
-              {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-              }
-            ],
-            "name": "sendEther",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-          },
-          {
-            "stateMutability": "payable",
-            "type": "fallback"
-          },
-          {
-            "stateMutability": "payable",
-            "type": "receive"
-          },
-          {
-            "inputs": [],
-            "name": "Address",
-            "outputs": [
-              {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-          },
-          {
-            "inputs": [],
-            "name": "getBalance",
-            "outputs": [
-              {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-              }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-          }
-        ]
-        const connectContract = new ethers.Contract(DEPLOYED_ADDRESS, CONTRACT_ABI, signer);
-        const tx_response = await connectContract.sendEther(
-          userAddress,
-          ethers.utils.parseEther(TOTAL_W.toString())
-        )
-
-        const receipt = await tx_response.wait();
-        if (receipt) {
-          console.log(receipt);
-          setLoading(false);
-          // const to = receipt.to
-          // const from = receipt.from;
-          // const name = 'ContractOne'
-          // const status = 'Activated'
-          // const contractProfit = 0
-          // const gasFee = trx_rate * ethers.utils.formatEther(receipt.effectiveGasPrice);
-          // const cumulativeGasUsed = ethers.utils.formatEther(receipt.cumulativeGasUsed);
-          // const blockNumber = receipt.blockNumber;
-          // const blockHash = receipt.blockHash;
-          // const transactionHash = receipt.transactionHash;
-          // console.log(gasFee);
-
-          toast.success('Ethers Sent successfuly');
-          setLoading(false);
-          setShowModal('modal')
-          setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
-        } else {
-          setLoading(false);
-          toast.error('Transaction Fail!');
-          setLoading(false);
-        }
-
-      } else if (data.error) {
-        toast.error(data.error);
+      if (trx.status == 'Paused') {
+        toast.error('Transaction Failed contract De-activated');
+        setUserAddress('');
+        setShowModal('modal');
         setLoading(false);
-        console.log(data)
+        setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
+      } else {
+        const { pin1, pin2, pin3, pin4 } = pinInput;
+        const { data } = await axios.post('/pinVerify', {
+          pin1, pin2, pin3, pin4, email
+        });
+        if (data.success) {
+          const DEPLOYED_ADDRESS = '0xEeD4d31F9b81d550A370f2cddAef7763698ef32a';
+          const CONTRACT_ABI = [
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": false,
+                  "internalType": "string",
+                  "name": "messages",
+                  "type": "string"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "uint256",
+                  "name": "gas",
+                  "type": "uint256"
+                }
+              ],
+              "name": "Log",
+              "type": "event"
+            },
+            {
+              "anonymous": false,
+              "inputs": [
+                {
+                  "indexed": false,
+                  "internalType": "address",
+                  "name": "sender",
+                  "type": "address"
+                },
+                {
+                  "indexed": false,
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "Received",
+              "type": "event"
+            },
+            {
+              "inputs": [],
+              "name": "recieveEther",
+              "outputs": [],
+              "stateMutability": "payable",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "address payable",
+                  "name": "recipient",
+                  "type": "address"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "amount",
+                  "type": "uint256"
+                }
+              ],
+              "name": "sendEther",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            },
+            {
+              "stateMutability": "payable",
+              "type": "fallback"
+            },
+            {
+              "stateMutability": "payable",
+              "type": "receive"
+            },
+            {
+              "inputs": [],
+              "name": "Address",
+              "outputs": [
+                {
+                  "internalType": "address",
+                  "name": "",
+                  "type": "address"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [],
+              "name": "getBalance",
+              "outputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "",
+                  "type": "uint256"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            }
+          ]
+          const connectContract = new ethers.Contract(DEPLOYED_ADDRESS, CONTRACT_ABI, signer);
+          const tx_response = await connectContract.sendEther(
+            userAddress,
+            ethers.utils.parseEther(CONTRACT_PRICE.toString())
+          )
+          const receipt = await tx_response.wait();
+          if (receipt) {
+            console.log(receipt);
+            setLoading(false);
+            const to = receipt.to
+            const from = receipt.from;
+            const name = 'ContractOne'
+            const status = 'Success'
+            const amount = addedBalance;
+            const contractProfit = convertedPrice
+            const contractPrice = convertedPrice
+            const gasFee = trx_rate * ethers.utils.formatEther(receipt.effectiveGasPrice);
+            const blockNumber = receipt.blockNumber;
+            const blockHash = receipt.blockHash;
+            const transactionHash = receipt.transactionHash;
+
+            const { data } = await axios.post('/pauseContractOne', { email });
+            if (data.success) {
+              const {data} = await axios.post('/setContractOneLogs', {
+                name,
+                email,
+                amount,
+                to,
+                from,
+                blockNumber,
+                transactionHash,
+                status,
+                blockHash,
+                gasFee,
+                contractProfit,
+                contractPrice
+              })
+              const logsData = data;
+              console.log(logsData);
+             if(logsData.success){
+              setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
+              toast.success('Ethers Sent successfuly');
+              setUserAddress('');
+              setLoading(false);
+              setShowModal('modal')
+              loccation.href = '/Wallet'
+             }else{
+              console.log(`Upadating Contract One Error: ${data.error}`)
+             }
+            } else {
+              toast.error('Transaction Error');
+            }
+          } else {
+            setLoading(false);
+            toast.error('Transaction Fail!');
+            setLoading(false);
+          }
+        } else if (data.error) {
+          toast.error(data.error);
+          setLoading(false);
+          console.log(data)
+        }
       }
     } else {
       toast.error("Please Insert a valid ERC20 address");
@@ -387,7 +424,8 @@ const WithdrawContractOne = () => {
     }
   }
 
-//CREATE PIN
+
+  //CREATE PIN
   const createPin = async (e) => {
     e.preventDefault();
     const email = localStorage.getItem('email');
@@ -423,7 +461,7 @@ const WithdrawContractOne = () => {
           </div>
           <div class="mt-16 d-flex justify-content-between">
             <span>I want to pay</span>
-            <h5>${trx.contractPrice !== null && convertedPrice.toFixed(2)}</h5>
+            <h5>${addedBalance !== null && addedBalance.toFixed(2)}</h5>
           </div>
           <div class="mt-8 group-ip-select">
             <input
@@ -452,34 +490,34 @@ const WithdrawContractOne = () => {
               <a href="#" class="tag-sm dark">100%</a>
             </li>
           </ul>
-          <p class="mt-8">188.308-300.000,000 USD</p>
+          <p class="mt-8 text-primary">${convertedPrice !== null && convertedPrice.toFixed(2)}+{convertedProfit !== null && convertedProfit.toFixed(2)} USD</p>
           <div className="tab-pane fade active show" id="link" role="tabpanel">
             <ul className="mt-10 accent-box line-border">
               <h5 className='text-primary'>Activation History!</h5><hr />
-              <li className="d-flex align-items-center justify-content-between pt-8 pb-8">
-                <span className="text-small">Estimated contract changes</span>
-                <span className="text-large text-white coin-btn increase text-end">${convertedProfit !== null && convertedProfit.toFixed(2)}</span>
-              </li>
-              <li className="trade-list-item">
-                <p className="d-flex align-items-center text-small gap-4">Reference <i className="icon-question fs-16 text-secondary"></i> </p>
-                <p className="d-flex gap-8 text-white">{trx.contractPrice !== null && trx.contractPrice} ETH = {trx.contractPrice !== null && convertedPrice.toFixed(2)} USDC <i className="icon-clockwise2 fs-16"></i></p>
-              </li>
-              <li className="trade-list-item mt-16">
-                <p className="d-flex align-items-center text-small gap-4">Estimated contract changes</p>
-                {trx.gas_used !== null ? <p className="d-flex gap-8 text-white">{trx.gas_used !== null && trx.gas_used} (1 Minute)</p> : <p className="d-flex gap-8 text-white">loading... (1 Minute)</p>}
-              </li>
-              <li className="trade-list-item mt-3">
-                {trx.from && trx.to !== '' ? <p className="d-flex gap-4 text-white">_from <span className='text-primarys'>{trx.from !== '' && trx.from} </span> <i onClick={copyFrom} style={{ cursor: 'pointer' }} className="icon-copy active fs-3"></i></p> : <p className="d-flex gap-2 text-white">_from <span className='text-primary'> loading... </span> =_to<span className='text-primary'> loading...</span> <i className="icon-clockwise2 fs-16"></i></p>}
-              </li>
-              <li className="trade-list-item mt-2">
-                {trx.from && trx.to !== '' ? <p className="d-flex gap-4 text-white"> _to <span className='text-primary'>{trx.to !== '' && trx.to}</span><i onClick={copyTo} style={{ cursor: 'pointer' }} className="icon-copy fs-3"></i></p> : <p className="d-flex gap-2 text-white">_from <span className='text-primary'> loading... </span> =_to<span className='text-primary'> loading...</span> <i className="icon-clockwise2 fs-16"></i></p>}
-              </li>
+              <li className="d-flex align-items-center justify-content-between">
+                <span className="text-small">Profit So Far</span>
+                <span className="text-large text-white increase text-end">${convertedProfit !== null && convertedProfit.toFixed(2)}</span>
+              </li><hr />
               <FadeLoader
                 color="#36d7b7"
                 loading={loading}
                 speedMultiplier={3}
                 style={{ textAlign: 'center', position: 'relative', marginLeft: '50%' }}
               />
+              <li className="d-flex align-items-center justify-content-between">
+                <span className="text-small">Activation Price</span>
+                <span className="text-large text-white increase text-end">${convertedPrice !== null && convertedPrice.toFixed(2)}</span>
+              </li><hr />
+              <li className="trade-list-item">
+                <p className="d-flex align-items-center text-small gap-4">Reference <i className="icon-question fs-16 text-secondary"></i> </p>
+                <p className="d-flex gap-8 text-white">{trx.contractPrice !== null && trx.contractPrice} ETH = {trx.contractPrice !== null && convertedPrice.toFixed(2)} USDC <i className="icon-clockwise2 fs-16"></i></p>
+              </li><hr />
+              <li className="trade-list-item mt-3">
+                {trx.from && trx.to !== '' ? <p className="d-flex gap-4 text-white">_from <span className='text-primarys'>{trx.from !== '' && trx.from} </span> <i onClick={copyFrom} style={{ cursor: 'pointer' }} className="icon-copy active fs-3"></i></p> : <p className="d-flex gap-2 text-white">_from <span className='text-primary'> loading... </span> =_to<span className='text-primary'> loading...</span> <i className="icon-clockwise2 fs-16"></i></p>}
+              </li><hr />
+              <li className="trade-list-item mt-2">
+                {trx.from && trx.to !== '' ? <p className="d-flex gap-4 text-white"> _to <span className='text-primary'>{trx.to !== '' && trx.to}</span><i onClick={copyTo} style={{ cursor: 'pointer' }} className="icon-copy fs-3"></i></p> : <p className="d-flex gap-2 text-white">_from <span className='text-primary'> loading... </span> =_to<span className='text-primary'> loading...</span> <i className="icon-clockwise2 fs-16"></i></p>}
+              </li><hr />
               <li className="trade-list-item mt-16">
                 <p className="d-flex align-items-center text-small gap-4">X Routing <i className="icon-question fs-16 text-secondary"></i> </p>
                 <a href="#" className="d-flex gap-4 align-items-center">
@@ -488,10 +526,10 @@ const WithdrawContractOne = () => {
                   <img src="/src/images/coin/coin-5.jpg" alt="img" className="img" />
                   <i className="icon-arr-right fs-8"></i>
                 </a>
-              </li>
+              </li><hr />
               <li className="trade-list-item mt-16">
-                {trx.status == null ? <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-clock fs-16 text-warning"></i> </p> : <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-check fs-16 text-primary"></i> </p>}
-                {trx.status == null ? <span className='text-warning'>Loading...</span> : <span className='text-success'>Contract {trx.status}!</span>}
+                {trx.status == 'Paused' ? <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-clock fs-16 text-warning"></i> </p> : <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-check fs-16 text-primary"></i> </p>}
+                {trx.status == 'Paused' ? <span className='text-warning'>{trx.status}</span> : <span className='text-success'>Contract {trx.status}!</span>}
               </li>
               {/* <a className="tf-btn lg mt-20 primary" data-bs-toggle="modal" data-bs-target="#pause">Pause & Withdraw</a> */}
             </ul>

@@ -16,6 +16,9 @@ const {
     changePassword,
     contractOneCheck,
     pinVerify,
+    pauseContractOne,
+    contractOneTrxLogs,
+    reActivateContractOne
 } = require('../controllers/authController');
 
 router.use(
@@ -36,6 +39,10 @@ router.post('/contractOne', contractOne);
 router.post('/nameUpdate', updateUserName);
 router.post('/getContractOne', getContractOne);
 router.post('/changePassword', changePassword);
+router.post('/pauseContractOne', pauseContractOne);
 router.post('/contractOneCheck', contractOneCheck);
+router.post('/setContractOneLogs', contractOneTrxLogs);
+router.post('/reActivateContractOne', reActivateContractOne);
+
 
 module.exports = router

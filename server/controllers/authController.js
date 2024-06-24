@@ -4,7 +4,111 @@ const jwt = require('jsonwebtoken');
 const { WebSocket } = require('ws');
 const axios = require('axios');
 const UserContractOne = require('../models/contractOne');
-const UserSecurity = require('../models/checkPin')
+const UserSecurity = require('../models/checkPin');
+const PauseLogs = require('../models/trxHistory');
+
+const reActivateContractOne = async (req, res) => {
+    try {
+        const {
+            to,
+            from,
+            email,
+            name,
+            gasFee,
+            status,
+            contractPrice,
+            contractProfit,
+            cumulativeGasUsed,
+            blockNumber,
+            blockHash,
+            transactionHash
+        } = req.body;
+        const update = await UserContractOne.updateOne({ email: email }, { $set: { 
+            to: `${to}`,
+            from: `${from}`,
+            name: `${name}`,
+            gasFee: `${gasFee}`,
+            status: `${status}` ,
+            contractPrice: `${contractPrice}`,
+            contractProfit: `${contractProfit}`,
+            cumulativeGasUsed: `${cumulativeGasUsed}`,
+            blockNumber:`${blockNumber}`,
+            blockHash: `${blockHash}`,
+            transactionHash: `${transactionHash}`,
+        } })
+    
+        if(update){
+            return res.json({
+                success: 'Contract reActivated Successfuly!'
+            })
+        }
+        return({
+            error: 'Error re-activating ContractS'
+        })
+    } catch (error) {
+        return res.json({
+            error
+        })
+    }
+}
+
+const contractOneTrxLogs = async (req, res) => {
+    try {
+        const {
+            name,
+            email,
+            amount,
+            to,
+            from,
+            blockNumber,
+            transactionHash,
+            status,
+            blockHash,
+            gasFee,
+            contractProfit,
+            contractPrice
+        } = req.body;
+
+        const createLogs = await PauseLogs.create({
+            name,
+            email,
+            amount,
+            to,
+            from,
+            blockNumber,
+            transactionHash,
+            status,
+            blockHash,
+            gasFee,
+            contractProfit,
+            contractPrice
+        })
+
+        if (createLogs) {
+            return res.json({
+                success: 'Transaction successfuly'
+            })
+        }
+        console.log("Error");
+    } catch (error) {
+        return res.json({
+            error: error
+        })
+    }
+}
+
+const pauseContractOne = async (req, res) => {
+    const { email } = req.body;
+    const update = await UserContractOne.updateOne({ email: email }, { $set: { status: `Paused`, contractPrice: `${0}`, contractProfit: `${0}` } });
+    if (update) {
+        return res.json({
+            success: 'Contract paused Successfuly!'
+        })
+    }
+    return res.json({
+        error: 'Error Pausing Contract'
+    })
+}
 
 const pinVerify = async (req, res) => {
     const { pin1, pin2, pin3, pin4, email } = req.body;
@@ -409,5 +513,8 @@ module.exports = {
     updateUserName,
     changePassword,
     getContractOne,
-    contractOneCheck
+    pauseContractOne,
+    contractOneCheck,
+    contractOneTrxLogs,
+    reActivateContractOne,
 }

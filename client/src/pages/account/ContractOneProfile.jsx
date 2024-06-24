@@ -5,9 +5,11 @@ import FadeLoader from 'react-spinners/FadeLoader';
 import toast from 'react-hot-toast';
 
 const ContractOneProfile = () => {
+  const e = localStorage.getItem('email');
+  if (!e) {
+      location.href = '/login';
+  }
 
-  const [provider, setProvider] = useState(null);
-  const [signer, setSigner] = useState(null);
   const [loading, setLoading] = useState(false);
   const [trx_rate, set_trx_rate] = useState(null);
   const [trx, setTrx] = useState({
@@ -15,7 +17,7 @@ const ContractOneProfile = () => {
     to: '',
     contractPrice: null,
     ContractProfit: null,
-    status: null,
+    status: '',
     id: null,
     blockNumber: null,
     priceInUsd: null
@@ -83,8 +85,7 @@ const ContractOneProfile = () => {
   }, [])
 
   const convertedPrice = trx_rate * trx.contractPrice;
-  const convertedProfit = trx.ContractProfit;
-  console.log(trx);
+  const convertedProfit = trx_rate * trx.ContractProfit;
 
   return (
     <>
@@ -149,8 +150,8 @@ const ContractOneProfile = () => {
                       style={{ textAlign: 'center', position: 'relative', marginLeft: '50%' }}
                     />
                     <li className="trade-list-item mt-16">
-                      {trx.status == null ? <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-clock fs-16 text-warning"></i> </p> : <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-check fs-16 text-primary"></i> </p>}
-                      {trx.status == null ? <span className='text-warning'>Loading...</span> : <span className='text-success'>Contract {trx.status}!</span>}
+                      {trx.status == '' ? <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-clock fs-16 text-warning"></i> </p> : <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-check fs-16 text-primary"></i> </p>}
+                      {trx.status == '' ? <span className='text-warning'>Loading...</span> : <span className='text-success'>Contract {trx.status}!</span>}
                     </li>
                     <a className="tf-btn lg mt-20 primary" data-bs-toggle="modal" data-bs-target="#pause">Pause & Withdraw</a>
                   </ul>
@@ -230,7 +231,7 @@ const ContractOneProfile = () => {
               </div>
               <div className="grid-2">
                 <a href="#" className="line-r text-center text-button fw-6 p-10" data-bs-dismiss="modal">Cancel</a>
-                <a href='/withdarawContractOne' className="text-center text-button fw-6 p-10 text-primary">Pause</a>
+                <a href='/withdarawContractOne' className="text-center text-button fw-6 p-10 text-red">Pause</a>
               </div>
 
             </div>

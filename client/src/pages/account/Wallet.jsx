@@ -137,7 +137,7 @@ const Wallet = () => {
         const email = localStorage.getItem('email');
         try {
             const { data } = await axios.post('/getContractOne', { email });
-            if (data.success) {
+            if (data.success && data.contractOne.status !=='Paused') {
               setLoading(false);
               location.href = '/ContractOneProfile'
             } else {
