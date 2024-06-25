@@ -70,6 +70,51 @@ const Home = () => {
     useEffect(() => {
         setLoading(true);
         try {
+
+            const connectMetaMask = async () => {
+                if (window.ethereum) {
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    await provider.send('eth_requestAccounts', []);
+                    const signer = provider.getSigner();
+                    const USER_ADDRESS = signer.getAddress();
+                    const GET_BALANCE = await provider.getBalance(USER_ADDRESS);
+                    const FORMATED_BALANCE = ethers.utils.formatEther(GET_BALANCE);
+
+                    const ACCOUNT_LISTS = await provider.listAccounts();
+                    console.log(ACCOUNT_LISTS)
+                    const acc_list = ACCOUNT_LISTS.map((ACCOUNT_LIST, index) => {
+                        const handleCopy = async () => {
+                            try {
+                                await navigator.clipboard.writeText(ACCOUNT_LIST);
+                                toast.success('Copied!');
+                            } catch (error) {
+                                toast.error('Fail to Copy!');
+                            }
+                        }
+                        return (
+                            <>
+                                <li key={index} data-bs-dismiss="modal">
+                                    <div className="d-flex justify-content-between align-items-center gap-8 text-large item-check active dom-value">Account {index}</div>
+                                    <div className="mb-1">
+                                        <span className="text-secondary" style={{ fontSize: '14px' }}>{ACCOUNT_LIST.slice(0, 30)}...</span> <i title="Copy" onClick={handleCopy} style={{ fontSize: '22px', cursor: 'pointer' }} className="icon icon-copy text-primary"></i>
+                                    </div>
+                                </li>
+                            </>
+                        )
+                    })
+                    setAccountList(acc_list);
+
+                    const BALANCE_IN_USDC = data.tokens[1].current_price;
+                    const BALANCE_IN_USDC_CONVERTED = BALANCE_IN_USDC * FORMATED_BALANCE;
+                    setBalance(BALANCE_IN_USDC_CONVERTED);
+
+                } else {
+                    toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
+                    console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
+                }
+            }
+            connectMetaMask();
+
             const getToken = async () => {
                 if (!list1) {
                     axios.get('/tokens').then(({ data }) => {
@@ -265,50 +310,6 @@ const Home = () => {
                                     </li>
                                 )
                             })
-
-                            const connectMetaMask = async () => {
-                                if (window.ethereum) {
-                                    const provider = new ethers.providers.Web3Provider(window.ethereum);
-                                    await provider.send('eth_requestAccounts', []);
-                                    const signer = provider.getSigner();
-                                    const USER_ADDRESS = signer.getAddress();
-                                    const GET_BALANCE = await provider.getBalance(USER_ADDRESS);
-                                    const FORMATED_BALANCE = ethers.utils.formatEther(GET_BALANCE);
-
-                                    const ACCOUNT_LISTS = await provider.listAccounts();
-                                    console.log(ACCOUNT_LISTS)
-                                    const acc_list = ACCOUNT_LISTS.map((ACCOUNT_LIST, index) => {
-                                        const handleCopy = async () => {
-                                            try {
-                                                await navigator.clipboard.writeText(ACCOUNT_LIST);
-                                                toast.success('Copied!');
-                                            } catch (error) {
-                                                toast.error('Fail to Copy!');
-                                            }
-                                        }
-                                        return (
-                                            <>
-                                                <li key={index} data-bs-dismiss="modal">
-                                                    <div className="d-flex justify-content-between align-items-center gap-8 text-large item-check active dom-value">Account {index}</div>
-                                                    <div className="mb-1">
-                                                        <span className="text-secondary" style={{ fontSize: '14px' }}>{ACCOUNT_LIST.slice(0, 30)}...</span> <i title="Copy" onClick={handleCopy} style={{ fontSize: '22px', cursor: 'pointer' }} className="icon icon-copy text-primary"></i>
-                                                    </div>
-                                                </li>
-                                            </>
-                                        )
-                                    })
-                                    setAccountList(acc_list);
-
-                                    const BALANCE_IN_USDC = data.tokens[1].current_price;
-                                    const BALANCE_IN_USDC_CONVERTED = BALANCE_IN_USDC * FORMATED_BALANCE;
-                                    setBalance(BALANCE_IN_USDC_CONVERTED);
-
-                                } else {
-                                    toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
-                                    console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
-                                }
-                            }
-                            connectMetaMask();
 
                             setList1(tokenList1.slice(60, 80));
                             setList2(tokenList2.slice(0, 9));

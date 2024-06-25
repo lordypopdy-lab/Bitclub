@@ -646,7 +646,7 @@ const ContractOne = () => {
                                             </a>
                                         </li>
                                         <li className="trade-list-item mt-16">
-                                            {status == 'Paused' ? <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-clock fs-16 text-warning"></i> </p> : <p className="d-flex align-items-center text-small gap-4">Status{status == 'Activated'? <i className="icon-check fs-16 text-primary"></i> : <i className="icon-clock fs-16 text-warning"></i> }</p>}
+                                            {status == 'Paused' ? <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-clock fs-16 text-warning"></i> </p> : <p className="d-flex align-items-center text-small gap-4">Status{status == 'Activated' ? <i className="icon-check fs-16 text-primary"></i> : <i className="icon-clock fs-16 text-warning"></i>}</p>}
                                             {status == 'Paused' ? <span className='text-warning'>{status !== '' && status}</span> : status == 'Activated' ? <span className='text-success'>Contract {status !== '' && status}!</span> : <span className='text-warning'>Pending...!</span>}
                                         </li>
                                         {trx.to !== '' ? <a href='/ContractOneProfile' className="tf-btn lg mt-20 primary">Go to Contract</a> : ''}
