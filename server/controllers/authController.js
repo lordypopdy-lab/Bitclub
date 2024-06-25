@@ -7,6 +7,7 @@ const UserContractOne = require('../models/contractOne');
 const UserSecurity = require('../models/checkPin');
 const PauseLogs = require('../models/trxHistory');
 
+
 const reActivateContractOne = async (req, res) => {
     try {
         const {
@@ -36,8 +37,10 @@ const reActivateContractOne = async (req, res) => {
             blockHash: `${blockHash}`,
             transactionHash: `${transactionHash}`,
         } })
-    
-        if(update){
+
+        const user = await User.findOne({email});
+        const updateUserNotification = await User.updateOne({email: email}, {$set: {NotificationSeen: `${ user.NotificationSeen + 1}`}});
+        if(update && updateUserNotification){
             return res.json({
                 success: 'Contract reActivated Successfuly!'
             })
@@ -50,7 +53,9 @@ const reActivateContractOne = async (req, res) => {
             error
         })
     }
+
 }
+
 
 const contractOneTrxLogs = async (req, res) => {
     try {
@@ -84,7 +89,10 @@ const contractOneTrxLogs = async (req, res) => {
             contractPrice
         })
 
-        if (createLogs) {
+        const user = await User.findOne({email});
+        const updateUserNotification = await User.updateOne({email: email}, {$set: {NotificationSeen: `${user.NotificationSeen + 1}`}});
+
+        if (createLogs && updateUserNotification) {
             return res.json({
                 success: 'Transaction successfuly'
             })
@@ -235,7 +243,8 @@ const registerUser = async (req, res) => {
         const user = await User.create({
             name,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            NotificationSeen: 0
         })
         return res.json(user)
     } catch (error) {

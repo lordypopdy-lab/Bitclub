@@ -1,4 +1,8 @@
-import { useState } from "react";
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
+import { useState, useEffect } from "react";
+import toast from 'react-hot-toast';
+import { ethers } from 'ethers';
 import {
     EmailShareButton,
     FacebookMessengerShareButton,
@@ -53,9 +57,44 @@ const AddresScan = () => {
     //         location.href = "/CameraDone";
     //     },10000) 
     // });
+
+
+    useEffect(()=>{
+        try {
+            const connectMetaMask = async()=>{
+                if(typeof window.ethereum !=='undefined'){
+                    const accounts = await window.ethereum.send('eth_requestAccounts',[]);
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    const signer = provider.getSigner();
+                    const signerAddress = await signer.getAddress();
+                    setUserAddress(signerAddress);
+                }else{
+                    toast.error('Non-Ethereum browser detected. Consider trying MetaMask!');
+                    console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
+                }
+            }
+            connectMetaMask();
+        } catch (error) {
+            console.log(error);
+        }
+    },[])
+
     const e = localStorage.getItem('email');
     if (!e) {
         location.href = '/login';
+    }
+
+    const copyAddrress = async()=>{
+       if(userAddress !== ''){
+        try {
+            await navigator.clipboard.writeText(userAddress);
+            toast.success('Address Copied!');
+        } catch (error) {
+            toast.error('Fail to Copy!');
+        }
+       }else{
+        toast.error('Failed to Copy, No Address Detected')
+       }
     }
     return (
         <>
@@ -70,20 +109,17 @@ const AddresScan = () => {
                         <img src="/src/images/banner/banner-qrcode.png" alt="img" />
                     </div>
                 </div>
-
-                <div className="box-auth-pass mt-5">
-                    <input
-                        type="text"
-                        value='0x12646e7E11a0eAcC19FAef015a757b3e569727BF'
-                    />
-                    <span className="show-pass">
-                        <i style={{fontSize: '20px'}} className="icon-copy"></i>
-                    </span>
-                </div>
                 <ul className="mt-10 accent-box line-border">
-                    <h3 className='text-primary'>Deposite Ethereum (ERC20)</h3><hr />
-                    <li className="trade-list-item line-border rounded p-4">
+                    <li>
                         <p className="d-flex align-items-center text-small gap-4">Deposite Address <i className="icon-question fs-16 text-secondary"></i> </p>
+                        <InputGroup className="mb-2 mt-3">
+                            <Form.Control
+                                type="text"
+                                value= {userAddress !== '' && userAddress}
+                                aria-describedby="basic-addon1"
+                            />
+                            <InputGroup.Text onClick={copyAddrress} style={{ border: 'none', cursor: 'pointer' }} className='bg-transparent line-border' id="basic-addon1"><i style={{ fontSize: '22px' }} className="icon-copy text-light"></i></InputGroup.Text>
+                        </InputGroup>
                     </li>
                     <a href="javascript:void(0);" className="tf-btn lg mt-20 primary" data-bs-toggle="modal" data-bs-target="#share">Share Address</a>
                 </ul>
