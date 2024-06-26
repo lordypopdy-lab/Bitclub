@@ -6,7 +6,71 @@ const axios = require('axios');
 const UserContractOne = require('../models/contractOne');
 const UserSecurity = require('../models/checkPin');
 const PauseLogs = require('../models/trxHistory');
+const NotificationModel = require('../models/notification');
 
+const createNotification = async (req, res) => {
+    const { email, For } = req.body;
+
+    const NotificationList = {
+        activationHeader: 'Contract Activated! 🎉',
+        activationMessage: 'Your contract has been successfully activated.We are excited to support you and ensure a seamless experience. Enjoy the benefits of your new contract!',
+        reActivationHeader: 'Contract Reactivated! 🎉',
+        reActivationMessage: 'Your contract has been successfully reactivated. We are thrilled to have you back! Enjoy the continued benefits and services. Thank you for choosing us again!',
+        pauseAndWithdrawHeader: 'Contract Paused and Withdrawn! 🎉',
+        pauseAndWithdrawMessage: 'Your contract has been successfully paused and withdrawn.'
+    }
+    if (email && For == 'ForcontractOneActivation') {
+        const createNew = await NotificationModel.create({
+            email,
+            For: For,
+            message: NotificationList.activationMessage,
+            header: NotificationList.activationHeader
+        });
+
+        const user = await User.findOne({ email });
+        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${user.NotificationSeen + 1}` } });
+        if (createNew && updateUserNotification) {
+            return res.json({
+                success: 'Success'
+            })
+        }
+        
+    }
+
+    if(email && For =='ForcontractOneReActivation'){
+        const createNew = await NotificationModel.create({
+            email,
+            For: For,
+            message: NotificationList.reActivationMessage,
+            header: NotificationList.reActivationHeader
+        });
+
+        const user = await User.findOne({ email });
+        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${user.NotificationSeen + 1}` } });
+        if (createNew && updateUserNotification) {
+            return res.json({
+                success: 'Success'
+            })
+        }
+    }
+
+    if(email && For == 'ForContractOnePauseAndWithdraw'){
+        const createNew = await NotificationModel.create({
+            email,
+            For: For,
+            message: NotificationList.pauseAndWithdrawMessage,
+            header: NotificationList.pauseAndWithdrawHeader
+        });
+
+        const user = await User.findOne({ email });
+        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${user.NotificationSeen + 1}` } });
+        if (createNew && updateUserNotification) {
+            return res.json({
+                success: 'Success'
+            })
+        }
+    }
+}
 
 const reActivateContractOne = async (req, res) => {
     try {
@@ -24,28 +88,30 @@ const reActivateContractOne = async (req, res) => {
             blockHash,
             transactionHash
         } = req.body;
-        const update = await UserContractOne.updateOne({ email: email }, { $set: { 
-            to: `${to}`,
-            from: `${from}`,
-            name: `${name}`,
-            gasFee: `${gasFee}`,
-            status: `${status}` ,
-            contractPrice: `${contractPrice}`,
-            contractProfit: `${contractProfit}`,
-            cumulativeGasUsed: `${cumulativeGasUsed}`,
-            blockNumber:`${blockNumber}`,
-            blockHash: `${blockHash}`,
-            transactionHash: `${transactionHash}`,
-        } })
+        const update = await UserContractOne.updateOne({ email: email }, {
+            $set: {
+                to: `${to}`,
+                from: `${from}`,
+                name: `${name}`,
+                gasFee: `${gasFee}`,
+                status: `${status}`,
+                contractPrice: `${contractPrice}`,
+                contractProfit: `${contractProfit}`,
+                cumulativeGasUsed: `${cumulativeGasUsed}`,
+                blockNumber: `${blockNumber}`,
+                blockHash: `${blockHash}`,
+                transactionHash: `${transactionHash}`,
+            }
+        })
 
-        const user = await User.findOne({email});
-        const updateUserNotification = await User.updateOne({email: email}, {$set: {NotificationSeen: `${ user.NotificationSeen + 1}`}});
-        if(update && updateUserNotification){
+        const user = await User.findOne({ email });
+        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${user.NotificationSeen + 1}` } });
+        if (update && updateUserNotification) {
             return res.json({
                 success: 'Contract reActivated Successfuly!'
             })
         }
-        return({
+        return ({
             error: 'Error re-activating ContractS'
         })
     } catch (error) {
@@ -89,8 +155,8 @@ const contractOneTrxLogs = async (req, res) => {
             contractPrice
         })
 
-        const user = await User.findOne({email});
-        const updateUserNotification = await User.updateOne({email: email}, {$set: {NotificationSeen: `${user.NotificationSeen + 1}`}});
+        const user = await User.findOne({ email });
+        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${user.NotificationSeen + 1}` } });
 
         if (createLogs && updateUserNotification) {
             return res.json({
@@ -523,6 +589,7 @@ module.exports = {
     changePassword,
     getContractOne,
     pauseContractOne,
+    createNotification,
     contractOneCheck,
     contractOneTrxLogs,
     reActivateContractOne,

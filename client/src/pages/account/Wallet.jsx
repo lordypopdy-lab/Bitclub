@@ -117,7 +117,7 @@ const Wallet = () => {
                     })
                 }
             }
-            
+
             getToken();
         } catch (error) {
             console.log(error);
@@ -133,21 +133,21 @@ const Wallet = () => {
         location.href = '/login';
     }
 
-    const toContractOne = async()=>{
+    const toContractOne = async () => {
         const email = localStorage.getItem('email');
         try {
             const { data } = await axios.post('/getContractOne', { email });
-            if (data.success && data.contractOne.status !=='Paused') {
-              setLoading(false);
-              location.href = '/ContractOneProfile'
+            if (data.success && data.contractOne.status !== 'Paused') {
+                setLoading(false);
+                location.href = '/ContractOneProfile'
             } else {
-              setLoading(false);
-              location.href = '/ContractOne'
+                setLoading(false);
+                location.href = '/ContractOne'
             }
-          } catch (error) {
+        } catch (error) {
             setLoading(false);
             console.log(`Contract is yet to Activated!: ${error}`)
-          }
+        }
     }
 
     return (
@@ -267,49 +267,49 @@ const Wallet = () => {
                                 <ul>
                                     <li>
                                         <div className="accent-box-v5 p-0 bg-menuDark active" style={{ width: '100%' }}>
-                                        <a onClick={toContractOne} className="coin-item style-1 gap-12 bg-surface">
-                                            <span className="icon-box bg-transparent bg-icon1"><i className="icon-book"></i></span>
-                                            <div className="mt-12">
-                                                <a href="#" className="text-small">Contract <span style={{color: '#25C866'}}>Class One</span></a>
-                                                <p className="mt-4">Click Create and set up your collection.
-                                                    Add contract status, a description, price & contract icons, and set a secondary sales fee. <span style={{color: '#25C866'}}>Contract level one+</span></p>
-                                            </div>
+                                            <a onClick={toContractOne} className="coin-item style-1 gap-12 bg-surface">
+                                                <span className="icon-box bg-transparent bg-icon1"><i className="icon-book"></i></span>
+                                                <div className="mt-12">
+                                                    <a href="#" className="text-small">Contract <span style={{ color: '#25C866' }}>Class One</span></a>
+                                                    <p className="mt-4">Click Create and set up your collection.
+                                                        Add contract status, a description, price & contract icons, and set a secondary sales fee. <span style={{ color: '#25C866' }}>Contract level one+</span></p>
+                                                </div>
                                             </a>
                                         </div>
                                     </li>
                                     <li className="mt-8">
-                                    <div className="accent-box-v5 p-0 bg-menuDark" style={{ width: '100%' }}>
-                                        <a href="/ContractTwo" className="coin-item style-1 gap-12 bg-surface">
-                                            <span className="icon-box bg-transparent bg-icon1"><i className="icon-book"></i></span>
-                                            <div className="mt-12">
-                                            <a href="#" className="text-small">Contract <span style={{color: '#25C866'}}>Class two</span></a>
-                                                <p className="mt-4">Click Create and set up your collection.
-                                                    Add contract status, a description, price & contract icons, and set a secondary sales fee. <span style={{color: '#25C866'}}>Contract level two+</span></p>
-                                            </div>
+                                        <div className="accent-box-v5 p-0 bg-menuDark" style={{ width: '100%' }}>
+                                            <a href="/ContractTwo" className="coin-item style-1 gap-12 bg-surface">
+                                                <span className="icon-box bg-transparent bg-icon1"><i className="icon-book"></i></span>
+                                                <div className="mt-12">
+                                                    <a href="#" className="text-small">Contract <span style={{ color: '#25C866' }}>Class two</span></a>
+                                                    <p className="mt-4">Click Create and set up your collection.
+                                                        Add contract status, a description, price & contract icons, and set a secondary sales fee. <span style={{ color: '#25C866' }}>Contract level two+</span></p>
+                                                </div>
                                             </a>
                                         </div>
                                     </li>
                                     <li className="mt-8">
-                                    <div className="accent-box-v5 p-0 bg-menuDark" style={{ width: '100%' }}>
-                                        <a href="/ContractThree" className="coin-item style-1 gap-12 bg-surface">
-                                        <span className="icon-box bg-transparent bg-icon2"><i className="icon-wallet-money"></i></span>
-                                            <div className="mt-12">
-                                            <a href="#" className="text-small">Contract <span style={{color: '#25C866'}}>Class three</span></a>
-                                                <p className="mt-4">Click Create and set up your collection.
-                                                    Add contract status, a description, price & contract icons, and set a secondary sales fee. <span style={{color: '#ab00e7'}}>Contract level three+</span></p>
-                                            </div>
+                                        <div className="accent-box-v5 p-0 bg-menuDark" style={{ width: '100%' }}>
+                                            <a href="/ContractThree" className="coin-item style-1 gap-12 bg-surface">
+                                                <span className="icon-box bg-transparent bg-icon2"><i className="icon-wallet-money"></i></span>
+                                                <div className="mt-12">
+                                                    <a href="#" className="text-small">Contract <span style={{ color: '#25C866' }}>Class three</span></a>
+                                                    <p className="mt-4">Click Create and set up your collection.
+                                                        Add contract status, a description, price & contract icons, and set a secondary sales fee. <span style={{ color: '#ab00e7' }}>Contract level three+</span></p>
+                                                </div>
                                             </a>
                                         </div>
                                     </li>
                                     <li className="mt-8">
-                                    <div className="accent-box-v5 p-0 bg-menuDark" style={{ width: '100%' }}>
-                                        <a href="/ContractFour" className="coin-item style-1 gap-12 bg-surface">
-                                            <span className="icon-box bg-transparent bg-icon2"><i className="icon-wallet-money"></i></span>
-                                            <div className="mt-12">
-                                            <a href="#" className="text-small">Contract <span style={{color: '#25C866'}}>Class four</span></a>
-                                                <p className="mt-4">Click Create and set up your collection.
-                                                    Add contract status, a description, price & contract icons, and set a secondary sales fee. <span style={{color: '#ab00e7'}}>Contract level four+</span></p>
-                                            </div>
+                                        <div className="accent-box-v5 p-0 bg-menuDark" style={{ width: '100%' }}>
+                                            <a href="/ContractFour" className="coin-item style-1 gap-12 bg-surface">
+                                                <span className="icon-box bg-transparent bg-icon2"><i className="icon-wallet-money"></i></span>
+                                                <div className="mt-12">
+                                                    <a href="#" className="text-small">Contract <span style={{ color: '#25C866' }}>Class four</span></a>
+                                                    <p className="mt-4">Click Create and set up your collection.
+                                                        Add contract status, a description, price & contract icons, and set a secondary sales fee. <span style={{ color: '#ab00e7' }}>Contract level four+</span></p>
+                                                </div>
                                             </a>
                                         </div>
                                     </li>
@@ -369,7 +369,7 @@ const Wallet = () => {
                             <span className="icon-cancel" data-bs-dismiss="modal"></span>
                         </div>
                         <ul className="mt-20 pb-16">
-                           {accountList !==null && accountList}
+                            {accountList !== null && accountList}
                         </ul>
                     </div>
 

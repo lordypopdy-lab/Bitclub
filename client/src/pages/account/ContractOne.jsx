@@ -323,20 +323,29 @@ const ContractOne = () => {
                     });
 
                     if (data.success) {
-                        console.log(data);
-                        setTrx({
-                            to: to,
-                            from: from,
-                            gas_used: gasFee,
-                            cumulative_gas_used: cumulativeGasUsed,
-                            cumulative_gas_price: gasFee
+                        const For = "ForcontractOneActivation";
+                        const { data } = await axios.post('/notification', {
+                            For,
+                            email,
                         })
-
-                        setStatus(status);
-                        toast.success('Ethers Sent successfuly');
-                        setLoading(false);
-                        setShowModal('modal')
-                        setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
+                        if(data.success){
+                            console.log(data);
+                            setTrx({
+                                to: to,
+                                from: from,
+                                gas_used: gasFee,
+                                cumulative_gas_used: cumulativeGasUsed,
+                                cumulative_gas_price: gasFee
+                            })
+    
+                            setStatus(status);
+                            toast.success('Ethers Sent successfuly');
+                            setLoading(false);
+                            setShowModal('modal')
+                            setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });   
+                        }else{
+                            console.log('Error sending notification');
+                        }
                     } else if (data.error) {
                         setShowModal('modal')
                         toast.error(data.error);
@@ -490,11 +499,20 @@ const ContractOne = () => {
                             transactionHash
                         });
                         if (data.success) {
+                            const For = "ForcontractOneReActivation";
+                            const { data } = await axios.post('/notification', {
+                                For,
+                                email,
+                            })
+                           if(data.success){
                             setStatus(status);
                             toast.success('Ethers Sent successfuly');
                             setLoading(false);
                             setShowModal('modal')
                             setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
+                           }else{
+                            console.log("Error Sending Notification For Re-Activation")
+                           }
                         } else {
                             toast.error(data.error)
                         }
