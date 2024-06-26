@@ -1,11 +1,13 @@
 const mongoose = require('mongoose');
-const {Schema} = mongoose;
+const { Schema } = mongoose;
 
 const notificationSchema = new Schema({
-    email:{
+    email: {
         type: String
     },
-    message: String
+    For: String,
+    message: String,
+    header: String
 })
 
 const notificationModel = mongoose.model("NotificationModel", notificationSchema);

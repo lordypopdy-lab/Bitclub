@@ -16,6 +16,7 @@ const {
     changePassword,
     contractOneCheck,
     pinVerify,
+    createNotification,
     pauseContractOne,
     contractOneTrxLogs,
     reActivateContractOne
@@ -39,6 +40,7 @@ router.post('/contractOne', contractOne);
 router.post('/nameUpdate', updateUserName);
 router.post('/getContractOne', getContractOne);
 router.post('/changePassword', changePassword);
+router.post('/notification', createNotification )
 router.post('/pauseContractOne', pauseContractOne);
 router.post('/contractOneCheck', contractOneCheck);
 router.post('/setContractOneLogs', contractOneTrxLogs);

@@ -378,7 +378,7 @@ const WithdrawContractOne = () => {
 
             const { data } = await axios.post('/pauseContractOne', { email });
             if (data.success) {
-              const {data} = await axios.post('/setContractOneLogs', {
+              const { data } = await axios.post('/setContractOneLogs', {
                 name,
                 email,
                 amount,
@@ -393,17 +393,25 @@ const WithdrawContractOne = () => {
                 contractPrice
               })
               const logsData = data;
-              console.log(logsData);
-             if(logsData.success){
-              setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
-              toast.success('Ethers Sent successfuly');
-              setUserAddress('');
-              setLoading(false);
-              setShowModal('modal')
-              loccation.href = '/Wallet'
-             }else{
-              console.log(`Upadating Contract One Error: ${data.error}`)
-             }
+              if (logsData.success) {
+                const For = "ForContractOnePauseAndWithdraw";
+                const { data } = await axios.post('/notification', {
+                  For,
+                  email,
+                })
+                if(data.success){
+                  setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
+                  toast.success('Ethers Sent successfuly');
+                  setUserAddress('');
+                  setLoading(false);
+                  setShowModal('modal')
+                }else{
+                  console.log('Error Pause and Withdrawing Contract');
+                }
+               
+              } else {
+                console.log(`Upadating Contract One Error: ${data.error}`)
+              }
             } else {
               toast.error('Transaction Error');
             }
