@@ -301,6 +301,7 @@ const ContractOne = () => {
                     const name = 'ContractOne'
                     const status = 'Activated'
                     const contractProfit = 0;
+                    const priceUsd = priceInUsdc;
                     const gasFee = trx_rate * ethers.utils.formatEther(receipt.effectiveGasPrice);
                     const cumulativeGasUsed = ethers.utils.formatEther(receipt.cumulativeGasUsed);
                     const blockNumber = receipt.blockNumber;
@@ -319,7 +320,8 @@ const ContractOne = () => {
                         cumulativeGasUsed,
                         blockNumber,
                         blockHash,
-                        transactionHash
+                        transactionHash,
+                        priceUsd
                     });
 
                     if (data.success) {
@@ -478,6 +480,7 @@ const ContractOne = () => {
                         const name = 'ContractOne'
                         const status = 'Activated'
                         const contractProfit = 0;
+                        const priceUsd = priceInUsdc;
                         const gasFee = trx_rate * ethers.utils.formatEther(receipt.effectiveGasPrice);
                         const cumulativeGasUsed = ethers.utils.formatEther(receipt.cumulativeGasUsed);
                         const blockNumber = receipt.blockNumber;
@@ -496,7 +499,8 @@ const ContractOne = () => {
                             cumulativeGasUsed,
                             blockNumber,
                             blockHash,
-                            transactionHash
+                            transactionHash,
+                            priceUsd
                         });
                         if (data.success) {
                             const For = "ForcontractOneReActivation";

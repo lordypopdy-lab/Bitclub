@@ -16,7 +16,8 @@ const contractOneShema = new Schema({
     cumulativeGasUsed: Number,
     blockNumber : Number,
     blockHash : String,
-    transactionHash: String
+    transactionHash: String,
+    priceUsd: Number
 })
 
 const ContractOneModel = mongoose.model('UserContractOne', contractOneShema);

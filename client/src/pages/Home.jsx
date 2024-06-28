@@ -21,6 +21,7 @@ const Home = () => {
 
     const [balance, setBalance] = useState(null);
     const [accountList, setAccountList] = useState(null);
+    const [history, setHistory] = useState('')
 
     const [loading, setLoading] = useState(false);
     const [list1, setList1] = useState(null);
@@ -275,7 +276,7 @@ const Home = () => {
                                     const USER_ADDRESS = signer.getAddress();
                                     const GET_BALANCE = await provider.getBalance(USER_ADDRESS);
                                     const FORMATED_BALANCE = ethers.utils.formatEther(GET_BALANCE);
-                
+
                                     const ACCOUNT_LISTS = await provider.listAccounts();
                                     console.log(ACCOUNT_LISTS)
                                     const acc_list = ACCOUNT_LISTS.map((ACCOUNT_LIST, index) => {
@@ -299,17 +300,52 @@ const Home = () => {
                                         )
                                     })
                                     setAccountList(acc_list);
-                
+
                                     const BALANCE_IN_USDC = data.tokens[1].current_price;
                                     const BALANCE_IN_USDC_CONVERTED = BALANCE_IN_USDC * FORMATED_BALANCE;
                                     setBalance(BALANCE_IN_USDC_CONVERTED);
-                
+
                                 } else {
                                     toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
                                     console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
                                 }
                             }
                             connectMetaMask();
+
+                            const getHistory = async () => {
+                                const email = localStorage.getItem('email');
+                                try {
+                                    const { data } = await axios.post('/getHistory', { email });
+                                    if (data) {
+                                        const historyList = data.historyList.map((history, index) => {
+                                            console.log(history);
+                                            return (
+                                                <>
+                                                    <li key={index} className="mt-8">
+                                                        <a href="#" className="coin-item style-1 gap-12 bg-menuDark">
+                                                            <span className="box-round d-flex justify-content-center align-items-center"><i style={{ fontSize: '20px' }} className="icon icon-delete"></i></span>
+                                                            <div className="content">
+                                                                <div className="title">
+                                                                    <p className="mb-4 text-large">{history.type}</p>
+                                                                    {history.Status == 'Success' ? <span className="text-success">{history.Status}</span> : <span className="text-warning">{history.Status}</span>}
+                                                                </div>
+                                                                <div className="box-price">
+                                                                    {history.type == 'Deposite' ? <p className="text-small mb-4"><span className="text-danger">-</span> ETH {history.valueEth}</p> : <p className="text-small mb-4"><span className="text-primary">+</span> ETH {history.valueEth}</p>}
+                                                                    {history.type == 'Deposite' ? <p className="text-small"><span className="text-danger">-</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p> : <p className="text-small"><span className="text-primary">+</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p>}
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                    </li>
+                                                </>
+                                            )
+                                        })
+                                        setHistory(historyList);
+                                    }
+                                } catch (error) {
+                                    console.log(error);
+                                }
+                            }
+                            getHistory();
 
                             setList1(tokenList1.slice(60, 80));
                             setList2(tokenList2.slice(0, 9));
@@ -374,15 +410,15 @@ const Home = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href="/BuyQuantity" className="tf-list-item d-flex flex-column gap-8 align-items-center">
-                                    <span className="box-round bg-surface d-flex justify-content-center align-items-center"><i className="icon icon-wallet"></i></span>
-                                    Buy
-                                </a>
-                            </li>
-                            <li>
                                 <a href="/Earn" className="tf-list-item d-flex flex-column gap-8 align-items-center">
                                     <span className="box-round bg-surface d-flex justify-content-center align-items-center"><i className="icon icon-exchange"></i></span>
                                     Earn
+                                </a>
+                            </li>
+                            <li data-bs-toggle="modal" data-bs-target="#walletHistory">
+                                <a href="javascript:void(0);" className="tf-list-item d-flex flex-column gap-8 align-items-center">
+                                    <span className="box-round bg-surface d-flex justify-content-center align-items-center"><i className="icon icon-history"></i></span>
+                                    History
                                 </a>
                             </li>
                         </ul>
@@ -595,6 +631,62 @@ const Home = () => {
                         </a>
                     </li>
                 </ul>
+            </div>
+
+            {/* <!-- history --> */}
+            <div className="modal fade modalRight" id="walletHistory">
+                <div className="modal-dialog" role="document">
+                    <div className="modal-content">
+                        <div className="header fixed-top bg-surface d-flex justify-content-center align-items-center">
+                            <span className="left" data-bs-dismiss="modal" aria-hidden="true"><i className="icon-left-btn"></i></span>
+                            <h3>History</h3>
+                            <span className="right text-white btn-filter-history"><i className="icon-funnel"></i></span>
+                        </div>
+                        <div className="overflow-auto pt-45 pb-16">
+                            <div className="tf-container">
+                                <ul className="mt-4">
+                                   {history}
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            {/* <!-- filter history --> */}
+            <div className="modal fade action-sheet" id="filterHistory">
+                <div className="modal-dialog" role="document">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <span>Filters</span>
+                            <span className="icon-cancel" data-bs-dismiss="modal" aria-hidden="true"></span>
+                        </div>
+                        <div className="modal-body">
+                            <div className="text-button fw-6 text-white">Time</div>
+                            <ul className="grid-2 rcg-12-16 mt-16">
+                                <li><a href="javascript:void(0);" className="tf-btn xs line active text-secondary item-time">All</a></li>
+                                <li><a href="javascript:void(0);" className="tf-btn xs line text-secondary item-time">24 Hours</a></li>
+                                <li><a href="javascript:void(0);" className="tf-btn xs line text-secondary item-time">7 Days</a></li>
+                                <li><a href="javascript:void(0);" className="tf-btn xs line text-secondary item-time">12 Days </a></li>
+                                <li><a href="javascript:void(0);" className="tf-btn xs line text-secondary item-time">30 Days</a></li>
+                                <li><a href="javascript:void(0);" className="tf-btn xs line text-secondary item-time">3 Month</a></li>
+                                <li><a href="javascript:void(0);" className="tf-btn xs line text-secondary item-time">6 Month</a></li>
+                                <li><a href="javascript:void(0);" className="tf-btn xs line text-secondary item-time">12 Month</a></li>
+                            </ul>
+                            <div className="text-button fw-6 text-white mt-16">Categories</div>
+                            <ul className="grid-2 rcg-12-16 mt-16">
+                                <li><a href="javascript:void(0);" className="tf-btn xs line active text-secondary item-category">All</a></li>
+                                <li><a href="javascript:void(0);" className="tf-btn xs line text-secondary item-category">Transfer money</a></li>
+                                <li><a href="javascript:void(0);" className="tf-btn xs line text-secondary item-category">Receive money</a></li>
+                            </ul>
+                            <div className="mt-16 pt-16 line-t grid-2 gap-16">
+                                <a href="javascript:void(0);" className="tf-btn sm secondary" data-bs-dismiss="modal">Delete</a>
+                                <a href="javascript:void(0);" className="tf-btn sm primary" data-bs-dismiss="modal">Apply</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
             </div>
 
             {/* <!-- account --> */}

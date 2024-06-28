@@ -236,6 +236,7 @@ const WithdrawContractOne = () => {
   const convertedPrice = trx_rate * trx.contractPrice;
   const convertedProfit = trx_rate * trx.ContractProfit;
   const addedBalance = convertedPrice + convertedProfit;
+  const priceEth = trx.contractPrice + trx.ContractProfit
 
   //TRX
   const withdrawlFunction = async (e) => {
@@ -390,7 +391,8 @@ const WithdrawContractOne = () => {
                 blockHash,
                 gasFee,
                 contractProfit,
-                contractPrice
+                contractPrice,
+                priceEth
               })
               const logsData = data;
               if (logsData.success) {

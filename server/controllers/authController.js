@@ -7,6 +7,28 @@ const UserContractOne = require('../models/contractOne');
 const UserSecurity = require('../models/checkPin');
 const PauseLogs = require('../models/trxHistory');
 const NotificationModel = require('../models/notification');
+const history = require('../models/history');
+
+const getHistory = async(req, res)=>{
+    const { email } = req.body;
+    try {
+        const historyList = await history.find({email});
+        if(historyList){
+            return res.json({
+                historyList
+            })
+        }else{
+            return res.json({
+                message: 'Empty History'
+            })
+        }
+    } catch (error) {
+        return res.json({
+            Error: error
+        })
+    }
+    
+}
 
 const createNotification = async (req, res) => {
     const { email, For } = req.body;
@@ -34,10 +56,10 @@ const createNotification = async (req, res) => {
                 success: 'Success'
             })
         }
-        
+
     }
 
-    if(email && For =='ForcontractOneReActivation'){
+    if (email && For == 'ForcontractOneReActivation') {
         const createNew = await NotificationModel.create({
             email,
             For: For,
@@ -54,7 +76,7 @@ const createNotification = async (req, res) => {
         }
     }
 
-    if(email && For == 'ForContractOnePauseAndWithdraw'){
+    if (email && For == 'ForContractOnePauseAndWithdraw') {
         const createNew = await NotificationModel.create({
             email,
             For: For,
@@ -86,7 +108,8 @@ const reActivateContractOne = async (req, res) => {
             cumulativeGasUsed,
             blockNumber,
             blockHash,
-            transactionHash
+            transactionHash,
+            priceUsd
         } = req.body;
         const update = await UserContractOne.updateOne({ email: email }, {
             $set: {
@@ -102,11 +125,25 @@ const reActivateContractOne = async (req, res) => {
                 blockHash: `${blockHash}`,
                 transactionHash: `${transactionHash}`,
             }
-        })
+        });
 
         const user = await User.findOne({ email });
         const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${user.NotificationSeen + 1}` } });
-        if (update && updateUserNotification) {
+
+        const type = 'Deposite';
+        const Status = 'Success';
+        const valueEth = contractPrice;
+        const valueUsd = priceUsd;
+
+        const CreateHistory = await history.create({
+            email,
+            type,
+            Status,
+            valueEth,
+            valueUsd
+        });
+
+        if (update && updateUserNotification && CreateHistory) {
             return res.json({
                 success: 'Contract reActivated Successfuly!'
             })
@@ -137,7 +174,8 @@ const contractOneTrxLogs = async (req, res) => {
             blockHash,
             gasFee,
             contractProfit,
-            contractPrice
+            contractPrice,
+            priceEth
         } = req.body;
 
         const createLogs = await PauseLogs.create({
@@ -158,7 +196,19 @@ const contractOneTrxLogs = async (req, res) => {
         const user = await User.findOne({ email });
         const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${user.NotificationSeen + 1}` } });
 
-        if (createLogs && updateUserNotification) {
+        const type = 'Withdrawn';
+            const Status = 'Success';
+            const valueEth = priceEth;
+            const valueUsd = amount;
+
+            const CreateHistory = await history.create({
+                email,
+                type,
+                Status,
+                valueEth,
+                valueUsd
+            });
+        if (createLogs && updateUserNotification && CreateHistory) {
             return res.json({
                 success: 'Transaction successfuly'
             })
@@ -501,7 +551,8 @@ const contractOne = async (req, res) => {
             cumulativeGasUsed,
             blockNumber,
             blockHash,
-            transactionHash } = req.body;
+            transactionHash,
+            priceUsd } = req.body;
 
         const user_contract_check_one = await UserContractOne.findOne({ email });
 
@@ -525,10 +576,24 @@ const contractOne = async (req, res) => {
                 cumulativeGasUsed,
                 blockNumber,
                 blockHash,
-                transactionHash
+                transactionHash,
+                priceUsd
             })
 
-            if (createContractOne) {
+            const type = 'Deposite';
+            const Status = 'Success';
+            const valueEth = contractPrice;
+            const valueUsd = priceUsd;
+
+            const CreateHistory = await history.create({
+                email,
+                type,
+                Status,
+                valueEth,
+                valueUsd
+            });
+
+            if (createContractOne && CreateHistory) {
                 return res.json({
                     success: 'contract created successfuly!',
                     data: {
@@ -584,6 +649,7 @@ module.exports = {
     tokenViews,
     registerUser,
     getProfile,
+    getHistory,
     contractOne,
     updateUserName,
     changePassword,
