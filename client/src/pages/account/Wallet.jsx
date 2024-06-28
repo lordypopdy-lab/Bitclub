@@ -12,6 +12,7 @@ const Wallet = () => {
     const [list1, setList1] = useState(null);
     const [balance, setBalance] = useState(null);
     const [accountList, setAccountList] = useState(null);
+    const [history, setHistory] = useState('')
 
     const [details, setDetails] = useState({
         name: '',
@@ -33,7 +34,6 @@ const Wallet = () => {
                 if (!list1) {
                     axios.get('/tokens').then(({ data }) => {
                         if (data) {
-                            console.log(data);
                             const tokenList1 = data.tokens.map((token, index) => {
                                 const updateT = () => {
                                     setDetails({
@@ -77,7 +77,6 @@ const Wallet = () => {
                                     const FORMATED_BALANCE = ethers.utils.formatEther(GET_BALANCE);
 
                                     const ACCOUNT_LISTS = await provider.listAccounts();
-                                    console.log(ACCOUNT_LISTS)
                                     const acc_list = ACCOUNT_LISTS.map((ACCOUNT_LIST, index) => {
                                         const handleCopy = async () => {
                                             try {
@@ -110,6 +109,41 @@ const Wallet = () => {
                                 }
                             }
                             connectMetaMask();
+
+                            const getHistory = async () => {
+                                const email = localStorage.getItem('email');
+                                try {
+                                    const { data } = await axios.post('/getHistory', { email });
+                                    if (data) {
+                                        const historyList = data.historyList.map((history, index) => {
+                                            console.log(history);
+                                            return (
+                                                <>
+                                                    <li key={index} className="mt-8">
+                                                        <a href="#" className="coin-item style-1 gap-12 bg-menuDark">
+                                                        <span className="box-round d-flex justify-content-center align-items-center"><i style={{fontSize: '20px'}} className="icon icon-delete"></i></span>
+                                                            <div className="content">
+                                                                <div className="title">
+                                                                    <p className="mb-4 text-large">{history.type}</p>
+                                                                    {history.Status == 'Success' ? <span className="text-success">{history.Status}</span> : <span className="text-warning">{history.Status}</span>}
+                                                                </div>
+                                                                <div className="box-price">
+                                                                    {history.type == 'Deposite' ? <p className="text-small mb-4"><span className="text-danger">-</span> ETH {history.valueEth}</p> : <p className="text-small mb-4"><span className="text-primary">+</span> ETH {history.valueEth}</p> }
+                                                                   {history.type == 'Deposite' ?  <p className="text-small"><span className="text-danger">-</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p> :  <p className="text-small"><span className="text-primary">+</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p>}
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                                    </li>
+                                                </>
+                                            )
+                                        })
+                                        setHistory(historyList);
+                                    }
+                                } catch (error) {
+                                    console.log(error);
+                                }
+                            }
+                            getHistory();
 
                             setList1(tokenList1.slice(0, 21));
                             setLoading(false);
@@ -194,9 +228,9 @@ const Wallet = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href="/BuyQuantity" className="tf-list-item d-flex flex-column gap-8 align-items-center">
-                                    <span className="box-round bg-surface d-flex justify-content-center align-items-center"><i className="icon icon-wallet"></i></span>
-                                    Buy
+                                <a href="/Earn" className="tf-list-item d-flex flex-column gap-8 align-items-center">
+                                    <span className="box-round bg-surface d-flex justify-content-center align-items-center"><i className="icon icon-exchange"></i></span>
+                                    Earn
                                 </a>
                             </li>
                             <li data-bs-toggle="modal" data-bs-target="#walletHistory">
@@ -387,121 +421,7 @@ const Wallet = () => {
                         <div className="overflow-auto pt-45 pb-16">
                             <div className="tf-container">
                                 <ul className="mt-4">
-                                    <li>
-                                        <a href="#" className="coin-item style-1 gap-12 bg-menuDark">
-                                            <img src="/src/images/coin/coin-1.jpg" alt="img" className="img" />
-                                            <div className="content">
-                                                <div className="title">
-                                                    <p className="mb-4 text-large">Bitcoin</p>
-                                                    <span className="text-secondary">11:34 AM</span>
-                                                </div>
-                                                <div className="box-price">
-                                                    <p className="text-small mb-4"><span className="text-primary">+</span> BTC 0.0056</p>
-                                                    <p className="text-end"><span className="text-red">-</span> $950.50</p>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li className="mt-8">
-                                        <a href="#" className="coin-item style-1 gap-12 bg-menuDark">
-                                            <img src="/src/images/coin/coin-2.jpg" alt="img" className="img" />
-                                            <div className="content">
-                                                <div className="title">
-                                                    <p className="mb-4 text-large">Withdraw</p>
-                                                    <span className="text-secondary">1:12 PM</span>
-                                                </div>
-
-                                                <p className="text-small"><span className="text-red">-</span> 2,700.00</p>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li className="mt-8">
-                                        <a href="#" className="coin-item style-1 gap-12 bg-menuDark">
-                                            <img src="/src/images/coin/coin-3.jpg" alt="img" className="img" />
-                                            <div className="content">
-                                                <div className="title">
-                                                    <p className="mb-4 text-large">Ethereum</p>
-                                                    <span className="text-secondary">12:00 AM</span>
-                                                </div>
-                                                <div className="box-price">
-                                                    <p className="text-small mb-4"><span className="text-primary">+</span> ETH 1,498</p>
-                                                    <p className="text-end"><span className="text-red">-</span> $12948,68</p>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li className="mt-8">
-                                        <a href="#" className="coin-item style-1 gap-12 bg-menuDark">
-                                            <img src="/src/images/coin/coin-2.jpg" alt="img" className="img" />
-                                            <div className="content">
-                                                <div className="title">
-                                                    <p className="mb-4 text-large">Deposit</p>
-                                                    <span className="text-secondary">11:34 AM</span>
-                                                </div>
-                                                <p className="text-small"><span className="text-primary">+</span> 2,700.00</p>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li className="mt-8">
-                                        <a href="#" className="coin-item style-1 gap-12 bg-menuDark">
-                                            <img src="/src/images/coin/coin-1.jpg" alt="img" className="img" />
-                                            <div className="content">
-                                                <div className="title">
-                                                    <p className="mb-4 text-large">Bitcoin</p>
-                                                    <span className="text-secondary">11:34 AM</span>
-                                                </div>
-                                                <div className="box-price">
-                                                    <p className="text-small mb-4"><span className="text-primary">+</span> BTC 1,45</p>
-                                                    <p className="text-end"><span className="text-red">-</span> $12847.594</p>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li className="mt-8">
-                                        <a href="#" className="coin-item style-1 gap-12 bg-menuDark">
-                                            <img src="/src/images/coin/coin-1.jpg" alt="img" className="img" />
-                                            <div className="content">
-                                                <div className="title">
-                                                    <p className="mb-4 text-large">Bitcoin</p>
-                                                    <span className="text-secondary">11:34 AM</span>
-                                                </div>
-                                                <div className="box-price">
-                                                    <p className="text-small mb-4"><span className="text-primary">+</span> BTC 32,766</p>
-                                                    <p className="text-end"><span className="text-red">-</span> $23.0983,28</p>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li className="mt-8">
-                                        <a href="#" className="coin-item style-1 gap-12 bg-menuDark">
-                                            <img src="/src/images/coin/coin-3.jpg" alt="img" className="img" />
-                                            <div className="content">
-                                                <div className="title">
-                                                    <p className="mb-4 text-large">Ethereum</p>
-                                                    <span className="text-secondary">12:00 AM</span>
-                                                </div>
-                                                <div className="box-price">
-                                                    <p className="text-small mb-4"><span className="text-primary">+</span> ETH 1,498</p>
-                                                    <p className="text-end"><span className="text-red">-</span> $12948,68</p>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li className="mt-8">
-                                        <a href="#" className="coin-item style-1 gap-12 bg-menuDark">
-                                            <img src="/src/images/coin/coin-4.jpg" alt="img" className="img" />
-                                            <div className="content">
-                                                <div className="title">
-                                                    <p className="mb-4 text-large">Anchor</p>
-                                                    <span className="text-secondary">12:00 AM</span>
-                                                </div>
-                                                <div className="box-price">
-                                                    <p className="text-small mb-4"><span className="text-primary">+</span> ETH 1,498</p>
-                                                    <p className="text-end"><span className="text-red">-</span> $12948,68</p>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
+                                        {history}
                                 </ul>
                             </div>
                         </div>

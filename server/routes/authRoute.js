@@ -10,6 +10,7 @@ const {
     createPin,
     tokenViews,
     getProfile,
+    getHistory,
     contractOne,
     getContractOne,
     updateUserName,
@@ -36,6 +37,7 @@ router.get('/tokens', tokenViews)
 router.post('/createPin', createPin);
 router.post('/pinVerify', pinVerify)
 router.post('/profile', getProfile);
+router.post('/getHistory', getHistory);
 router.post('/contractOne', contractOne);
 router.post('/nameUpdate', updateUserName);
 router.post('/getContractOne', getContractOne);
