@@ -398,7 +398,7 @@ const Home = () => {
                         {balance == null ? <h1 className="mt-16"><a href="#">$0.00</a></h1> : <h1 className="mt-16"><a href="#">${balance !== null && balance.toFixed(2)}</a></h1>}
                         <ul className="mt-16 grid-4 m--16">
                             <li>
-                                <a href="/ChoosePayment" className="tf-list-item d-flex flex-column gap-8 align-items-center">
+                                <a href="/Send" className="tf-list-item d-flex flex-column gap-8 align-items-center">
                                     <span className="box-round bg-surface d-flex justify-content-center align-items-center"><i className="icon icon-way"></i></span>
                                     Send
                                 </a>
