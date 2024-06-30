@@ -8,6 +8,28 @@ const UserSecurity = require('../models/checkPin');
 const PauseLogs = require('../models/trxHistory');
 const NotificationModel = require('../models/notification');
 const history = require('../models/history');
+const notificationModel = require('../models/notification');
+
+const getNotification = async(req, res)=>{
+    const { email } = req.body;
+    try {
+        const notificationList = await notificationModel.find({email});
+        if(notificationList){
+            return res.json({
+                notificationList
+            })
+        }else{
+            return res.json({
+                message: 'Empty History'
+            })
+        }
+    } catch (error) {
+        return res.json({
+            Error: error
+        })
+    }
+    
+}
 
 const getHistory = async(req, res)=>{
     const { email } = req.body;
@@ -39,14 +61,20 @@ const createNotification = async (req, res) => {
         reActivationHeader: 'Contract Reactivated! 🎉',
         reActivationMessage: 'Your contract has been successfully reactivated. We are thrilled to have you back! Enjoy the continued benefits and services. Thank you for choosing us again!',
         pauseAndWithdrawHeader: 'Contract Paused and Withdrawn! 🎉',
-        pauseAndWithdrawMessage: 'Your contract has been successfully paused and withdrawn.'
+        pauseAndWithdrawMessage: 'Your contract has been successfully paused and withdrawn.',
+        sendHeader: 'Success! 🎉',
+        sendMessage: 'Ether has been sent successfully. Transaction completed.'
     }
+
+    const timestamp = new Date().getTime();
+
     if (email && For == 'ForcontractOneActivation') {
         const createNew = await NotificationModel.create({
             email,
             For: For,
             message: NotificationList.activationMessage,
-            header: NotificationList.activationHeader
+            header: NotificationList.activationHeader,
+            timestamp: timestamp
         });
 
         const user = await User.findOne({ email });
@@ -64,7 +92,8 @@ const createNotification = async (req, res) => {
             email,
             For: For,
             message: NotificationList.reActivationMessage,
-            header: NotificationList.reActivationHeader
+            header: NotificationList.reActivationHeader,
+            timestamp: timestamp
         });
 
         const user = await User.findOne({ email });
@@ -81,7 +110,8 @@ const createNotification = async (req, res) => {
             email,
             For: For,
             message: NotificationList.pauseAndWithdrawMessage,
-            header: NotificationList.pauseAndWithdrawHeader
+            header: NotificationList.pauseAndWithdrawHeader,
+            timestamp: timestamp
         });
 
         const user = await User.findOne({ email });
@@ -91,6 +121,45 @@ const createNotification = async (req, res) => {
                 success: 'Success'
             })
         }
+    }
+
+    if(email && For == 'sendSuccess'){
+        const createNew = await notificationModel.create({
+            email,
+            For: For,
+            message: NotificationList.sendMessage,
+            header: NotificationList.sendHeader,
+            timestamp: timestamp
+        })
+
+        const user = await User.findOne({ email });
+        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${user.NotificationSeen + 1}` } });
+        if (createNew && updateUserNotification) {
+
+            const {valueSend, amount} = req.body;
+
+            const type = 'Sent';
+            const Status = 'Success';
+            const valueEth = valueSend;
+            const valueUsd = amount;
+    
+            const CreateHistory = await history.create({
+                email,
+                type,
+                Status,
+                valueEth,
+                valueUsd
+            });
+           if(CreateHistory){
+            return res.json({
+                success: 'Success'
+            })
+           }
+        }
+    }else{
+        return res.json({
+            error: 'Error Creating Notification for Sending'
+        })
     }
 }
 
@@ -654,6 +723,7 @@ module.exports = {
     updateUserName,
     changePassword,
     getContractOne,
+    getNotification,
     pauseContractOne,
     createNotification,
     contractOneCheck,

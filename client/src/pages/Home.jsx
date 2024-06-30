@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import FadeLoader from 'react-spinners/FadeLoader';
+import { useContext } from "react"
+import { UserContext } from "../../context/UserContext";
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode } from 'swiper/modules';
@@ -18,10 +20,17 @@ import 'swiper/css/free-mode';
 import 'swiper/css/pagination';
 
 const Home = () => {
+    const e = localStorage.getItem('email');
+    if (!e) {
+        location.href = '/login';
+    }
 
+    const { user } = useContext(UserContext);
     const [balance, setBalance] = useState(null);
     const [accountList, setAccountList] = useState(null);
     const [history, setHistory] = useState('')
+    const [Notification, setNotification] = useState('');
+    const [tmp, setTmp] = useState('');
 
     const [loading, setLoading] = useState(false);
     const [list1, setList1] = useState(null);
@@ -61,12 +70,6 @@ const Home = () => {
         pricePercentage: '',
         ath_change_percentage: ''
     });
-
-
-    const e = localStorage.getItem('email');
-    if (!e) {
-        location.href = '/login';
-    }
 
     useEffect(() => {
         setLoading(true);
@@ -278,7 +281,6 @@ const Home = () => {
                                     const FORMATED_BALANCE = ethers.utils.formatEther(GET_BALANCE);
 
                                     const ACCOUNT_LISTS = await provider.listAccounts();
-                                    console.log(ACCOUNT_LISTS)
                                     const acc_list = ACCOUNT_LISTS.map((ACCOUNT_LIST, index) => {
                                         const handleCopy = async () => {
                                             try {
@@ -318,7 +320,6 @@ const Home = () => {
                                     const { data } = await axios.post('/getHistory', { email });
                                     if (data) {
                                         const historyList = data.historyList.map((history, index) => {
-                                            console.log(history);
                                             return (
                                                 <>
                                                     <li key={index} className="mt-8">
@@ -330,8 +331,8 @@ const Home = () => {
                                                                     {history.Status == 'Success' ? <span className="text-success">{history.Status}</span> : <span className="text-warning">{history.Status}</span>}
                                                                 </div>
                                                                 <div className="box-price">
-                                                                    {history.type == 'Deposite' ? <p className="text-small mb-4"><span className="text-danger">-</span> ETH {history.valueEth}</p> : <p className="text-small mb-4"><span className="text-primary">+</span> ETH {history.valueEth}</p>}
-                                                                    {history.type == 'Deposite' ? <p className="text-small"><span className="text-danger">-</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p> : <p className="text-small"><span className="text-primary">+</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p>}
+                                                                    {history.type == 'Deposite' || history.type == 'Sent' ? <p className="text-small mb-4"><span className="text-danger">-</span> ETH {history.valueEth}</p> : <p className="text-small mb-4"><span className="text-primary">+</span> ETH {history.valueEth}</p>}
+                                                                    {history.type == 'Deposite' || history.type == 'Sent' ? <p className="text-small"><span className="text-danger">-</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p> : <p className="text-small"><span className="text-primary">+</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p>}
                                                                 </div>
                                                             </div>
                                                         </a>
@@ -346,6 +347,48 @@ const Home = () => {
                                 }
                             }
                             getHistory();
+
+                            const getNotification = async () => {
+                                const email = localStorage.getItem('email');
+                                try {
+                                    axios.post('/getNotification', { email }).then(({ data }) => {
+                                        const datas = data.notificationList;
+                                        const NotificationList = datas.map((data, index) => {
+
+                                            const time = data.timestamp;
+                                            const timeAgo = async (timeStamp) => {
+                                                const now = new Date();
+                                                const secondsPast = (now.getTime() - new Date(timeStamp).getTime()) / 1000;
+                                                if (secondsPast < 60) {
+                                                    return `${Math.floor(secondsPast)} seconds ago`;
+                                                }
+                                                if (secondsPast < 3600) {
+                                                    return `${Math.floor(secondsPast / 60)} minutes ago`;
+                                                }
+                                                if (secondsPast < 86400) {
+                                                    return `${Math.floor(secondsPast / 3600)} hours ago`;
+                                                }
+                                                if (secondsPast < 2592000) {
+                                                    return `${Math.floor(secondsPast / 86400)} days ago`;
+                                                }
+                                                if (secondsPast < 31536000) {
+                                                    return `${Math.floor(secondsPast / 2592000)} months ago`;
+                                                }
+                                                return `${Math.floor(secondsPast / 31536000)} years ago`;
+                                            }
+                                            timeAgo(time).then((time) => {
+                                                setTmp(time)
+                                               console.log(time);
+                                            })
+                                           
+                                        })
+                                        setNotification(NotificationList);
+                                    })
+                                } catch (error) {
+                                    console.log(error);
+                                }
+                            }
+                            getNotification();
 
                             setList1(tokenList1.slice(60, 80));
                             setList2(tokenList2.slice(0, 9));
@@ -364,6 +407,9 @@ const Home = () => {
             setLoading(false);
         }
     }, [])
+
+    console.log(Notification)
+    
     return (
         <>
             {/* <!-- preloade --> */}
@@ -387,7 +433,7 @@ const Home = () => {
                     </div>
                     <div className="d-flex align-items-center gap-8">
                         <a href="/ListBlog" className="icon-gift"></a>
-                        <a href="#notification" className="icon-noti box-noti" data-bs-toggle="modal"></a>
+                        <a href="#notification" className="icon-noti" data-bs-toggle="modal"><span className="box-noti">{!!user && user.NotificationSeen}</span></a>
                     </div>
                 </div>
             </div>
@@ -645,7 +691,7 @@ const Home = () => {
                         <div className="overflow-auto pt-45 pb-16">
                             <div className="tf-container">
                                 <ul className="mt-4">
-                                   {history}
+                                    {history}
                                 </ul>
                             </div>
                         </div>
@@ -799,15 +845,7 @@ const Home = () => {
                         <div className="overflow-auto pt-45 pb-16">
                             <div className="tf-container">
                                 <ul className="mt-12">
-                                    <li>
-                                        <a href="#" className="noti-item bg-menuDark">
-                                            <div className="pb-8 line-bt d-flex">
-                                                <p className="text-button fw-6">Bitclub to just tick size and trading amount precision of spots/margins and perpetual swaps</p>
-                                                <i className="dot-lg bg-primary"></i>
-                                            </div>
-                                            <span className="d-block mt-8">5 minutes ago</span>
-                                        </a>
-                                    </li>
+                                    {Notification}
                                     <li className="mt-12">
                                         <a href="#" className="noti-item bg-menuDark">
                                             <div className="pb-8 line-bt d-flex">

@@ -20,7 +20,8 @@ const {
     createNotification,
     pauseContractOne,
     contractOneTrxLogs,
-    reActivateContractOne
+    reActivateContractOne,
+    getNotification
 } = require('../controllers/authController');
 
 router.use(
@@ -42,7 +43,8 @@ router.post('/contractOne', contractOne);
 router.post('/nameUpdate', updateUserName);
 router.post('/getContractOne', getContractOne);
 router.post('/changePassword', changePassword);
-router.post('/notification', createNotification )
+router.post('/notification', createNotification );
+router.post('/getNotification', getNotification)
 router.post('/pauseContractOne', pauseContractOne);
 router.post('/contractOneCheck', contractOneCheck);
 router.post('/setContractOneLogs', contractOneTrxLogs);

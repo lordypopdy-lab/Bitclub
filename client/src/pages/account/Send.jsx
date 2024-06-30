@@ -29,7 +29,7 @@ const Send = () => {
         from: '',
         status: '',
         value: null,
-        blockNumber :'',
+        blockNumber: '',
         transactionHash: ''
     })
 
@@ -217,7 +217,7 @@ const Send = () => {
         }
     }
 
-    const copyTrxHash = async()=>{
+    const copyTrxHash = async () => {
         try {
             await navigator.clipboard.writeText(trxH.transactionHash);
             toast.success('Copied!');
@@ -258,21 +258,26 @@ const Send = () => {
                             const blockNumber = receipt.blockNumber;
                             const transactionHash = receipt.transactionHash;
 
-
-                            setTrxH({
-                                to: to,
-                                from: from,
-                                status: status,
-                                value: amount,
-                                blockNumber: blockNumber,
-                                transactionHash: transactionHash
-                            })
-                            toast.success('Ethers Sent successfuly');
-                            setLoading(false);
-                            setShowModal('modal')
-                            setUserAddress('');
-                            setValueSend('');
-                            setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });   
+                            const For = 'sendSuccess';
+                            const { data } = await axios.post('/notification', { email, For, valueSend, amount });
+                            if (data.success) {
+                                setTrxH({
+                                    to: to,
+                                    from: from,
+                                    status: status,
+                                    value: amount,
+                                    blockNumber: blockNumber,
+                                    transactionHash: transactionHash
+                                })
+                                toast.success('Ethers Sent successfuly');
+                                setLoading(false);
+                                setShowModal('modal')
+                                setUserAddress('');
+                                setValueSend('');
+                                setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
+                            } else {
+                                console.log(data.error)
+                            }
 
                         } else {
                             setLoading(false);
@@ -388,7 +393,7 @@ const Send = () => {
                     </div>
                     <ul class="mt-8 d-flex gap-8">
                         <li>
-                        {balanceUsd !== null ? <a href="#" class="tag-sm dark p-2" style={{ fontSize: '17px' }}>${balanceUsd}</a> : <a href="#" class="tag-sm dark p-2" style={{ fontSize: '17px' }}>$0.00</a>}
+                            {balanceUsd !== null ? <a href="#" class="tag-sm dark p-2" style={{ fontSize: '17px' }}>${balanceUsd}</a> : <a href="#" class="tag-sm dark p-2" style={{ fontSize: '17px' }}>$0.00</a>}
                         </li>
                     </ul>
                     <i><a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#otpPin" class="tf-btn lg primary mt-10">Send</a></i>
@@ -397,7 +402,7 @@ const Send = () => {
                             <h5 className='text-primary'>Reference!</h5><hr />
                             <li className="d-flex align-items-center justify-content-between">
                                 <span className="text-small">ValueUSD</span>
-                               {trxH.value !== null ? <span className="text-large text-white increase text-end">{trxH.value && trxH.value.toFixed(2)}</span> : <span className="text-large text-white increase text-end">loading...</span> }
+                                {trxH.value !== null ? <span className="text-large text-white increase text-end">${trxH.value && trxH.value.toFixed(2)}</span> : <span className="text-large text-white increase text-end">loading...</span>}
                             </li><hr />
                             <FadeLoader
                                 color="#36d7b7"
@@ -426,7 +431,7 @@ const Send = () => {
                             </li><hr />
                             <li className="d-flex align-items-center justify-content-between">
                                 <span className="text-small">BlockNumber</span>
-                               {trxH.blockNumber !== '' ? <span className="text-large text-white increase text-end">{trxH.blockNumber}</span> : <span className="text-large text-white increase text-end">loading...</span> }
+                                {trxH.blockNumber !== '' ? <span className="text-large text-white increase text-end">{trxH.blockNumber}</span> : <span className="text-large text-white increase text-end">loading...</span>}
                             </li><hr />
                             <li className="trade-list-item mt-2">
                                 {trxH.transactionHash !== '' ? <p className="d-flex gap-4 text-white">transactionHash <span className='text-primary'>{trxH.transactionHash.slice(0, 25)}...</span><i onClick={copyTrxHash} style={{ cursor: 'pointer' }} className="icon-copy fs-3"></i></p> : <p className="d-flex gap-2 text-white">transactionHash <span className='text-primary'> loading... </span> <i className="icon-clockwise2 fs-16"></i></p>}
