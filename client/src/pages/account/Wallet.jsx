@@ -128,8 +128,8 @@ const Wallet = () => {
                                                                     {history.Status == 'Success' ? <span className="text-success">{history.Status}</span> : <span className="text-warning">{history.Status}</span>}
                                                                 </div>
                                                                 <div className="box-price">
-                                                                    {history.type == 'Deposite' ? <p className="text-small mb-4"><span className="text-danger">-</span> ETH {history.valueEth}</p> : <p className="text-small mb-4"><span className="text-primary">+</span> ETH {history.valueEth}</p> }
-                                                                   {history.type == 'Deposite' ?  <p className="text-small"><span className="text-danger">-</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p> :  <p className="text-small"><span className="text-primary">+</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p>}
+                                                                    {history.type == 'Deposite' || history.type == 'Sent' ? <p className="text-small mb-4"><span className="text-danger">-</span> ETH {history.valueEth}</p> : <p className="text-small mb-4"><span className="text-primary">+</span> ETH {history.valueEth}</p> }
+                                                                   {history.type == 'Deposite' || history.type == 'Sent' ?  <p className="text-small"><span className="text-danger">-</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p> :  <p className="text-small"><span className="text-primary">+</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p>}
                                                                 </div>
                                                             </div>
                                                         </a>

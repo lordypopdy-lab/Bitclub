@@ -7,7 +7,8 @@ const notificationSchema = new Schema({
     },
     For: String,
     message: String,
-    header: String
+    header: String,
+    timestamp: Number
 })
 
 const notificationModel = mongoose.model("NotificationModel", notificationSchema);

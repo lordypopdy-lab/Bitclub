@@ -1818,12 +1818,12 @@
   .box-noti {
     position: relative;
   }
-  .box-noti::after {
-    content: "2";
+  .box-noti {
+    content: "";
     font-family: "Poppins", sans-serif;
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 25%;
+    right: 2.7%;
     width: 12px;
     height: 12px;
     color: var(--white);
