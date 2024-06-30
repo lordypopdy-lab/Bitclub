@@ -294,7 +294,6 @@ const ContractOne = () => {
                 })
 
                 const receipt = await tx_response.wait();
-                console.log(receipt);
                 if (receipt) {
                     const to = receipt.to
                     const from = receipt.from;

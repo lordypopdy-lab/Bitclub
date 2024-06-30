@@ -1,4 +1,5 @@
 import React from 'react';
+import Send from './pages/account/Send';
 import Earn from './pages/account/Earn';
 import Wallet from './pages/account/Wallet';
 import Opt02 from './pages/settings/Opt02';
@@ -71,6 +72,7 @@ import {
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route>
+            <Route path='/Send' element={<Send />} />
             <Route path='/Profile' element={<Profile />} />
             <Route path='/UserInfo' element={<UserInfo />} />
             <Route path='/Earn' element={<Earn />} />
