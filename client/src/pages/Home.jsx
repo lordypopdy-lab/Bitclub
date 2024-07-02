@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import FadeLoader from 'react-spinners/FadeLoader';
 import { useContext } from "react"
 import { UserContext } from "../../context/UserContext";
+import { timeAgo } from "./utils/timeAgo";
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode } from 'swiper/modules';
@@ -30,7 +31,7 @@ const Home = () => {
     const [accountList, setAccountList] = useState(null);
     const [history, setHistory] = useState('')
     const [Notification, setNotification] = useState('');
-    const [tmp, setTmp] = useState('');
+    const [tmp, setTmp] = useState([]);
 
     const [loading, setLoading] = useState(false);
     const [list1, setList1] = useState(null);
@@ -76,6 +77,38 @@ const Home = () => {
         try {
 
             const getToken = async () => {
+
+
+                const getNotification = async () => {
+                    const email = localStorage.getItem('email');
+                    try {
+                        axios.post('/getNotification', { email }).then(({ data }) => {
+                            const datas = data.notificationList;
+                            const NotificationList = datas.map((data, index) => {
+                                const time = data.timestamp;
+                                return (
+                                    <>
+                                        <li key={index} className="mt-12">
+                                            <a href="#" className="noti-item bg-menuDark">
+                                                <p className="mb-1 text-primary fw-4">{data.header}</p>
+                                                <div className="pb-8 line-bt d-flex">
+                                                    <p className=" fw-4">{data.message}</p>
+                                                    <i className="dot-lg m-1 bg-primary"></i>
+                                                </div>
+                                                <span className="d-block mt-8">{timeAgo(time)}</span>
+                                            </a>
+                                        </li>
+                                    </>
+                                )
+                            })
+                            setNotification(NotificationList);
+                        })
+                    } catch (error) {
+                        console.log(error);
+                    }
+                }
+                getNotification();
+
                 if (!list1) {
                     axios.get('/tokens').then(({ data }) => {
                         if (data) {
@@ -348,48 +381,6 @@ const Home = () => {
                             }
                             getHistory();
 
-                            const getNotification = async () => {
-                                const email = localStorage.getItem('email');
-                                try {
-                                    axios.post('/getNotification', { email }).then(({ data }) => {
-                                        const datas = data.notificationList;
-                                        const NotificationList = datas.map((data, index) => {
-
-                                            const time = data.timestamp;
-                                            const timeAgo = async (timeStamp) => {
-                                                const now = new Date();
-                                                const secondsPast = (now.getTime() - new Date(timeStamp).getTime()) / 1000;
-                                                if (secondsPast < 60) {
-                                                    return `${Math.floor(secondsPast)} seconds ago`;
-                                                }
-                                                if (secondsPast < 3600) {
-                                                    return `${Math.floor(secondsPast / 60)} minutes ago`;
-                                                }
-                                                if (secondsPast < 86400) {
-                                                    return `${Math.floor(secondsPast / 3600)} hours ago`;
-                                                }
-                                                if (secondsPast < 2592000) {
-                                                    return `${Math.floor(secondsPast / 86400)} days ago`;
-                                                }
-                                                if (secondsPast < 31536000) {
-                                                    return `${Math.floor(secondsPast / 2592000)} months ago`;
-                                                }
-                                                return `${Math.floor(secondsPast / 31536000)} years ago`;
-                                            }
-                                            timeAgo(time).then((time) => {
-                                                setTmp(time)
-                                               console.log(time);
-                                            })
-                                           
-                                        })
-                                        setNotification(NotificationList);
-                                    })
-                                } catch (error) {
-                                    console.log(error);
-                                }
-                            }
-                            getNotification();
-
                             setList1(tokenList1.slice(60, 80));
                             setList2(tokenList2.slice(0, 9));
                             setList3(tokenList3.slice(0, 9))
@@ -408,8 +399,6 @@ const Home = () => {
         }
     }, [])
 
-    console.log(Notification)
-    
     return (
         <>
             {/* <!-- preloade --> */}
@@ -846,48 +835,6 @@ const Home = () => {
                             <div className="tf-container">
                                 <ul className="mt-12">
                                     {Notification}
-                                    <li className="mt-12">
-                                        <a href="#" className="noti-item bg-menuDark">
-                                            <div className="pb-8 line-bt d-flex">
-                                                <p className="text-button fw-6">Bitclub to adjust components of several indexes</p>
-                                                <i className="dot-lg bg-primary"></i>
-                                            </div>
-                                            <span className="d-block mt-8">5 minutes ago</span>
-                                        </a>
-                                    </li>
-                                    <li className="mt-12">
-                                        <a href="#" className="noti-item bg-menuDark">
-                                            <div className="pb-8 line-bt d-flex">
-                                                <p className="text-button fw-6">Bitclub to just tick size and trading amount precision of spots/margins and perpetual swaps</p>
-                                                <i className="dot-lg bg-primary"></i>
-                                            </div>
-                                            <span className="d-block mt-8">5 minutes ago</span>
-                                        </a>
-                                    </li>
-                                    <li className="mt-12">
-                                        <a href="#" className="noti-item bg-menuDark">
-                                            <div className="pb-8 line-bt">
-                                                <p className="text-button fw-6 text-secondary">Bitclub to adjust components of several indexes</p>
-                                            </div>
-                                            <span className="d-block mt-8 text-secondary">1 day ago</span>
-                                        </a>
-                                    </li>
-                                    <li className="mt-12">
-                                        <a href="#" className="noti-item bg-menuDark">
-                                            <div className="pb-8 line-bt">
-                                                <p className="text-button fw-6 text-secondary">Bitclub wallet uses Achain network service</p>
-                                            </div>
-                                            <span className="d-block mt-8 text-secondary">1 day ago</span>
-                                        </a>
-                                    </li>
-                                    <li className="mt-12">
-                                        <a href="#" className="noti-item bg-menuDark">
-                                            <div className="pb-8 line-bt">
-                                                <p className="text-button fw-6 text-secondary">Bitclub to adjust components of several indexes</p>
-                                            </div>
-                                            <span className="d-block mt-8 text-secondary">1 day ago</span>
-                                        </a>
-                                    </li>
                                 </ul>
                             </div>
                         </div>
