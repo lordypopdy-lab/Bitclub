@@ -501,6 +501,7 @@ const WithdrawContractOne = () => {
             </li>
           </ul>
           <p class="mt-8 text-primary">${convertedPrice !== null && convertedPrice.toFixed(2)}+{convertedProfit !== null && convertedProfit.toFixed(2)} USD</p>
+          <i><a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#otpPin" class="tf-btn lg primary mt-10">Send</a></i>
           <div className="tab-pane fade active show" id="link" role="tabpanel">
             <ul className="mt-10 accent-box line-border">
               <h5 className='text-primary'>Activation History!</h5><hr />
@@ -520,13 +521,13 @@ const WithdrawContractOne = () => {
               </li><hr />
               <li className="trade-list-item">
                 <p className="d-flex align-items-center text-small gap-4">Reference <i className="icon-question fs-16 text-secondary"></i> </p>
-                <p className="d-flex gap-8 text-white">{trx.contractPrice !== null && trx.contractPrice} ETH = {trx.contractPrice !== null && convertedPrice.toFixed(2)} USDC <i className="icon-clockwise2 fs-16"></i></p>
+                <p className="d-flex gap-8 text-white">{trx.contractPrice !== null && trx.contractPrice.toFixed(4)} ETH = {trx.contractPrice !== null && convertedPrice.toFixed(2)} USDC <i className="icon-clockwise2 fs-16"></i></p>
               </li><hr />
               <li className="trade-list-item mt-3">
-                {trx.from && trx.to !== '' ? <p className="d-flex gap-4 text-white">_from <span className='text-primarys'>{trx.from !== '' && trx.from} </span> <i onClick={copyFrom} style={{ cursor: 'pointer' }} className="icon-copy active fs-3"></i></p> : <p className="d-flex gap-2 text-white">_from <span className='text-primary'> loading... </span> =_to<span className='text-primary'> loading...</span> <i className="icon-clockwise2 fs-16"></i></p>}
+                {trx.from && trx.to !== '' ? <p className="d-flex gap-4 text-white">_from <span className='text-primarys'>{trx.from !== '' && trx.from.slice(0, 32)}...</span> <i onClick={copyFrom} style={{ cursor: 'pointer' }} className="icon-copy active fs-3"></i></p> : <p className="d-flex gap-2 text-white">_from <span className='text-primary'> loading... </span> =_to<span className='text-primary'> loading...</span> <i className="icon-clockwise2 fs-16"></i></p>}
               </li><hr />
               <li className="trade-list-item mt-2">
-                {trx.from && trx.to !== '' ? <p className="d-flex gap-4 text-white"> _to <span className='text-primary'>{trx.to !== '' && trx.to}</span><i onClick={copyTo} style={{ cursor: 'pointer' }} className="icon-copy fs-3"></i></p> : <p className="d-flex gap-2 text-white">_from <span className='text-primary'> loading... </span> =_to<span className='text-primary'> loading...</span> <i className="icon-clockwise2 fs-16"></i></p>}
+                {trx.from && trx.to !== '' ? <p className="d-flex gap-4 text-white"> _to <span className='text-primary'>{trx.to !== '' && trx.to.slice(0, 32)}...</span><i onClick={copyTo} style={{ cursor: 'pointer' }} className="icon-copy fs-3"></i></p> : <p className="d-flex gap-2 text-white">_from <span className='text-primary'> loading... </span> =_to<span className='text-primary'> loading...</span> <i className="icon-clockwise2 fs-16"></i></p>}
               </li><hr />
               <li className="trade-list-item mt-16">
                 <p className="d-flex align-items-center text-small gap-4">X Routing <i className="icon-question fs-16 text-secondary"></i> </p>
@@ -544,7 +545,6 @@ const WithdrawContractOne = () => {
               {/* <a className="tf-btn lg mt-20 primary" data-bs-toggle="modal" data-bs-target="#pause">Pause & Withdraw</a> */}
             </ul>
           </div>
-          <i><a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#otpPin" class="tf-btn lg primary mt-10">Send</a></i>
         </div>
 
         {/* <!-- filter otp --> */}

@@ -31,7 +31,6 @@ const Home = () => {
     const [accountList, setAccountList] = useState(null);
     const [history, setHistory] = useState('')
     const [Notification, setNotification] = useState('');
-    const [tmp, setTmp] = useState([]);
 
     const [loading, setLoading] = useState(false);
     const [list1, setList1] = useState(null);
@@ -74,41 +73,37 @@ const Home = () => {
 
     useEffect(() => {
         setLoading(true);
+        const getNotification = async () => {
+            const email = localStorage.getItem('email');
+            try {
+                axios.post('/getNotification', { email }).then(({ data }) => {
+                    const datas = data.notificationList;
+                    const NotificationList = datas.map((data, index) => {
+                        const time = data.timestamp;
+                        return (
+                            <>
+                                <li key={index} className="mt-12">
+                                    <a href="#" className="noti-item bg-menuDark">
+                                        <div className="pb-8 line-bt d-flex">
+                                            <p className="text-button fw-6">{data.header} {data.message}</p>
+                                            <i className="dot-lg bg-primary"></i>
+                                        </div>
+                                        <span className="d-block mt-8">{timeAgo(time)}</span>
+                                    </a>
+                                </li>
+                            </>
+                        )
+                    })
+                    setNotification(NotificationList);
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        getNotification();
         try {
 
             const getToken = async () => {
-
-
-                const getNotification = async () => {
-                    const email = localStorage.getItem('email');
-                    try {
-                        axios.post('/getNotification', { email }).then(({ data }) => {
-                            const datas = data.notificationList;
-                            const NotificationList = datas.map((data, index) => {
-                                const time = data.timestamp;
-                                return (
-                                    <>
-                                        <li key={index} className="mt-12">
-                                            <a href="#" className="noti-item bg-menuDark">
-                                                <p className="mb-1 text-primary fw-4">{data.header}</p>
-                                                <div className="pb-8 line-bt d-flex">
-                                                    <p className=" fw-4">{data.message}</p>
-                                                    <i className="dot-lg m-1 bg-primary"></i>
-                                                </div>
-                                                <span className="d-block mt-8">{timeAgo(time)}</span>
-                                            </a>
-                                        </li>
-                                    </>
-                                )
-                            })
-                            setNotification(NotificationList);
-                        })
-                    } catch (error) {
-                        console.log(error);
-                    }
-                }
-                getNotification();
-
                 if (!list1) {
                     axios.get('/tokens').then(({ data }) => {
                         if (data) {
@@ -134,7 +129,6 @@ const Home = () => {
                                 doge_price: data.tokens[8].current_price,
                                 doge_change_percent: data.tokens[8].market_cap_change_percentage_24h,
                             })
-                            console.log(data);
                             const tokenList1 = data.tokens.map((token, index) => {
                                 const updateT = () => {
                                     setDetails({

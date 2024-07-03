@@ -299,7 +299,7 @@ const ContractOne = () => {
                     const from = receipt.from;
                     const name = 'ContractOne'
                     const status = 'Activated'
-                    const contractProfit = 0;
+                    const contractProfit = 0.00985869899;
                     const priceUsd = priceInUsdc;
                     const gasFee = trx_rate * ethers.utils.formatEther(receipt.effectiveGasPrice);
                     const cumulativeGasUsed = ethers.utils.formatEther(receipt.cumulativeGasUsed);
@@ -478,7 +478,7 @@ const ContractOne = () => {
                         const from = receipt.from;
                         const name = 'ContractOne'
                         const status = 'Activated'
-                        const contractProfit = 0;
+                        const contractProfit = 0.00985869899;
                         const priceUsd = priceInUsdc;
                         const gasFee = trx_rate * ethers.utils.formatEther(receipt.effectiveGasPrice);
                         const cumulativeGasUsed = ethers.utils.formatEther(receipt.cumulativeGasUsed);
