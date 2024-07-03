@@ -92,7 +92,7 @@ const ContractOneProfile = () => {
       <div className="app-wallet">
         <div className="header-style2 fixed-top d-flex align-items-center justify-content-between bg-surface">
           <h3 className="d-flex gap-12">
-            <span style={{ color: '#25C866' }}>Contract level One+</span>
+            <span style={{ color: '#25C866' }}>Profile One+</span>
           </h3>
           <i className="icon-question text-white"></i>
         </div>
@@ -101,12 +101,12 @@ const ContractOneProfile = () => {
             <div className="tf-tab pt-12 mt-4">
               <div className="pt-55">
                 <div className="tf-container bg-transparent">
-                  <h1 className="mt-8 text-center">${trx.contractPrice !== null && convertedPrice.toFixed(2)} </h1>
+                  <h1 className="mt-8 text-center">${convertedProfit !== null && convertedProfit.toFixed(2)}</h1>
                   <ul className="mt-12 accent-box-v4 bg-menuDark">
 
                     <li className="d-flex align-items-center justify-content-between pt-8 pb-8 line-bt">
                       <span className="text-small">Estimated contract changes</span>
-                      <span className="text-large text-white coin-btn increase text-end">${convertedProfit !== null && convertedProfit.toFixed(2)}</span>
+                      <span className="text-large text-white coin-btn increase text-end">${trx.contractPrice !== null && convertedPrice.toFixed(2)}</span>
                     </li>
                     <li className="d-flex align-items-center justify-content-between pt-8 pb-8 line-bt">
                       <span className="text-small">blockNumber</span>

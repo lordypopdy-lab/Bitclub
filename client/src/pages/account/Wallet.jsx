@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import FadeLoader from 'react-spinners/FadeLoader';
+import { timeAgo } from "../utils/timeAgo";
 
 
 const Wallet = () => {
@@ -13,6 +14,7 @@ const Wallet = () => {
     const [balance, setBalance] = useState(null);
     const [accountList, setAccountList] = useState(null);
     const [history, setHistory] = useState('')
+    const [Notification, setNotification] = useState('');
 
     const [details, setDetails] = useState({
         name: '',
@@ -29,6 +31,34 @@ const Wallet = () => {
 
     useEffect(() => {
         setLoading(true);
+        const getNotification = async () => {
+            const email = localStorage.getItem('email');
+            try {
+                axios.post('/getNotification', { email }).then(({ data }) => {
+                    const datas = data.notificationList;
+                    const NotificationList = datas.map((data, index) => {
+                        const time = data.timestamp;
+                        return (
+                            <>
+                                <li key={index} className="mt-12">
+                                    <a href="#" className="noti-item bg-menuDark">
+                                        <div className="pb-8 line-bt d-flex">
+                                            <p className="text-button fw-6">{data.header} {data.message}</p>
+                                            <i className="dot-lg bg-primary"></i>
+                                        </div>
+                                        <span className="d-block mt-8">{timeAgo(time)}</span>
+                                    </a>
+                                </li>
+                            </>
+                        )
+                    })
+                    setNotification(NotificationList);
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        getNotification();
         try {
             const getToken = async () => {
                 if (!list1) {
@@ -116,7 +146,6 @@ const Wallet = () => {
                                     const { data } = await axios.post('/getHistory', { email });
                                     if (data) {
                                         const historyList = data.historyList.map((history, index) => {
-                                            console.log(history);
                                             return (
                                                 <>
                                                     <li key={index} className="mt-8">
@@ -205,7 +234,7 @@ const Wallet = () => {
                     </a>
                     <div className="d-flex align-items-center gap-8">
                         <a href="choose-cryptocurrency.html" className="icon-search"></a>
-                        <a href="#notification" className="icon-noti box-noti" data-bs-toggle="modal"></a>
+                        <a href="#notification" className="icon-noti" data-bs-toggle="modal"><span className="box-noti">{!!user && user.NotificationSeen}</span></a>
                     </div>
                 </div>
             </div>
@@ -723,57 +752,7 @@ const Wallet = () => {
                         <div className="overflow-auto pt-45 pb-16">
                             <div className="tf-container">
                                 <ul className="mt-12">
-                                    <li>
-                                        <a href="#" className="noti-item bg-menuDark">
-                                            <div className="pb-8 line-bt d-flex">
-                                                <p className="text-button fw-6">Cointex to just tick size and trading amount precision of spots/margins and perpetual swaps</p>
-                                                <i className="dot-lg bg-primary"></i>
-                                            </div>
-                                            <span className="d-block mt-8">5 minutes ago</span>
-                                        </a>
-                                    </li>
-                                    <li className="mt-12">
-                                        <a href="#" className="noti-item bg-menuDark">
-                                            <div className="pb-8 line-bt d-flex">
-                                                <p className="text-button fw-6">Cointex to adjust components of several indexes</p>
-                                                <i className="dot-lg bg-primary"></i>
-                                            </div>
-                                            <span className="d-block mt-8">5 minutes ago</span>
-                                        </a>
-                                    </li>
-                                    <li className="mt-12">
-                                        <a href="#" className="noti-item bg-menuDark">
-                                            <div className="pb-8 line-bt d-flex">
-                                                <p className="text-button fw-6">Cointex to just tick size and trading amount precision of spots/margins and perpetual swaps</p>
-                                                <i className="dot-lg bg-primary"></i>
-                                            </div>
-                                            <span className="d-block mt-8">5 minutes ago</span>
-                                        </a>
-                                    </li>
-                                    <li className="mt-12">
-                                        <a href="#" className="noti-item bg-menuDark">
-                                            <div className="pb-8 line-bt">
-                                                <p className="text-button fw-6 text-secondary">Cointex to adjust components of several indexes</p>
-                                            </div>
-                                            <span className="d-block mt-8 text-secondary">1 day ago</span>
-                                        </a>
-                                    </li>
-                                    <li className="mt-12">
-                                        <a href="#" className="noti-item bg-menuDark">
-                                            <div className="pb-8 line-bt">
-                                                <p className="text-button fw-6 text-secondary">Cryptex wallet uses Achain network service</p>
-                                            </div>
-                                            <span className="d-block mt-8 text-secondary">1 day ago</span>
-                                        </a>
-                                    </li>
-                                    <li className="mt-12">
-                                        <a href="#" className="noti-item bg-menuDark">
-                                            <div className="pb-8 line-bt">
-                                                <p className="text-button fw-6 text-secondary">Cointex to adjust components of several indexes</p>
-                                            </div>
-                                            <span className="d-block mt-8 text-secondary">1 day ago</span>
-                                        </a>
-                                    </li>
+                                    {Notification}
                                 </ul>
                             </div>
                         </div>
