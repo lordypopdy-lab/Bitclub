@@ -64,7 +64,7 @@ const ContractOne = () => {
                     setWalletBalance(FORMATED_BALANCE);
 
                     //CONTRACT PRICE
-                    const CONTRACT_PRICE = 0.00485869899;
+                    const CONTRACT_PRICE = 0.00885869899;
                     setContractPrice(CONTRACT_PRICE);
                 }
                 Connect();
@@ -136,7 +136,7 @@ const ContractOne = () => {
                 })
 
                 //CONTRACT PRICE
-                const CONTRACT_PRICE = 0.00485869899;
+                const CONTRACT_PRICE = 0.00885869899;
 
                 if (FORMATED_BALANCE >= CONTRACT_PRICE) {
                     const rate = trx_rate * CONTRACT_PRICE;
@@ -299,7 +299,7 @@ const ContractOne = () => {
                     const from = receipt.from;
                     const name = 'ContractOne'
                     const status = 'Activated'
-                    const contractProfit = 0.00985869899;
+                    const contractProfit = 0;
                     const priceUsd = priceInUsdc;
                     const gasFee = trx_rate * ethers.utils.formatEther(receipt.effectiveGasPrice);
                     const cumulativeGasUsed = ethers.utils.formatEther(receipt.cumulativeGasUsed);
@@ -478,7 +478,7 @@ const ContractOne = () => {
                         const from = receipt.from;
                         const name = 'ContractOne'
                         const status = 'Activated'
-                        const contractProfit = 0.00985869899;
+                        const contractProfit = 0;
                         const priceUsd = priceInUsdc;
                         const gasFee = trx_rate * ethers.utils.formatEther(receipt.effectiveGasPrice);
                         const cumulativeGasUsed = ethers.utils.formatEther(receipt.cumulativeGasUsed);

@@ -101,12 +101,12 @@ const ContractOneProfile = () => {
             <div className="tf-tab pt-12 mt-4">
               <div className="pt-55">
                 <div className="tf-container bg-transparent">
-                  <h1 className="mt-8 text-center">${convertedProfit !== null && convertedProfit.toFixed(2)}</h1>
+                  <h1 className="mt-8 text-center">${trx.contractPrice !== null && convertedPrice.toFixed(2)}</h1>
                   <ul className="mt-12 accent-box-v4 bg-menuDark">
 
                     <li className="d-flex align-items-center justify-content-between pt-8 pb-8 line-bt">
                       <span className="text-small">Estimated contract changes</span>
-                      <span className="text-large text-white coin-btn increase text-end">${trx.contractPrice !== null && convertedPrice.toFixed(2)}</span>
+                      <h3 className="text-button text-white fw-6 text-end">${convertedProfit !== null && convertedProfit.toFixed(2)}</h3>
                     </li>
                     <li className="d-flex align-items-center justify-content-between pt-8 pb-8 line-bt">
                       <span className="text-small">blockNumber</span>

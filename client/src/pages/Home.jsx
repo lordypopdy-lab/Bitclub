@@ -77,7 +77,7 @@ const Home = () => {
             const email = localStorage.getItem('email');
             try {
                 axios.post('/getNotification', { email }).then(({ data }) => {
-                    const datas = data.notificationList;
+                    const datas = data.notificationList.reverse()
                     const NotificationList = datas.map((data, index) => {
                         const time = data.timestamp;
                         return (
@@ -345,12 +345,13 @@ const Home = () => {
                                 const email = localStorage.getItem('email');
                                 try {
                                     const { data } = await axios.post('/getHistory', { email });
-                                    if (data) {
-                                        const historyList = data.historyList.map((history, index) => {
+                                    const datas  = data.historyList.reverse();
+                                    if (datas) {
+                                        const historyList = datas.map((history, index) => {
                                             return (
                                                 <>
                                                     <li key={index} className="mt-8">
-                                                        <a href="#" className="coin-item style-1 gap-12 bg-menuDark">
+                                                        <a href="#" className="line-bt coin-item mb-1 style-1 gap-12 bg-menuDark">
                                                             <span className="box-round d-flex justify-content-center align-items-center"><i style={{ fontSize: '20px' }} className="icon icon-delete"></i></span>
                                                             <div className="content">
                                                                 <div className="title">
@@ -358,8 +359,9 @@ const Home = () => {
                                                                     {history.Status == 'Success' ? <span className="text-success">{history.Status}</span> : <span className="text-warning">{history.Status}</span>}
                                                                 </div>
                                                                 <div className="box-price">
-                                                                    {history.type == 'Deposite' || history.type == 'Sent' ? <p className="text-small mb-4"><span className="text-danger">-</span> ETH {history.valueEth}</p> : <p className="text-small mb-4"><span className="text-primary">+</span> ETH {history.valueEth}</p>}
+                                                                    {history.type == 'Deposite' || history.type == 'Sent' ? <p className="text-small mb-2"><span className="text-danger">-</span> ETH {history.valueEth}</p> : <p className="text-small mb-4"><span className="text-primary">+</span> ETH {history.valueEth}</p>}
                                                                     {history.type == 'Deposite' || history.type == 'Sent' ? <p className="text-small"><span className="text-danger">-</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p> : <p className="text-small"><span className="text-primary">+</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p>}
+                                                                    <span className="mt-2" style={{marginLeft: '60px'}}>{timeAgo(history.timestamp)}</span>
                                                                 </div>
                                                             </div>
                                                         </a>

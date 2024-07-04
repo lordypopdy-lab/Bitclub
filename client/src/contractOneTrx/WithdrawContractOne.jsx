@@ -363,7 +363,6 @@ const WithdrawContractOne = () => {
           )
           const receipt = await tx_response.wait();
           if (receipt) {
-            console.log(receipt);
             setLoading(false);
             const to = receipt.to
             const from = receipt.from;

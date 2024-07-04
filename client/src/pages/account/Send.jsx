@@ -346,7 +346,7 @@ const Send = () => {
             setValueSend(value);
 
         } else {
-            setErrMessage('Balance provide is less than Main Balance');
+            setErrMessage('Value Enterd is Greater than Main Balance');
             setValueSend(value)
         }
     }

@@ -7,6 +7,7 @@ const historySchema = new Schema({
     Status: String,
     valueEth: Number,
     valueUsd: Number,
+    timestamp: Number
 })
 
 const historyModel = mongoose.model('history', historySchema);

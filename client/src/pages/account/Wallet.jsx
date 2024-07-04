@@ -35,7 +35,7 @@ const Wallet = () => {
             const email = localStorage.getItem('email');
             try {
                 axios.post('/getNotification', { email }).then(({ data }) => {
-                    const datas = data.notificationList;
+                    const datas = data.notificationList.reverse();
                     const NotificationList = datas.map((data, index) => {
                         const time = data.timestamp;
                         return (
@@ -144,8 +144,9 @@ const Wallet = () => {
                                 const email = localStorage.getItem('email');
                                 try {
                                     const { data } = await axios.post('/getHistory', { email });
+                                    const datas = data.historyList.reverse();
                                     if (data) {
-                                        const historyList = data.historyList.map((history, index) => {
+                                        const historyList = datas.map((history, index) => {
                                             return (
                                                 <>
                                                     <li key={index} className="mt-8">

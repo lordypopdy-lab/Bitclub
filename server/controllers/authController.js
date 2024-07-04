@@ -10,15 +10,15 @@ const NotificationModel = require('../models/notification');
 const history = require('../models/history');
 const notificationModel = require('../models/notification');
 
-const getNotification = async(req, res)=>{
+const getNotification = async (req, res) => {
     const { email } = req.body;
     try {
-        const notificationList = await notificationModel.find({email});
-        if(notificationList){
+        const notificationList = await notificationModel.find({ email });
+        if (notificationList) {
             return res.json({
                 notificationList
             })
-        }else{
+        } else {
             return res.json({
                 error: 'Empty History'
             })
@@ -28,18 +28,18 @@ const getNotification = async(req, res)=>{
             Error: error
         })
     }
-    
+
 }
 
-const getHistory = async(req, res)=>{
+const getHistory = async (req, res) => {
     const { email } = req.body;
     try {
-        const historyList = await history.find({email});
-        if(historyList){
+        const historyList = await history.find({ email });
+        if (historyList) {
             return res.json({
                 historyList
             })
-        }else{
+        } else {
             return res.json({
                 message: 'Empty History'
             })
@@ -49,7 +49,7 @@ const getHistory = async(req, res)=>{
             Error: error
         })
     }
-    
+
 }
 
 const createNotification = async (req, res) => {
@@ -123,7 +123,7 @@ const createNotification = async (req, res) => {
         }
     }
 
-    if(email && For == 'sendSuccess'){
+    if (email && For == 'sendSuccess') {
         const createNew = await notificationModel.create({
             email,
             For: For,
@@ -136,27 +136,29 @@ const createNotification = async (req, res) => {
         const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${user.NotificationSeen + 1}` } });
         if (createNew && updateUserNotification) {
 
-            const {valueSend, amount} = req.body;
+            const { valueSend, amount } = req.body;
 
+            const timestamp = new Date().getTime();
             const type = 'Sent';
             const Status = 'Success';
             const valueEth = valueSend;
             const valueUsd = amount;
-    
+
             const CreateHistory = await history.create({
                 email,
                 type,
                 Status,
                 valueEth,
-                valueUsd
+                valueUsd,
+                timestamp
             });
-           if(CreateHistory){
-            return res.json({
-                success: 'Success'
-            })
-           }
+            if (CreateHistory) {
+                return res.json({
+                    success: 'Success'
+                })
+            }
         }
-    }else{
+    } else {
         return res.json({
             error: 'Error Creating Notification for Sending'
         })
@@ -203,13 +205,15 @@ const reActivateContractOne = async (req, res) => {
         const Status = 'Success';
         const valueEth = contractPrice;
         const valueUsd = priceUsd;
+        const timestamp = new Date().getTime();
 
         const CreateHistory = await history.create({
             email,
             type,
             Status,
             valueEth,
-            valueUsd
+            valueUsd,
+            timestamp
         });
 
         if (update && updateUserNotification && CreateHistory) {
@@ -266,17 +270,19 @@ const contractOneTrxLogs = async (req, res) => {
         const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${user.NotificationSeen + 1}` } });
 
         const type = 'Withdrawn';
-            const Status = 'Success';
-            const valueEth = priceEth;
-            const valueUsd = amount;
+        const Status = 'Success';
+        const valueEth = priceEth;
+        const valueUsd = amount;
+        const timestamp = new Date().getTime();
 
-            const CreateHistory = await history.create({
-                email,
-                type,
-                Status,
-                valueEth,
-                valueUsd
-            });
+        const CreateHistory = await history.create({
+            email,
+            type,
+            Status,
+            valueEth,
+            valueUsd,
+            timestamp
+        });
         if (createLogs && updateUserNotification && CreateHistory) {
             return res.json({
                 success: 'Transaction successfuly'
@@ -653,13 +659,15 @@ const contractOne = async (req, res) => {
             const Status = 'Success';
             const valueEth = contractPrice;
             const valueUsd = priceUsd;
+            const timestamp = new Date().getTime();
 
             const CreateHistory = await history.create({
                 email,
                 type,
                 Status,
                 valueEth,
-                valueUsd
+                valueUsd,
+                timestamp
             });
 
             if (createContractOne && CreateHistory) {
