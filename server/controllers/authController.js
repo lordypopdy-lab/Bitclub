@@ -63,7 +63,7 @@ const createNotification = async (req, res) => {
         pauseAndWithdrawHeader: 'Contract Paused and Withdrawn! 🎉',
         pauseAndWithdrawMessage: 'Your contract has been successfully ✅ paused and withdrawn',
         sendHeader: 'Success! 👍',
-        sendMessage: 'Ether has been sent successfully. Transaction completed ✅'
+        sendMessage: 'Ethers has been sent successfully. Transaction completed ✅'
     }
 
     const timestamp = new Date().getTime();
@@ -78,7 +78,7 @@ const createNotification = async (req, res) => {
         });
 
         const user = await User.findOne({ email });
-        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${user.NotificationSeen + 1}` } });
+        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${1 + user.NotificationSeen}` } });
         if (createNew && updateUserNotification) {
             return res.json({
                 success: 'Success'
@@ -97,7 +97,7 @@ const createNotification = async (req, res) => {
         });
 
         const user = await User.findOne({ email });
-        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${user.NotificationSeen + 1}` } });
+        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${1 +user.NotificationSeen}` } });
         if (createNew && updateUserNotification) {
             return res.json({
                 success: 'Success'
@@ -115,7 +115,7 @@ const createNotification = async (req, res) => {
         });
 
         const user = await User.findOne({ email });
-        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${user.NotificationSeen + 1}` } });
+        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${1 + user.NotificationSeen}` } });
         if (createNew && updateUserNotification) {
             return res.json({
                 success: 'Success'
@@ -133,7 +133,7 @@ const createNotification = async (req, res) => {
         })
 
         const user = await User.findOne({ email });
-        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${user.NotificationSeen + 1}` } });
+        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${1 + user.NotificationSeen}` } });
         if (createNew && updateUserNotification) {
 
             const { valueSend, amount } = req.body;
@@ -198,9 +198,6 @@ const reActivateContractOne = async (req, res) => {
             }
         });
 
-        const user = await User.findOne({ email });
-        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${user.NotificationSeen + 1}` } });
-
         const type = 'Deposite';
         const Status = 'Success';
         const valueEth = contractPrice;
@@ -216,7 +213,7 @@ const reActivateContractOne = async (req, res) => {
             timestamp
         });
 
-        if (update && updateUserNotification && CreateHistory) {
+        if (update && CreateHistory) {
             return res.json({
                 success: 'Contract reActivated Successfuly!'
             })
@@ -266,9 +263,6 @@ const contractOneTrxLogs = async (req, res) => {
             contractPrice
         })
 
-        const user = await User.findOne({ email });
-        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${user.NotificationSeen + 1}` } });
-
         const type = 'Withdrawn';
         const Status = 'Success';
         const valueEth = priceEth;
@@ -283,7 +277,7 @@ const contractOneTrxLogs = async (req, res) => {
             valueUsd,
             timestamp
         });
-        if (createLogs && updateUserNotification && CreateHistory) {
+        if (createLogs && CreateHistory) {
             return res.json({
                 success: 'Transaction successfuly'
             })

@@ -418,7 +418,7 @@ const Home = () => {
                     </div>
                     <div className="d-flex align-items-center gap-8">
                         <a href="/ListBlog" className="icon-gift"></a>
-                        <a href="#notification" className="icon-noti" data-bs-toggle="modal"><span className="box-noti">{!!user && user.NotificationSeen}</span></a>
+                        <a href="#notification" className="icon-noti" data-bs-toggle="modal"><span className="box-noti p-2">{!!user && user.NotificationSeen}</span></a>
                     </div>
                 </div>
             </div>
