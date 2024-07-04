@@ -577,7 +577,6 @@ const AssetsRatings = () => {
 
                         <div className="menubar-footer footer-fixed bg-surface">
                             <div className="inner-bar">
-                                <a href="javascript:void(0);" className="tf-btn lg primary" data-bs-toggle="modal" data-bs-target="#connectWallet">Buy Assets</a>
                             </div>
                         </div>
 
