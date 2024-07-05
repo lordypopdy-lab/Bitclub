@@ -31,6 +31,7 @@ const Home = () => {
     const [accountList, setAccountList] = useState(null);
     const [history, setHistory] = useState('')
     const [Notification, setNotification] = useState('');
+    const [news, setNews] = useState([]);
 
     const [loading, setLoading] = useState(false);
     const [list1, setList1] = useState(null);
@@ -73,6 +74,24 @@ const Home = () => {
 
     useEffect(() => {
         setLoading(true);
+
+        const fetchNews = async () => {
+            try {
+              const response = await fetch(
+                `https://newsapi.org/v2/everything?q=cryptocurrency,stock market&apiKey=5907073000f343e0b7eac50d02235010`
+              );
+              const data = await response.json();
+              console.log(data)
+              setNews(data.articles);
+              setLoading(false);
+            } catch (error) {
+              console.error('Error fetching the news:', error);
+              setLoading(false);
+            }
+          };
+      
+          fetchNews();
+
         const getNotification = async () => {
             const email = localStorage.getItem('email');
             try {
