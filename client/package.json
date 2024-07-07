@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "start": "vite",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build" 
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "@uniswap/sdk": "^3.0.3",
@@ -26,6 +26,7 @@
     "react-router-dom": "^6.23.0",
     "react-share": "^5.1.0",
     "react-spinners": "^0.13.8",
+    "react-webcam": "^7.2.0",
     "swiper": "^11.1.4",
     "web3": "^4.9.0",
     "ws": "^8.17.0"

@@ -3,7 +3,12 @@ import axios from 'axios';
 import { useState, useEffect } from "react";
 import FadeLoader from 'react-spinners/FadeLoader';
 import toast from 'react-hot-toast';
+import { UserContext } from '../../../context/UserContext';
+import { useContext } from 'react';
+
 const ContractOne = () => {
+    const { user } = useContext(UserContext);
+
     const [pinError, setPinError] = useState('')
     const [showModal, setShowModal] = useState('')
     const [loading, setLoading] = useState(false);
@@ -14,7 +19,6 @@ const ContractOne = () => {
     const [contractPrice, setContractPrice] = useState(null);
     const [priceInUsdc, setPriceInUsdc] = useState(null);
     const [trx_rate, set_trx_rate] = useState(null);
-    const [provider, setProvider] = useState(null);
     const [signer, setSigner] = useState(null);
     const [current_bal, setCurrent_bal] = useState(null);
     const [pinInput, setPinInput] = useState({
@@ -144,7 +148,6 @@ const ContractOne = () => {
                     set_trx_rate(trx_rate);
                     setPriceInUsdc(rate)
                     setContractPrice(CONTRACT_PRICE);
-                    setProvider(provider);
                     setConnect(true);
                     setSigner(signer);
                     setWalletBalance(FORMATED_BALANCE);
@@ -176,6 +179,13 @@ const ContractOne = () => {
 
     const startContractOne = async (e) => {
         e.preventDefault();
+       const verificationStatus = !!user && user.verification;
+       console.log(verificationStatus);
+       if(verificationStatus == 'Unverified'){
+        toast.error('Unverified Account, Actication Failed!');
+       }else if(verificationStatus == 'Inreview'){
+        toast.error('Failed Activation, Verification request in review')
+       }else{
         const email = localStorage.getItem('email');
         const { pin1, pin2, pin3, pin4 } = pinInput;
         const { data } = await axios.post('/pinVerify', {
@@ -534,6 +544,7 @@ const ContractOne = () => {
             toast.error(data.error);
             console.log(data.error);
         }
+       }
     }
     // console.log(trx);
 

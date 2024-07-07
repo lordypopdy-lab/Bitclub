@@ -35,6 +35,10 @@ const Login = () => {
 
         }
     }
+
+    const googleAuth = async() =>{
+        alert('Login with google')
+    }
     return (
         <>
             {/* <!-- preloade --> */}
@@ -53,7 +57,7 @@ const Login = () => {
                         <h2 className="text-center">Login Bitclub.</h2>
                         <ul className="mt-40 socials-login">
                             <li className="mt-12"><a href="Home" className="tf-btn md social dark"><img src="/src/images/logo/fb.jpg" alt="img" /> Continue with Facebook</a></li>
-                            <li className="mt-12"><a href="Home" className="tf-btn md social dark"><img src="/src/images/logo/google.jpg" alt="img" /> Continue with Google</a></li>
+                            <li onClick={googleAuth} className="mt-12"><a className="tf-btn md social dark"><img src="/src/images/logo/google.jpg" alt="img" /> Continue with Google</a></li>
                             <li className="mt-12"><a href="Home" className="tf-btn md social dark"><img src="/src/images/logo/apple.jpg" alt="img" /> Continue with Apple</a></li>
                         </ul>
                     </div>
