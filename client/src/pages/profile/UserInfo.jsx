@@ -27,8 +27,8 @@ const UserInfo = () => {
                             <img src="/src/images/avt/avt2.jpg" alt="img" className="avt" />
                             <div className="info">
                                 <h5>{!!user && user.name}</h5>
-                                <p className="text-small text-secondary mt-8 mb-8">Profile and settings</p>
-                                <span className="tag-xs style-2 round-2 red">Unverified</span>
+                                <p className="text-small text-secondary mt-8 mb-8">Profile and settings</p> 
+                                {!!user && user.verification == 'Unverified' ? <span className="tag-xs style-2 round-2 red">{!!user && user.verification}</span> : !!user && user.verification == 'Inreview' ? <span className="tag-xs style-2 round-2 text-warning">{!!user && user.verification}</span> : <span className="tag-xs style-2 round-2 primary">{!!user && user.verification}</span> }
                             </div>
                         </div>
                         <span className="arr-right"><i className="icon-arr-right"></i></span>
@@ -37,18 +37,18 @@ const UserInfo = () => {
                 </div>
                 <div className="bg-menuDark tf-container">
                     <div className="pt-12 pb-12 mt-4">
-                        <h5>Buy cryptocurrencies</h5>
+                        <h5>Bitclub Ratings</h5>
                         <ul className="mt-16 grid-3 gap-12">
                             <li>
                                 <a href="#cryptocurrency" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center" data-bs-toggle="modal">
-                                    <i className="icon icon-currency"></i>
+                                    <i className="icon text-primary icon-currency"></i>
                                     Currency
                                 </a>
                             </li>
                             <li>
-                                <a href="/Exchange" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
-                                    <i className="icon icon-swap"></i>
-                                    Exchange
+                                <a href="/Earn" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
+                                    <i className="icon text-primary icon-swap"></i>
+                                    Contracts
                                 </a>
                             </li>
 
@@ -72,8 +72,8 @@ const UserInfo = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href="#" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
-                                    <i className="icon icon-bank"></i>
+                                <a href="/AddressScan" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
+                                    <i className="icon text-primary icon-bank"></i>
                                     Deposit
                                 </a>
                             </li>

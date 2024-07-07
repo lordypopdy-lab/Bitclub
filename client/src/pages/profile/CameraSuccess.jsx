@@ -24,8 +24,8 @@ const CameraSuccess = () => {
                         <span className="circle-box sm bg-primary"></span>
                     </div>
                     <h2 className="text-surface text-center">Successful!</h2>
-                    <p className="text-large text-center mt-8">Your personal information has been verified</p>
-                    <a href="/VerificationAdvance" className="tf-btn lg primary mt-40">Done</a>
+                    <p className="text-large text-center mt-8">Your personal information has been submited for review</p>
+                    <a href="/profile" className="tf-btn lg primary mt-40">Done</a>
                 </div>
             </div>
            

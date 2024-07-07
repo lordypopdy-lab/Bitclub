@@ -1,6 +1,6 @@
 import React from 'react'
 
-const ChooseVerification = () => {
+const ChooseVerification = (props) => {
     const e = localStorage.getItem('email');
     if(!e){
         location.href = '/login';

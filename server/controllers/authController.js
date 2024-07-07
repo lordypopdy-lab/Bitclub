@@ -10,6 +10,16 @@ const NotificationModel = require('../models/notification');
 const history = require('../models/history');
 const notificationModel = require('../models/notification');
 
+const citizenId = async (req, res)=>{
+    const {email, imgSrc} = req.body;
+    const updateUser = await User.updateOne({email: email}, {$set: {citizenId: `${imgSrc}`, verification: `Inreview`}});
+    if(updateUser){
+        return res.json({
+            success: 'Success'
+        })
+    }
+}
+
 const getNotification = async (req, res) => {
     const { email } = req.body;
     try {
@@ -426,6 +436,8 @@ const registerUser = async (req, res) => {
 
         const hashedPassword = await hashPassword(password)
         const user = await User.create({
+            citizenId: '',
+            verification: 'Unverified',
             name,
             email,
             password: hashedPassword,
@@ -716,6 +728,7 @@ module.exports = {
     pinCheck,
     loginUser,
     createPin,
+    citizenId,
     pinVerify,
     tokenViews,
     registerUser,

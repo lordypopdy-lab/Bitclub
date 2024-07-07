@@ -33,7 +33,7 @@ const Profile = () => {
                     <a href="/Verification" className="mt-16 d-flex justify-content-between align-items-center">
                         <div className="box-left">
                             <h5 className="mb-8">Verification</h5>
-                            <span className="text-red">Unverified</span>
+                            {!!user && user.verification == 'Unverified' ? <span className=" text-red">{!!user && user.verification}</span> : !!user && user.verification == 'Inreview' ? <span className="text-warning">{!!user && user.verification}</span> : <span className="text-primary">{!!user && user.verification}</span> }
                         </div>
                         <span className="icon-arr-right text-secondary fs-12"></span>
                     </a>
