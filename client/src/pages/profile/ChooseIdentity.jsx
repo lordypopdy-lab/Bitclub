@@ -20,11 +20,6 @@ const ChooseIdentity = () => {
                     <input type="radio" className="tf-radio flex-shrink-0" name="radio" id="radio1" checked />
 
                 </li>
-                <li  className="tf-list-item-v2 mt-20 bg-menuDark">
-                    <a href="/PersonalVerification" className="text-button text-white" >Enter your citizenship information</a>
-                    <input type="radio" className="tf-radio flex-shrink-0" name="radio" id="radio2" /> 
-                </li>
-                
             </ul>
         </div>
     </div>

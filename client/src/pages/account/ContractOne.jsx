@@ -184,7 +184,7 @@ const ContractOne = () => {
        if(verificationStatus == 'Unverified'){
         toast.error('Unverified Account, Actication Failed!');
        }else if(verificationStatus == 'Inreview'){
-        toast.error('Failed Activation, Verification request in review')
+        toast.error('Failed Activation, Account Verification request in review')
        }else{
         const email = localStorage.getItem('email');
         const { pin1, pin2, pin3, pin4 } = pinInput;

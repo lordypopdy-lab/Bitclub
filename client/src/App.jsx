@@ -46,7 +46,6 @@ import ChangePassword from './pages/settings/ChangePassword';
 import VerificationDone from './pages/profile/VerificationDone';
 import ContractOneProfile from './pages/account/ContractOneProfile';
 import AddressVerification from './pages/account/AddressVerification';
-import PersonalVerification from './pages/account/PersonalVerification';
 import VerificationComfirm from './pages/profile/VerificationComfirm';
 import VerificationAdvance from './pages/profile/VerificationAdvance';
 import IdentityVerification from './pages/profile/IdentityVerification';
@@ -119,7 +118,6 @@ const router = createBrowserRouter(
             <Route path='/withdarawContractOne' element={<WithdrawContractOne />} />
             <Route path='/ContractOneProfile' element={<ContractOneProfile />} />
             <Route path='/AddressVerification' element={<AddressVerification />} />
-            <Route path='/PersonalVerification' element={<PersonalVerification />} />
             <Route path='/VerificationComfirm' element={<VerificationComfirm />} />
             <Route path='/VerificationAdvance' element={<VerificationAdvance />} />
             <Route path='/ChooseVerification' element={<ChooseVerification />} />

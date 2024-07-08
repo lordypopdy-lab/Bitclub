@@ -1,14 +1,37 @@
 const User = require('../models/user');
 const { hashPassword, comparePassword } = require('../helpers/auth');
 const jwt = require('jsonwebtoken');
-const { WebSocket } = require('ws');
-const axios = require('axios');
 const UserContractOne = require('../models/contractOne');
 const UserSecurity = require('../models/checkPin');
 const PauseLogs = require('../models/trxHistory');
 const NotificationModel = require('../models/notification');
 const history = require('../models/history');
 const notificationModel = require('../models/notification');
+const userInfomation = require('../models/userInformation');
+
+const userInfo = async (req, res)=>{
+    const {email, Id, Country} = req.body;
+    const check = await userInfomation.findOne({email});
+    if(check){
+        const update = await userInfomation.updateOne({email: email}, {$set: {email: `${email}`, Id: `${Id}`, Country: `${Country}`}})
+        if(update){
+            return res.json({
+                message: 'Updated'
+            })
+        }
+    }
+    const create = await userInfomation.create({
+        email, 
+        Id,
+        Country
+    })
+    if(create){
+        return res.json({
+            message: 'success'
+        })
+    }
+
+}
 
 const citizenId = async (req, res)=>{
     const {email, imgSrc} = req.body;
@@ -73,7 +96,10 @@ const createNotification = async (req, res) => {
         pauseAndWithdrawHeader: 'Contract Paused and Withdrawn! 🎉',
         pauseAndWithdrawMessage: 'Your contract has been successfully ✅ paused and withdrawn',
         sendHeader: 'Success! 👍',
-        sendMessage: 'Ethers has been sent successfully. Transaction completed ✅'
+        sendMessage: 'Ethers has been sent successfully. Transaction completed ✅',
+        verificationHeader: 'Submitted Successfully! ✅',
+        verificationMessage: 'Thank you for submitting your ID for verification. We have received your documents, and they are currently under review. You will be notified once the verification process is complete.',
+
     }
 
     const timestamp = new Date().getTime();
@@ -95,6 +121,24 @@ const createNotification = async (req, res) => {
             })
         }
 
+    }
+
+    if(email && For ==  'IDverification'){
+        const createNew = await NotificationModel.create({
+            email,
+            For: For,
+            message: NotificationList.verificationMessage,
+            header: NotificationList.verificationHeader,
+            timestamp: timestamp
+        });
+
+        const user = await User.findOne({ email });
+        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${1 + user.NotificationSeen}` } });
+        if (createNew && updateUserNotification) {
+            return res.json({
+                success: 'Success'
+            })
+        }   
     }
 
     if (email && For == 'ForcontractOneReActivation') {
@@ -725,6 +769,7 @@ const getContractOne = async (req, res) => {
 }
 
 module.exports = {
+    userInfo,
     pinCheck,
     loginUser,
     createPin,
