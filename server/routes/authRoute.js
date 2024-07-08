@@ -5,6 +5,7 @@ const router = express.Router();
 
 const {
     registerUser,
+    userInfo,
     pinCheck,
     citizenId,
     loginUser,
@@ -36,6 +37,7 @@ router.post('/login', loginUser);
 router.post('/pinCheck', pinCheck);
 router.post('/register', registerUser);
 router.get('/tokens', tokenViews)
+router.post('/userInfo', userInfo);
 router.post('/citizenId', citizenId);
 router.post('/createPin', createPin);
 router.post('/pinVerify', pinVerify)
