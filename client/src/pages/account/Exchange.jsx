@@ -269,6 +269,10 @@ const Exchange = () => {
         }
     }
 
+    const TradeExchang = async ()=>{
+        toast.success("Trade Exchange is Comming Sonn!");
+    }
+
     return (
         <>
 
@@ -282,7 +286,7 @@ const Exchange = () => {
             <div className="header-style2 fixed-top d-flex align-items-center justify-content-between bg-surface">
                 <h3 className="d-flex gap-12">
                     <a href="#">Market</a>
-                    <a href="/TradeExchange" className="text-secondary">Trade</a>
+                    <a onClick={TradeExchang} className="text-secondary">Trade</a>
                 </h3>
                 <i className="icon-funnel text-white" data-bs-toggle="modal" data-bs-target="#filter"></i>
             </div>
