@@ -15,7 +15,7 @@ const Verification = () => {
     <div className="pt-45 pb-16">
         <div className="tf-container">
             <div className="accent-box bg-menuDark mt-4">
-                <h4>Basic verification (level 1)</h4>
+                <h4>Verification</h4>
                 <h5 className="mt-20">Features and limitations</h5>
                 <ul className="pt-16 pb-12 line-bt">
                     <li className="d-flex justify-content-between align-items-center">

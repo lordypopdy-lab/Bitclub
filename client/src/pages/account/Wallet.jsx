@@ -7,7 +7,6 @@ import toast from "react-hot-toast";
 import FadeLoader from 'react-spinners/FadeLoader';
 import { timeAgo } from "../utils/timeAgo";
 
-
 const Wallet = () => {
     const [loading, setLoading] = useState(false);
     const [list1, setList1] = useState(null);
