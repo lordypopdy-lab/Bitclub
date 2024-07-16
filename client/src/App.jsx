@@ -3,6 +3,8 @@ import Send from './pages/account/Send';
 import Earn from './pages/account/Earn';
 import Wallet from './pages/account/Wallet';
 import Opt02 from './pages/settings/Opt02';
+import Terms from './terms&conditions/Terms';
+import Policy from './terms&conditions/Policy';
 import Profile from './pages/profile/Profile';
 import Welcome from './pages/account/Welcome';
 import UserInfo from './pages/profile/UserInfo';
@@ -80,6 +82,8 @@ const router = createBrowserRouter(
             <Route index element={<Welcome />} />
             <Route path='/Home' element={<Home />} />
             <Route path='/Option' element={<Option />} />
+            <Route path='/terms' element={<Terms />} />
+            <Route path='/policy' element={<Policy />} />
             <Route path='/FaceID' element={<FaceID />} />
             <Route path='/FaceIdDone' element={<FaceIdDone />} />
             <Route path='/ListBlog' element={<ListBlog />} />
