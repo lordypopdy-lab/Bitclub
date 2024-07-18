@@ -27,6 +27,7 @@ const Home = () => {
     }
 
     const { user } = useContext(UserContext);
+
     const [balance, setBalance] = useState(null);
     const [accountList, setAccountList] = useState(null);
     const [history, setHistory] = useState('')
@@ -427,7 +428,7 @@ const Home = () => {
                 <div className="d-flex justify-content-between align-items-center gap-14">
                     <div className="box-account style-2">
                         <a href="/UserInfo">
-                            <img src="/src/images/avt/avt2.jpg" alt="img" className="avt" />
+                        {!!user && user.picture !== '' ? <img src={!!user && user.picture} alt="img" className="avt" /> : <img src="/src/images/avt/avt2.jpg" alt="img" className="avt" />} 
                         </a>
                         <div className="search-box box-input-field style-2">
                             <a href="home-search.html" className="icon-search"></a>

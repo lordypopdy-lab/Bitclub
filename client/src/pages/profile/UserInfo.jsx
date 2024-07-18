@@ -24,7 +24,7 @@ const UserInfo = () => {
                 <div className="bg-menuDark tf-container">
                     <a href="/Profile" className="pt-12 pb-12 mt-4 d-flex justify-content-between align-items-center">
                         <div className="box-account">
-                            <img src="/src/images/avt/avt2.jpg" alt="img" className="avt" />
+                           {!!user && user.picture !== '' ? <img src={!!user && user.picture} alt="img" className="avt" /> : <img src="/src/images/avt/avt2.jpg" alt="img" className="avt" />} 
                             <div className="info">
                                 <h5>{!!user && user.name}</h5>
                                 <p className="text-small text-secondary mt-8 mb-8">Profile and settings</p> 
