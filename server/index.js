@@ -6,12 +6,16 @@ const cors = require('cors');
 
 const app = express();
 
-app.use(
-    cors({
-        credentials: true,
-        origin: 'http://localhost:3000'
-    })
-)
+app.use((req, res, next) => {
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+    res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
+    next();
+  });
+
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }));
 
 mongoose.connect(process.env.MONGO_URL)
 .then(()=> console.log('Database Connected successfuly!'))
@@ -19,7 +23,7 @@ mongoose.connect(process.env.MONGO_URL)
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({extended: true}));
 app.use('/', require('./routes/authRoute'));
 
 const port = 8000;

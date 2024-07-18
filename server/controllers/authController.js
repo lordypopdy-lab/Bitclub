@@ -9,23 +9,48 @@ const history = require('../models/history');
 const notificationModel = require('../models/notification');
 const userInfomation = require('../models/userInformation');
 
-const userInfo = async (req, res)=>{
-    const {email, Id, Country} = req.body;
-    const check = await userInfomation.findOne({email});
-    if(check){
-        const update = await userInfomation.updateOne({email: email}, {$set: {email: `${email}`, Id: `${Id}`, Country: `${Country}`}})
-        if(update){
+const googleLogin = async (req, res) => {
+   const { email, name, picture } = req.body;
+   if(email && name){
+        const check = await User.findOne({email});
+        if(check){
+            const update = await User.updateOne({email: email}, {$set: {email: `${email}`, name: `${name}`, picture: `${picture}`}});
+            if(update){
+                return res.json(check)
+            }else{
+                console.log('Error Updating')
+            }
+        }
+        const user = await User.create({
+            picture: picture,
+            citizenId: '',
+            verification: 'Unverified',
+            name,
+            email,
+            NotificationSeen: 0
+        })
+        return res.json(user)
+   }
+   
+}
+
+const userInfo = async (req, res) => {
+    const { email, Id, Country } = req.body;
+    const check = await userInfomation.findOne({ email });
+    if (check) {
+        const update = await userInfomation.updateOne({ email: email }, { $set: { email: `${email}`, Id: `${Id}`, Country: `${Country}` } })
+        if (update) {
             return res.json({
                 message: 'Updated'
             })
         }
     }
     const create = await userInfomation.create({
-        email, 
+        email,
         Id,
         Country
     })
-    if(create){
+    if (create) {
         return res.json({
             message: 'success'
         })
@@ -33,10 +58,10 @@ const userInfo = async (req, res)=>{
 
 }
 
-const citizenId = async (req, res)=>{
-    const {email, imgSrc} = req.body;
-    const updateUser = await User.updateOne({email: email}, {$set: {citizenId: `${imgSrc}`, verification: `Inreview`}});
-    if(updateUser){
+const citizenId = async (req, res) => {
+    const { email, imgSrc } = req.body;
+    const updateUser = await User.updateOne({ email: email }, { $set: { citizenId: `${imgSrc}`, verification: `Inreview` } });
+    if (updateUser) {
         return res.json({
             success: 'Success'
         })
@@ -123,7 +148,7 @@ const createNotification = async (req, res) => {
 
     }
 
-    if(email && For ==  'IDverification'){
+    if (email && For == 'IDverification') {
         const createNew = await NotificationModel.create({
             email,
             For: For,
@@ -138,7 +163,7 @@ const createNotification = async (req, res) => {
             return res.json({
                 success: 'Success'
             })
-        }   
+        }
     }
 
     if (email && For == 'ForcontractOneReActivation') {
@@ -151,7 +176,7 @@ const createNotification = async (req, res) => {
         });
 
         const user = await User.findOne({ email });
-        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${1 +user.NotificationSeen}` } });
+        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${1 + user.NotificationSeen}` } });
         if (createNew && updateUserNotification) {
             return res.json({
                 success: 'Success'
@@ -480,6 +505,7 @@ const registerUser = async (req, res) => {
 
         const hashedPassword = await hashPassword(password)
         const user = await User.create({
+            picture: '',
             citizenId: '',
             verification: 'Unverified',
             name,
@@ -776,6 +802,7 @@ module.exports = {
     citizenId,
     pinVerify,
     tokenViews,
+    googleLogin,
     registerUser,
     getProfile,
     getHistory,

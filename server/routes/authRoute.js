@@ -19,6 +19,7 @@ const {
     changePassword,
     contractOneCheck,
     pinVerify,
+    googleLogin,
     createNotification,
     pauseContractOne,
     contractOneTrxLogs,
@@ -42,6 +43,7 @@ router.post('/citizenId', citizenId);
 router.post('/createPin', createPin);
 router.post('/pinVerify', pinVerify)
 router.post('/profile', getProfile);
+router.post('/loginGoggle', googleLogin);
 router.post('/getHistory', getHistory);
 router.post('/contractOne', contractOne);
 router.post('/nameUpdate', updateUserName);

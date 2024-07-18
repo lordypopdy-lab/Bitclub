@@ -225,7 +225,7 @@ const Wallet = () => {
             <div className="header-style2 fixed-top bg-menuDark">
                 <div className="d-flex justify-content-between align-items-center">
                     <a className="box-account" href="/UserInfo">
-                        <img src="/src/images/avt/avt2.jpg" alt="img" className="avt" />
+                    {!!user && user.picture !== '' ? <img src={!!user && user.picture} alt="img" className="avt" /> : <img src="/src/images/avt/avt2.jpg" alt="img" className="avt" />} 
                         <div className="info">
                             <p className="text-xsmall text-secondary">Welcome back!</p>
                             <h5 className="mt-4">{!!user && user.name}</h5>

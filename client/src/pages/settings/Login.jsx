@@ -2,8 +2,19 @@ import { useState } from "react"
 import axios from 'axios';
 import toast from "react-hot-toast";
 import FadeLoader from 'react-spinners/FadeLoader';
+import { GoogleLogin } from 'react-google-login';
+import { gapi } from "gapi-script";
+import { jwtDecode } from "jwt-decode";
 
 const Login = () => {
+
+    gapi.load('client:auth2', () => {
+        window.gapi.client.init({
+            clientId: '170268353832-0fn4qbgklemeb9s0o5elvi99ronia9ov.apps.googleusercontent.com',
+            plugin_name: "chat",
+            scope: 'email'
+        })})
+    
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState({
         email: '',
@@ -36,9 +47,36 @@ const Login = () => {
         }
     }
 
-    const googleAuth = async() =>{
-        alert('Login with google')
-    }
+
+    const handleLoginSuccess = async (response) => {
+        setLoading(true)
+        const { tokenId } = response;
+        const decoded = jwtDecode(tokenId);
+        const { email, name, picture, email_verified } = decoded
+        
+       try {
+        if(email_verified){
+            const { data } = await axios.post('/loginGoggle', {email, name, picture});
+            if(data){
+                toast.success("Login Successfully, Welcome!");
+                setLoading(false)
+                localStorage.setItem('email', email);
+                localStorage.setItem('pin', data._id);
+                location.href = '/Home'
+            }else{
+                toast.error("Login Error");
+                setLoading(false)
+            }
+        }
+       } catch (error) {
+            console.log("Error, Login With Google");
+            toast.error("Login failed")
+            setLoading(false)
+       } };
+    
+      const handleLoginFailure = (response) => {
+        console.log('Login Failed:', response);
+      };
     return (
         <>
             {/* <!-- preloade --> */}
@@ -57,7 +95,18 @@ const Login = () => {
                         <h2 className="text-center">Login Bitclub.</h2>
                         <ul className="mt-40 socials-login">
                             <li className="mt-12"><a href="Home" className="tf-btn md social dark"><img src="/src/images/logo/fb.jpg" alt="img" /> Continue with Facebook</a></li>
-                            <li onClick={googleAuth} className="mt-12"><a className="tf-btn md social dark"><img src="/src/images/logo/google.jpg" alt="img" /> Continue with Google</a></li>
+                            <li className="mt-12">
+                            <GoogleLogin
+                             render={renderProps => (
+                                <a className="tf-btn md social dark" onClick={renderProps.onClick} disabled={renderProps.disabled}><img src="/src/images/logo/google.jpg" alt="img" />  Sign in with Google</a>
+                              )}
+                                clientId="170268353832-0fn4qbgklemeb9s0o5elvi99ronia9ov.apps.googleusercontent.com"
+                                onSuccess={handleLoginSuccess}
+                                onFailure={handleLoginFailure}
+                                cookiePolicy={'single_host_origin'}
+                            >
+                            </GoogleLogin>
+                            </li>
                             <li className="mt-12"><a href="Home" className="tf-btn md social dark"><img src="/src/images/logo/apple.jpg" alt="img" /> Continue with Apple</a></li>
                         </ul>
                     </div>

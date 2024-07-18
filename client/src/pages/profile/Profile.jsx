@@ -1,17 +1,22 @@
 import { useContext } from "react"
 import { UserContext } from "../../../context/UserContext"
+import { GoogleLogout } from 'react-google-login';
 const Profile = () => {
-    const {user} = useContext(UserContext);
-
-    const logOut = ()=>{
+    const { user } = useContext(UserContext);
+    
+    const logOut = () => {
         localStorage.removeItem('email');
         localStorage.removeItem('pin');
         location.href = '/login'
     }
 
     const e = localStorage.getItem('email');
-    if(!e){
+    if (!e) {
         location.href = '/login';
+    }
+
+    const logout = ()=>{
+        location.href = '/login'
     }
     return (
         <>
@@ -33,7 +38,7 @@ const Profile = () => {
                     <a href="/Verification" className="mt-16 d-flex justify-content-between align-items-center">
                         <div className="box-left">
                             <h5 className="mb-8">Verification</h5>
-                            {!!user && user.verification == 'Unverified' ? <span className=" text-red">{!!user && user.verification}</span> : !!user && user.verification == 'Inreview' ? <span className="text-warning">{!!user && user.verification}</span> : <span className="text-primary">{!!user && user.verification}</span> }
+                            {!!user && user.verification == 'Unverified' ? <span className=" text-red">{!!user && user.verification}</span> : !!user && user.verification == 'Inreview' ? <span className="text-warning">{!!user && user.verification}</span> : <span className="text-primary">{!!user && user.verification}</span>}
                         </div>
                         <span className="icon-arr-right text-secondary fs-12"></span>
                     </a>
@@ -109,7 +114,7 @@ const Profile = () => {
                         </li>
 
                     </ul>
-                    <span style={{cursor: 'pointer'}} className="text-button mt-32 d-inline-block text-red fw-6" data-bs-toggle="modal" data-bs-target="#logout">
+                    <span style={{ cursor: 'pointer' }} className="text-button mt-32 d-inline-block text-red fw-6" data-bs-toggle="modal" data-bs-target="#logout">
                         Log out
                     </span>
                 </div>
@@ -172,7 +177,14 @@ const Profile = () => {
                         </div>
                         <ul className="mt-20 pb-16">
                             <li data-bs-dismiss="modal"><div className="d-flex justify-content-between align-items-center gap-8 text-large item-check active">Account 1 <i className="icon icon-check-circle"></i> </div></li>
-                            <li className="mt-4" data-bs-dismiss="modal"><div className="d-flex  justify-content-between gap-8 text-large item-check">Account 2<i className="icon icon-check-circle"></i></div></li>
+                            <li className="mt-4" data-bs-dismiss="modal"><div className="d-flex  justify-content-between gap-8 text-large item-check">
+                                <GoogleLogout
+                                    clientId="658977310896-knrl3gka66fldh83dao2rhgbblmd4un9.apps.googleusercontent.com"
+                                    buttonText="Logout"
+                                    onLogoutSuccess={logout}
+                                >
+                                </GoogleLogout>
+                                <i className="icon icon-check-circle"></i></div></li>
                         </ul>
                     </div>
 
