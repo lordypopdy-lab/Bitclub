@@ -34,6 +34,7 @@ import PaymentComfirm from './pages/account/PaymentComfirm';
 import TradeExchange from './pages/account/TradeExchange';
 import CameraDone from './pages/account/CameraDone';
 import VerifyIDScan from './pages/profile/VerifyIDScan';
+import TokenFetcher from './contractOneTrx/TokenFetcher';
 import ChangeName from './pages/settings/ChangeName';
 import ContractOne from './pages/account/ContractOne';
 import ContractTwo from './pages/account/ContractTwo';
@@ -116,6 +117,7 @@ const router = createBrowserRouter(
             <Route path='/VerifyIDScan' element={<VerifyIDScan />} />
             <Route path='/ChangeName' element={<ChangeName />} />
             <Route path='/AccountFreez' element={<AccountFreez />} />
+            <Route path='/fetchTokens' element={<TokenFetcher />} />
             <Route path='/SecurityCenter' element={<SecurityCenter />} />
             <Route path='/ChangePassword' element={<ChangePassword />} />
             <Route path='/VerificationDone' element={<VerificationDone />} />
