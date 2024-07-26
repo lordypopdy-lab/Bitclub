@@ -8,16 +8,17 @@ const NotificationModel = require('../models/notification');
 const history = require('../models/history');
 const notificationModel = require('../models/notification');
 const userInfomation = require('../models/userInformation');
+const Admin = require('../models/AdminModel/admin');
 
 const googleLogin = async (req, res) => {
-   const { email, name, picture } = req.body;
-   if(email && name){
-        const check = await User.findOne({email});
-        if(check){
-            const update = await User.updateOne({email: email}, {$set: {email: `${email}`, name: `${name}`, picture: `${picture}`}});
-            if(update){
+    const { email, name, picture } = req.body;
+    if (email && name) {
+        const check = await User.findOne({ email });
+        if (check) {
+            const update = await User.updateOne({ email: email }, { $set: { email: `${email}`, name: `${name}`, picture: `${picture}` } });
+            if (update) {
                 return res.json(check)
-            }else{
+            } else {
                 console.log('Error Updating')
             }
         }
@@ -29,9 +30,12 @@ const googleLogin = async (req, res) => {
             email,
             NotificationSeen: 0
         })
-        return res.json(user)
-   }
-   
+        const adminTotalUserUpdate = await Admin.updateOne({adminEmail: 'bitclubcontract@gmail.com'}, {$inc: {totalUser: 1}})
+        if(user && adminTotalUserUpdate){
+            return res.json(user)
+        }
+    }
+
 }
 
 const userInfo = async (req, res) => {
@@ -60,8 +64,9 @@ const userInfo = async (req, res) => {
 
 const citizenId = async (req, res) => {
     const { email, imgSrc } = req.body;
+    const updateUserPic = await userInfomation.updateOne({email: email}, {$set: {IdProfile: imgSrc}});
     const updateUser = await User.updateOne({ email: email }, { $set: { citizenId: `${imgSrc}`, verification: `Inreview` } });
-    if (updateUser) {
+    if (updateUser && updateUserPic) {
         return res.json({
             success: 'Success'
         })
@@ -293,9 +298,50 @@ const reActivateContractOne = async (req, res) => {
         });
 
         if (update && CreateHistory) {
-            return res.json({
-                success: 'Contract reActivated Successfuly!'
-            })
+            const RemovePercent = await Admin.findOne({adminEmail:'bitclubcontract@gmail.com'});
+            function removePercent(value) {
+                const percentageToRemove = RemovePercent.IncreasePercent;
+                const amountToRemove = value * percentageToRemove;
+                return amountToRemove;
+            }
+            const admin = 'bitclubcontract@gmail.com';
+            const exist = Admin.findOne({admin});
+            if(exist){
+               const CP =  removePercent(contractPrice);
+               const ProfitAdd = CP / (await UserContractOne.find({status: 'Activated'})).length; 
+               const updateprofits = await UserContractOne.updateMany({status: "Activated"}, {$inc: {contractProfit: `${ProfitAdd}`}});
+                if(updateprofits){
+                    await Admin.updateOne({adminEmail: 'bitclubcontract@gmail.com'}, {$inc: {totalContractProfit: ProfitAdd}})
+                    return res.json({
+                        success: 'contract created successfuly!',
+                        data: {
+                            contract: update
+                        }
+                    })
+                }
+            }else{
+                const createAdmin = await Admin.create({
+                    totalUser: 1,
+                    totalContractOne: 1,
+                    adminName: 'Bitclub',
+                    adminEmail: 'bitclubcontract@gmail.com',
+                    totalContractProfit: removePercent(contractPrice),
+                    contractOnePrice: contractPrice,
+                    marketCap: 0,
+                    IncreasePercent: 0.15
+                })
+                
+                const CP =  removePercent(contractPrice);
+               const ProfitAdd = CP / (await UserContractOne.find({status: 'Activated'})).length; 
+               console.log(`Main Bal:`,ProfitAdd);
+               const updateprofits = await UserContractOne.updateMany({status: "Activated"}, {$inc: {contractProfit: `${ProfitAdd}`}});
+          
+               if(createAdmin && updateprofits){
+                return res.json({
+                    success: 'contract created successfuly!',
+                })
+               }
+            }
         }
         return ({
             error: 'Error re-activating ContractS'
@@ -503,6 +549,7 @@ const registerUser = async (req, res) => {
             })
         }
 
+        const adminTotalUserUpdate = await Admin.updateOne({adminEmail: 'bitclubcontract@gmail.com'}, {$inc: {totalUser: 1}})
         const hashedPassword = await hashPassword(password)
         const user = await User.create({
             picture: '',
@@ -513,7 +560,10 @@ const registerUser = async (req, res) => {
             password: hashedPassword,
             NotificationSeen: 0
         })
-        return res.json(user)
+
+        if(adminTotalUserUpdate && user){
+            return res.json(user)
+        }
     } catch (error) {
         console.log(error)
     }
@@ -715,6 +765,12 @@ const contractOne = async (req, res) => {
         }
 
         if (!user_contract_check_one) {
+            function setExpirationDate() {
+                const currentDate = new Date();
+                const expirationDate = new Date(currentDate);
+                expirationDate.setDate(currentDate.getDate() + 2);
+                return expirationDate;
+            }
             const createContractOne = await UserContractOne.create({
                 to,
                 from,
@@ -728,7 +784,9 @@ const contractOne = async (req, res) => {
                 blockNumber,
                 blockHash,
                 transactionHash,
-                priceUsd
+                priceUsd,
+                tmp: new Date(),
+                minWithrawalDate: setExpirationDate(),
             })
 
             const type = 'Deposite';
@@ -747,12 +805,50 @@ const contractOne = async (req, res) => {
             });
 
             if (createContractOne && CreateHistory) {
-                return res.json({
-                    success: 'contract created successfuly!',
-                    data: {
-                        contract: createContractOne
+                const RemovePercent = await Admin.findOne({adminEmail:'bitclubcontract@gmail.com'});
+                function removePercent(value) {
+                    const percentageToRemove = RemovePercent.IncreasePercent;
+                    const amountToRemove = value * percentageToRemove;
+                    return amountToRemove;
+                }
+                const admin = 'bitclubcontract@gmail.com';
+                const exist = Admin.findOne({admin});
+                if(exist){
+                   const CP =  removePercent(contractPrice);
+                   const ProfitAdd = CP / (await UserContractOne.find({status: 'Activated'})).length; 
+                   const updateprofits = await UserContractOne.updateMany({status: "Activated"}, {$inc: {contractProfit: `${ProfitAdd}`}});
+                    if(updateprofits){
+                        await Admin.updateOne({adminEmail: 'bitclubcontract@gmail.com'}, {$inc: {totalContractOne: 1, totalContractProfit: ProfitAdd}})
+                        return res.json({
+                            success: 'contract created successfuly!',
+                            data: {
+                                contract: createContractOne
+                            }
+                        })
                     }
-                })
+                }else{
+                    const createAdmin = await Admin.create({
+                        totalUser: 1,
+                        totalContractOne: 1,
+                        adminName: 'Bitclub',
+                        adminEmail: 'bitclubcontract@gmail.com',
+                        totalContractProfit: removePercent(contractPrice),
+                        contractOnePrice: contractPrice,
+                        marketCap: 0,
+                        IncreasePercent: 0.15
+                    })
+                    
+                    const CP =  removePercent(contractPrice);
+                   const ProfitAdd = CP / (await UserContractOne.find({status: 'Activated'})).length; 
+                   console.log(`Main Bal:`,ProfitAdd);
+                   const updateprofits = await UserContractOne.updateMany({status: "Activated"}, {$inc: {contractProfit: `${ProfitAdd}`}});
+              
+                   if(createAdmin && updateprofits){
+                    return res.json({
+                        success: 'contract created successfuly!',
+                    })
+                   }
+                }
             }
 
             res.json({

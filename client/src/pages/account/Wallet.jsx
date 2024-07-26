@@ -58,127 +58,139 @@ const Wallet = () => {
             }
         }
         getNotification();
+
+        //////////////''''''''//////////TOKEN FETCHER////////////''''''''//////////////
+        const fetcher = async () => {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd');
+                const datas = await response.json();
+                if (datas.length > 0) {
+                    localStorage.setItem('tokens', JSON.stringify(datas));
+                }
+            } catch (error) {
+                console.log(`Error fetching tokens:`, error);
+            }
+        }
+        fetcher();
+
         try {
             const getToken = async () => {
-                if (!list1) {
-                    axios.get('/tokens').then(({ data }) => {
-                        if (data) {
-                            const tokenList1 = data.tokens.map((token, index) => {
-                                const updateT = () => {
-                                    setDetails({
-                                        name: token.name,
-                                        images: token.image,
-                                        symbol: token.symbol,
-                                        current_price: token.current_price,
-                                        market_cap: token.market_cap,
-                                        lastTradindVolume24: token.price_change_24h,
-                                        pricePercentage: token.price_change_percentage_24h,
-                                        ath_change_percentage: token.ath_change_percentage
-                                    })
-                                }
+                const tokenGetter = localStorage.getItem('tokens');
+                const datas = JSON.parse(tokenGetter);
+                const tokenList1 = datas.map((token, index) => {
+                    const updateT = () => {
+                        setDetails({
+                            name: token.name,
+                            images: token.image,
+                            symbol: token.symbol,
+                            current_price: token.current_price,
+                            market_cap: token.market_cap,
+                            lastTradindVolume24: token.price_change_24h,
+                            pricePercentage: token.price_change_percentage_24h,
+                            ath_change_percentage: token.ath_change_percentage
+                        })
+                    }
 
-                                return (
-                                    <li key={index} style={{ marginTop: '9px' }}>
-                                        <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-1 gap-12 bg-surface">
-                                            <img src={token.image} alt="img" className="img" />
-                                            <div className="content">
-                                                <div className="title">
-                                                    <p className="mb-4 text-large">{token.name}</p>
-                                                    <span className="text-secondary">11:34 AM</span>
-                                                </div>
-                                                <div className="box-price">
-                                                    <p className="text-small mb-4"><span className="text-primary">+</span> {token.symbol.toUpperCase()} {token.high_24h}</p>
-                                                    <p className="text-end"><span className="text-red">-</span>{token.low_24h}</p>
-                                                </div>
-                                            </div>
-                                        </a>
+                    return (
+                        <li key={index} style={{ marginTop: '9px' }}>
+                            <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-1 gap-12 bg-surface">
+                                <img src={token.image} alt="img" className="img" />
+                                <div className="content">
+                                    <div className="title">
+                                        <p className="mb-4 text-large">{token.name}</p>
+                                        <span className="text-secondary">11:34 AM</span>
+                                    </div>
+                                    <div className="box-price">
+                                        <p className="text-small mb-4"><span className="text-primary">+</span> {token.symbol.toUpperCase()} {token.high_24h}</p>
+                                        <p className="text-end"><span className="text-red">-</span>{token.low_24h}</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    )
+                })
+
+                const connectMetaMask = async () => {
+                    if (window.ethereum) {
+                        const provider = new ethers.providers.Web3Provider(window.ethereum);
+                        await provider.send('eth_requestAccounts', []);
+                        const signer = provider.getSigner();
+                        const USER_ADDRESS = signer.getAddress();
+                        const GET_BALANCE = await provider.getBalance(USER_ADDRESS);
+                        const FORMATED_BALANCE = ethers.utils.formatEther(GET_BALANCE);
+
+                        const ACCOUNT_LISTS = await provider.listAccounts();
+                        const acc_list = ACCOUNT_LISTS.map((ACCOUNT_LIST, index) => {
+                            const handleCopy = async () => {
+                                try {
+                                    await navigator.clipboard.writeText(ACCOUNT_LIST);
+                                    toast.success('Copied!');
+                                } catch (error) {
+                                    toast.error('Fail to Copy!');
+                                }
+                            }
+                            return (
+                                <>
+                                    <li key={index} data-bs-dismiss="modal">
+                                        <div className="d-flex justify-content-between align-items-center gap-8 text-large item-check active dom-value">Account {index}</div>
+                                        <div className="mb-1">
+                                            <span className="text-secondary" style={{ fontSize: '14px' }}>{ACCOUNT_LIST.slice(0, 30)}...</span> <i title="Copy" onClick={handleCopy} style={{ fontSize: '22px', cursor: 'pointer' }} className="icon icon-copy text-primary"></i>
+                                        </div>
                                     </li>
+                                </>
+                            )
+                        })
+                        setAccountList(acc_list);
+
+                        const BALANCE_IN_USDC = datas[1].current_price;
+                        const BALANCE_IN_USDC_CONVERTED = BALANCE_IN_USDC * FORMATED_BALANCE;
+                        setBalance(BALANCE_IN_USDC_CONVERTED);
+
+                    } else {
+                        toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
+                        console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
+                    }
+                }
+                connectMetaMask();
+
+                const getHistory = async () => {
+                    const email = localStorage.getItem('email');
+                    try {
+                        const { data } = await axios.post('/getHistory', { email });
+                        const datas = data.historyList.reverse();
+                        if (data) {
+                            const historyList = datas.map((history, index) => {
+                                return (
+                                    <>
+                                        <li key={index} className="mt-8">
+                                            <a href="#" className="coin-item style-1 gap-12 bg-menuDark">
+                                                <span className="box-round d-flex justify-content-center align-items-center"><i style={{ fontSize: '20px' }} className="icon icon-delete"></i></span>
+                                                <div className="content">
+                                                    <div className="title">
+                                                        <p className="mb-4 text-large">{history.type}</p>
+                                                        {history.Status == 'Success' ? <span className="text-success">{history.Status}</span> : <span className="text-warning">{history.Status}</span>}
+                                                    </div>
+                                                    <div className="box-price">
+                                                        {history.type == 'Deposite' || history.type == 'Sent' ? <p className="text-small mb-4"><span className="text-danger">-</span> ETH {history.valueEth}</p> : <p className="text-small mb-4"><span className="text-primary">+</span> ETH {history.valueEth}</p>}
+                                                        {history.type == 'Deposite' || history.type == 'Sent' ? <p className="text-small"><span className="text-danger">-</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p> : <p className="text-small"><span className="text-primary">+</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p>}
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    </>
                                 )
                             })
-
-                            const connectMetaMask = async () => {
-                                if (window.ethereum) {
-                                    const provider = new ethers.providers.Web3Provider(window.ethereum);
-                                    await provider.send('eth_requestAccounts', []);
-                                    const signer = provider.getSigner();
-                                    const USER_ADDRESS = signer.getAddress();
-                                    const GET_BALANCE = await provider.getBalance(USER_ADDRESS);
-                                    const FORMATED_BALANCE = ethers.utils.formatEther(GET_BALANCE);
-
-                                    const ACCOUNT_LISTS = await provider.listAccounts();
-                                    const acc_list = ACCOUNT_LISTS.map((ACCOUNT_LIST, index) => {
-                                        const handleCopy = async () => {
-                                            try {
-                                                await navigator.clipboard.writeText(ACCOUNT_LIST);
-                                                toast.success('Copied!');
-                                            } catch (error) {
-                                                toast.error('Fail to Copy!');
-                                            }
-                                        }
-                                        return (
-                                            <>
-                                                <li key={index} data-bs-dismiss="modal">
-                                                    <div className="d-flex justify-content-between align-items-center gap-8 text-large item-check active dom-value">Account {index}</div>
-                                                    <div className="mb-1">
-                                                        <span className="text-secondary" style={{ fontSize: '14px' }}>{ACCOUNT_LIST.slice(0, 30)}...</span> <i title="Copy" onClick={handleCopy} style={{ fontSize: '22px', cursor: 'pointer' }} className="icon icon-copy text-primary"></i>
-                                                    </div>
-                                                </li>
-                                            </>
-                                        )
-                                    })
-                                    setAccountList(acc_list);
-
-                                    const BALANCE_IN_USDC = data.tokens[1].current_price;
-                                    const BALANCE_IN_USDC_CONVERTED = BALANCE_IN_USDC * FORMATED_BALANCE;
-                                    setBalance(BALANCE_IN_USDC_CONVERTED);
-
-                                } else {
-                                    toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
-                                    console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
-                                }
-                            }
-                            connectMetaMask();
-
-                            const getHistory = async () => {
-                                const email = localStorage.getItem('email');
-                                try {
-                                    const { data } = await axios.post('/getHistory', { email });
-                                    const datas = data.historyList.reverse();
-                                    if (data) {
-                                        const historyList = datas.map((history, index) => {
-                                            return (
-                                                <>
-                                                    <li key={index} className="mt-8">
-                                                        <a href="#" className="coin-item style-1 gap-12 bg-menuDark">
-                                                        <span className="box-round d-flex justify-content-center align-items-center"><i style={{fontSize: '20px'}} className="icon icon-delete"></i></span>
-                                                            <div className="content">
-                                                                <div className="title">
-                                                                    <p className="mb-4 text-large">{history.type}</p>
-                                                                    {history.Status == 'Success' ? <span className="text-success">{history.Status}</span> : <span className="text-warning">{history.Status}</span>}
-                                                                </div>
-                                                                <div className="box-price">
-                                                                    {history.type == 'Deposite' || history.type == 'Sent' ? <p className="text-small mb-4"><span className="text-danger">-</span> ETH {history.valueEth}</p> : <p className="text-small mb-4"><span className="text-primary">+</span> ETH {history.valueEth}</p> }
-                                                                   {history.type == 'Deposite' || history.type == 'Sent' ?  <p className="text-small"><span className="text-danger">-</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p> :  <p className="text-small"><span className="text-primary">+</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p>}
-                                                                </div>
-                                                            </div>
-                                                        </a>
-                                                    </li>
-                                                </>
-                                            )
-                                        })
-                                        setHistory(historyList);
-                                    }
-                                } catch (error) {
-                                    console.log(error);
-                                }
-                            }
-                            getHistory();
-
-                            setList1(tokenList1.slice(0, 21));
-                            setLoading(false);
+                            setHistory(historyList);
                         }
-                    })
+                    } catch (error) {
+                        console.log(error);
+                    }
                 }
+                getHistory();
+
+                setList1(tokenList1.slice(0, 21));
+                setLoading(false);
+
             }
 
             getToken();
@@ -225,7 +237,7 @@ const Wallet = () => {
             <div className="header-style2 fixed-top bg-menuDark">
                 <div className="d-flex justify-content-between align-items-center">
                     <a className="box-account" href="/UserInfo">
-                    {!!user && user.picture !== '' ? <img src={!!user && user.picture} alt="img" className="avt" /> : <img src="/src/images/avt/avt2.jpg" alt="img" className="avt" />} 
+                        {!!user && user.picture !== '' ? <img src={!!user && user.picture} alt="img" className="avt" /> : <img src="/src/images/avt/avt2.jpg" alt="img" className="avt" />}
                         <div className="info">
                             <p className="text-xsmall text-secondary">Welcome back!</p>
                             <h5 className="mt-4">{!!user && user.name}</h5>
@@ -233,7 +245,7 @@ const Wallet = () => {
                         </div>
                     </a>
                     <div className="d-flex align-items-center gap-8">
-                        <a href="choose-cryptocurrency.html" className="icon-search"></a>
+                        <a href="/assetsRatings" className="icon-search"></a>
                         <a href="#notification" className="icon-noti" data-bs-toggle="modal"><span className="box-noti p-2">{!!user && user.NotificationSeen}</span></a>
                     </div>
                 </div>
@@ -409,7 +421,7 @@ const Wallet = () => {
                         <div className="overflow-auto pt-45 pb-16">
                             <div className="tf-container">
                                 <ul className="mt-4">
-                                        {history}
+                                    {history}
                                 </ul>
                             </div>
                         </div>

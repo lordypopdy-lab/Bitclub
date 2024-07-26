@@ -35,134 +35,141 @@ const Earn = () => {
 
     useEffect(() => {
         setLoading(true);
+        
+        //////////////''''''''//////////TOKEN FETCHER////////////''''''''//////////////
+        const fetcher = async () => {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd');
+                const datas = await response.json();
+                if (datas.length > 0) {
+                    localStorage.setItem('tokens', JSON.stringify(datas));
+                }
+            } catch (error) {
+                console.log(`Error fetching tokens:`, error);
+            }
+        }
+        fetcher();
         try {
-            const getToken = async () => {
-                if (!list1) {
-                    axios.get('/tokens').then(({ data }) => {
-                        if (data) {
-                            const tokenList1 = data.tokens.map((token, index) => {
-                                const updateT = () => {
-                                    setDetails({
-                                        name: token.name,
-                                        images: token.image,
-                                        symbol: token.symbol,
-                                        current_price: token.current_price,
-                                        market_cap: token.market_cap,
-                                        lastTradindVolume24: token.price_change_24h,
-                                        pricePercentage: token.price_change_percentage_24h,
-                                        ath_change_percentage: token.ath_change_percentage
-                                    })
-                                }
-
-                                return (
-                                    <li key={index} style={{ marginTop: '18px' }}>
-                                        <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
-                                            <img src={token.image} alt="img" className="img" />
-                                            <div className="content">
-                                                <div className="title">
-                                                    <p className="mb-4 text-button">{token.symbol.toUpperCase()}</p>
-                                                    <span className="text-secondary">${token.market_cap}M</span>
-                                                </div>
-                                                <div className="d-flex align-items-center gap-12">
-                                                    <span className="text-small">${token.current_price}</span>
-                                                    {token.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{token.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{token.price_change_percentage_24h}2%</span>}
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                )
-                            })
-
-                            const tokenList2 = data.tokens.map((token, index) => {
-                                const updateT = () => {
-                                    setDetails({
-                                        name: token.name,
-                                        images: token.image,
-                                        symbol: token.symbol,
-                                        current_price: token.current_price,
-                                        market_cap: token.market_cap,
-                                        lastTradindVolume24: token.price_change_24h,
-                                        pricePercentage: token.price_change_percentage_24h,
-                                        ath_change_percentage: token.ath_change_percentage
-                                    })
-                                }
-
-                                return (
-                                    <li key={index} style={{ marginTop: '18px' }}>
-                                        <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
-                                            <img src={token.image} alt="img" className="img" />
-                                            <div className="content">
-                                                <div className="title">
-                                                    <p className="mb-4 text-button">{token.symbol.toUpperCase()}</p>
-                                                    <span className="text-secondary">${token.market_cap}M</span>
-                                                </div>
-                                                <div className="d-flex align-items-center gap-12">
-                                                    <span className="text-small">${token.current_price}</span>
-                                                    {token.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{token.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{token.price_change_percentage_24h}2%</span>}
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                )
-                            })
-
-                            const tokenList3 = data.tokens.map((token, index) => {
-                                const updateT = () => {
-                                    setDetails({
-                                        name: token.name,
-                                        images: token.image,
-                                        symbol: token.symbol,
-                                        current_price: token.current_price,
-                                        market_cap: token.market_cap,
-                                        lastTradindVolume24: token.price_change_24h,
-                                        pricePercentage: token.price_change_percentage_24h,
-                                        ath_change_percentage: token.ath_change_percentage
-                                    })
-                                }
-
-                                return (
-                                    <li key={index} style={{ marginTop: '18px' }}>
-                                        <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
-                                            <img src={token.image} alt="img" className="img" />
-                                            <div className="content">
-                                                <div className="title">
-                                                    <p className="mb-4 text-button">{token.symbol.toUpperCase()}</p>
-                                                    <span className="text-secondary">${token.market_cap}M</span>
-                                                </div>
-                                                <div className="d-flex align-items-center gap-12">
-                                                    <span className="text-small">${token.current_price}</span>
-                                                    {token.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{token.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{token.price_change_percentage_24h}2%</span>}
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                )
-                            })
-
-                            const listItems = data.tokens.map((token, index) => {
-                                return (
-                                    <li key={index}>
-                                        <div className="item-check coin-item style-2 gap-8">
-                                            <img src={token.image} alt="img" className="img" />
-                                            <p className="content text-large">
-                                                {token.name}
-                                                <i className="icon icon-check-circle"></i>
-                                            </p>
-                                        </div>
-                                    </li>
-                                )
-                            })
-                            setSearchList(listItems.slice(0, 12))
-                            setList1(tokenList1);
-                            setList2(tokenList2.slice(60, 80));
-                            setList3(tokenList3.slice(80, 98))
-                            setLoading(false);
-                            setTokens(data);
-                        }
+            const tokenGetter = localStorage.getItem('tokens');
+            const datas = JSON.parse(tokenGetter);
+            const tokenList1 = datas.map((token, index) => {
+                const updateT = () => {
+                    setDetails({
+                        name: token.name,
+                        images: token.image,
+                        symbol: token.symbol,
+                        current_price: token.current_price,
+                        market_cap: token.market_cap,
+                        lastTradindVolume24: token.price_change_24h,
+                        pricePercentage: token.price_change_percentage_24h,
+                        ath_change_percentage: token.ath_change_percentage
                     })
                 }
-            }
-            getToken();
+
+                return (
+                    <li key={index} style={{ marginTop: '18px' }}>
+                        <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
+                            <img src={token.image} alt="img" className="img" />
+                            <div className="content">
+                                <div className="title">
+                                    <p className="mb-4 text-button">{token.symbol.toUpperCase()}</p>
+                                    <span className="text-secondary">${token.market_cap}M</span>
+                                </div>
+                                <div className="d-flex align-items-center gap-12">
+                                    <span className="text-small">${token.current_price}</span>
+                                    {token.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{token.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{token.price_change_percentage_24h}2%</span>}
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                )
+            })
+
+            const tokenList2 = datas.map((token, index) => {
+                const updateT = () => {
+                    setDetails({
+                        name: token.name,
+                        images: token.image,
+                        symbol: token.symbol,
+                        current_price: token.current_price,
+                        market_cap: token.market_cap,
+                        lastTradindVolume24: token.price_change_24h,
+                        pricePercentage: token.price_change_percentage_24h,
+                        ath_change_percentage: token.ath_change_percentage
+                    })
+                }
+
+                return (
+                    <li key={index} style={{ marginTop: '18px' }}>
+                        <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
+                            <img src={token.image} alt="img" className="img" />
+                            <div className="content">
+                                <div className="title">
+                                    <p className="mb-4 text-button">{token.symbol.toUpperCase()}</p>
+                                    <span className="text-secondary">${token.market_cap}M</span>
+                                </div>
+                                <div className="d-flex align-items-center gap-12">
+                                    <span className="text-small">${token.current_price}</span>
+                                    {token.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{token.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{token.price_change_percentage_24h}2%</span>}
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                )
+            })
+
+            const tokenList3 = datas.map((token, index) => {
+                const updateT = () => {
+                    setDetails({
+                        name: token.name,
+                        images: token.image,
+                        symbol: token.symbol,
+                        current_price: token.current_price,
+                        market_cap: token.market_cap,
+                        lastTradindVolume24: token.price_change_24h,
+                        pricePercentage: token.price_change_percentage_24h,
+                        ath_change_percentage: token.ath_change_percentage
+                    })
+                }
+
+                return (
+                    <li key={index} style={{ marginTop: '18px' }}>
+                        <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
+                            <img src={token.image} alt="img" className="img" />
+                            <div className="content">
+                                <div className="title">
+                                    <p className="mb-4 text-button">{token.symbol.toUpperCase()}</p>
+                                    <span className="text-secondary">${token.market_cap}M</span>
+                                </div>
+                                <div className="d-flex align-items-center gap-12">
+                                    <span className="text-small">${token.current_price}</span>
+                                    {token.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{token.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{token.price_change_percentage_24h}2%</span>}
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                )
+            })
+
+            const listItems = datas.map((token, index) => {
+                return (
+                    <li key={index}>
+                        <div className="item-check coin-item style-2 gap-8">
+                            <img src={token.image} alt="img" className="img" />
+                            <p className="content text-large">
+                                {token.name}
+                                <i className="icon icon-check-circle"></i>
+                            </p>
+                        </div>
+                    </li>
+                )
+            })
+            setSearchList(listItems.slice(0, 12))
+            setList1(tokenList1);
+            setList2(tokenList2.slice(60, 80));
+            setList3(tokenList3.slice(80, 98))
+            setLoading(false);
+            setTokens(datas);
         } catch (error) {
             console.log(error);
             toast.error(error.message);
@@ -178,7 +185,7 @@ const Earn = () => {
     const changeFunction = (e) => {
         const searchTerm = e.target.value;
         setSearchItem(searchTerm);
-        const filteredItems = tokens.tokens.filter((token) =>
+        const filteredItems = tokens.filter((token) =>
             token.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
 
@@ -219,24 +226,24 @@ const Earn = () => {
 
     }
 
-    const toContractOne = async()=>{
+    const toContractOne = async () => {
         const email = localStorage.getItem('email');
         try {
             const { data } = await axios.post('/getContractOne', { email });
             if (data.success && data.contractOne.status !== 'Paused') {
-              setLoading(false);
-              location.href = '/ContractOneProfile'
+                setLoading(false);
+                location.href = '/ContractOneProfile'
             } else {
-              setLoading(false);
-              location.href = '/ContractOne'
+                setLoading(false);
+                location.href = '/ContractOne'
             }
-          } catch (error) {
+        } catch (error) {
             setLoading(false);
             console.log(`Contract is yet to Activated!: ${error}`)
-          }
+        }
     }
 
-    const toContractTwo = async()=>{
+    const toContractTwo = async () => {
         const email = localStorage.getItem('email');
         // try {
         //     const { data } = await axios.post('/getContractOne', { email });
@@ -284,27 +291,27 @@ const Earn = () => {
                         <div className="swiper">
                             <div className="swiper-wrapper">
                                 <SwiperSlide>
-                                <div className="accent-box-v5 p-0 bg-icon2 bg-menuDark active">
+                                    <div className="accent-box-v5 p-0 bg-icon2 bg-menuDark active">
                                         <a onClick={toContractOne} className="coin-item style-1 gap-12 bg-surface">
                                             <div className="mt-1">
-                                            <span className="icon-box bg-transparent bg-icon1"><i className="icon-book"></i></span>
-                                            <a href="#" className="text-small">Contract <span style={{color: '#25C866'}}>Class One</span></a>
+                                                <span className="icon-box bg-transparent bg-icon1"><i className="icon-book"></i></span>
+                                                <a href="#" className="text-small">Contract <span style={{ color: '#25C866' }}>Class One</span></a>
                                                 <p className="mt-4">Click Create and set up your collection.
-                                                    Add contract status, a description, price & contract icons, and set a secondary sales fee. <span style={{color: '#25C866'}}>Contract level One+</span></p>
+                                                    Add contract status, a description, price & contract icons, and set a secondary sales fee. <span style={{ color: '#25C866' }}>Contract level One+</span></p>
                                             </div>
-                                            </a>
-                                        </div>
+                                        </a>
+                                    </div>
                                 </SwiperSlide>
                                 <SwiperSlide>
                                     <div className="accent-box-v5 bg-menuDark">
-                                    <a onClick={toContractTwo} className="coin-item style-1 gap-12 bg-surface">
+                                        <a onClick={toContractTwo} className="coin-item style-1 gap-12 bg-surface">
                                             <span className="icon-box bg-transparent bg-icon1"><i className="icon-book"></i></span>
                                             <div className="mt-12">
-                                            <a href="#" className="text-small">Contract <span style={{color: '#25C866'}}>Class two</span></a>
+                                                <a href="#" className="text-small">Contract <span style={{ color: '#25C866' }}>Class two</span></a>
                                                 <p className="mt-4">Click Create and set up your collection.
-                                                    Add contract status, a description, price & contract icons, and set a secondary sales fee. <span style={{color: '#25C866'}}>Contract level two+</span></p>
+                                                    Add contract status, a description, price & contract icons, and set a secondary sales fee. <span style={{ color: '#25C866' }}>Contract level two+</span></p>
                                             </div>
-                                            </a>
+                                        </a>
                                     </div>
                                 </SwiperSlide>
                             </div>
