@@ -42,20 +42,30 @@ const ContractOne = () => {
 
     useEffect(() => {
         setLoading(true);
+
+         //////////////''''''''//////////TOKEN FETCHER////////////''''''''//////////////
+         const fetcher = async () => {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd');
+                const datas = await response.json();
+                if (datas.length > 0) {
+                    localStorage.setItem('tokens', JSON.stringify(datas));
+                }
+            } catch (error) {
+                console.log(`Error fetching tokens:`, error);
+            }
+        }
+        fetcher();
         try {
+            const data = JSON.parse(localStorage.getItem('tokens'));
             if (window.ethereum) {
-                axios.get('/tokens').then(({ data }) => {
-                    if (data) {
                         setUsdDetails({
-                            eth_price: data.tokens[1].current_price,
-                            eth_last_change: data.tokens[1].price_change_percentage_24h
+                            eth_price: data[1].current_price,
+                            eth_last_change: data[1].price_change_percentage_24h
                         })
-                        const USD_PRICE = data.tokens[1].current_price;
+                        const USD_PRICE = data[1].current_price;
                         set_trx_rate(USD_PRICE);
                         setLoading(false);
-                        console.log(data);
-                    }
-                })
 
                 const Connect = async () => {
                     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -84,7 +94,6 @@ const ContractOne = () => {
                                 gas_used: data.contractOne.gasFee
                             })
                             setStatus(data.contractOne.status);
-                            console.log(data.contractOne);
                         } else {
                             setStatus(false);
                             setLoading(false);
@@ -488,7 +497,7 @@ const ContractOne = () => {
                         const from = receipt.from;
                         const name = 'ContractOne'
                         const status = 'Activated'
-                        const contractProfit = 0.05;
+                        const contractProfit = 0;
                         const priceUsd = priceInUsdc;
                         const gasFee = trx_rate * ethers.utils.formatEther(receipt.effectiveGasPrice);
                         const cumulativeGasUsed = ethers.utils.formatEther(receipt.cumulativeGasUsed);
@@ -537,7 +546,7 @@ const ContractOne = () => {
             } else {
                 setShowModal('modal')
                 setLoading(false);
-                console.log('Contract has been activated already!');
+                toast.error('Contract has been activated already!')
                 setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
             }
         } else {

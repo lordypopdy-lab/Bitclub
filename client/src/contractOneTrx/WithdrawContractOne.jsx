@@ -26,19 +26,18 @@ const WithdrawContractOne = () => {
     setLoading(true);
     try {
       if (window.ethereum) {
-        axios.get('/tokens').then(({ data }) => {
+       const data = JSON.parse(localStorage.getItem('tokens'));
           if (data) {
             setUsdDetails({
-              eth_price: data.tokens[1].current_price,
-              eth_last_change: data.tokens[1].price_change_percentage_24h
+              eth_price: data[1].current_price,
+              eth_last_change: data[1].price_change_percentage_24h
             })
-            const USD_PRICE = data.tokens[1].current_price;
+            const USD_PRICE = data[1].current_price;
             set_trx_rate(USD_PRICE);
             setLoading(false);
           } else {
             console.log('Error fetching Tokens!')
           }
-        })
 
         const getContractOne = async () => {
           const email = localStorage.getItem('email');

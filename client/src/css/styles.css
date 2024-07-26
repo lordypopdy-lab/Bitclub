@@ -13,6 +13,45 @@
     --backdrop: #161616;
     --shadow1: 0px 5.31717px 13.29293px 0px rgba(0, 0, 0, 0.05);
   }
+
+@media (min-width: 1000px) {
+  .camera{
+    width: 100%;
+    border-radius: 20px;
+  }
+}
+
+@media (min-width: 430px) {
+  .camera{
+    width: 100%;
+    margin-bottom: 20px;
+    border-radius: 15px;
+  }
+}
+
+@media (min-width: 390px) {
+  .camera{
+    width: 100%;
+    margin-bottom: 20px;
+    border-radius: 15px;
+  }
+}
+
+@media (min-width: 360px) {
+  .camera{
+    width: 100%;
+    margin-bottom: 20px;
+    border-radius: 15px;
+  }
+}
+
+@media (min-width: 344px) {
+  .camera{
+    width: 100%;
+    margin-bottom: 20px;
+    border-radius: 15px;
+  }
+}
   
   html {
     -webkit-text-size-adjust: 100%;

@@ -36,21 +36,32 @@ const Send = () => {
 
     useEffect(() => {
         setLoading(true);
+
+          //////////////''''''''//////////TOKEN FETCHER////////////''''''''//////////////
+          const fetcher = async () => {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd');
+                const datas = await response.json();
+                if (datas.length > 0) {
+                    localStorage.setItem('tokens', JSON.stringify(datas));
+                }
+            } catch (error) {
+                console.log(`Error fetching tokens:`, error);
+            }
+        }
+        fetcher();
+
         try {
+            const data = JSON.parse(localStorage.getItem('tokens'));
             if (window.ethereum) {
-                axios.get('/tokens').then(({ data }) => {
-                    if (data) {
-                        setUsdDetails({
-                            eth_price: data.tokens[1].current_price,
-                            eth_last_change: data.tokens[1].price_change_percentage_24h
-                        })
-                        const USD_PRICE = data.tokens[1].current_price;
-                        set_trx_rate(USD_PRICE);
-                        setLoading(false);
-                    } else {
-                        console.log('Error fetching Tokens!')
-                    }
+                setUsdDetails({
+                    eth_price: data[1].current_price,
+                    eth_last_change: data[1].price_change_percentage_24h
                 })
+                const USD_PRICE = data[1].current_price;
+                set_trx_rate(USD_PRICE);
+                setLoading(false);
+
 
                 const pinCheck = async () => {
                     const email = localStorage.getItem('email');
@@ -175,9 +186,6 @@ const Send = () => {
                     const contractAddr = await connectContract.Address();
                     const CONTRACT_BALANCE = await connectContract.getBalance();
                     const Balance = ethers.utils.formatEther(CONTRACT_BALANCE)
-                    console.log(`Contract Balance: $${trx_rate * Balance}`);
-                    console.log(`Contract Address: ${contractAddr}`);
-
                     setSigner(signer);
                     setBalanceEth(FORMATED_BALANCE);
                     setLoading(false)

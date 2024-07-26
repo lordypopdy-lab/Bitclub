@@ -17,7 +17,9 @@ const contractOneShema = new Schema({
     blockNumber : Number,
     blockHash : String,
     transactionHash: String,
-    priceUsd: Number
+    priceUsd: Number,
+    tmp: Number,
+    minWithrawalDate: Number
 })
 
 const ContractOneModel = mongoose.model('UserContractOne', contractOneShema);

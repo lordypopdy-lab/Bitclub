@@ -48,9 +48,9 @@ const CameraScan = () => {
                         <div className="line-qr">
                             {captured == false ? <Webcam
                                 audio={false}
-
                                 width={350}
                                 ref={webcamRef}
+                                className='camera'
                                 screenshotFormat="image/jpeg"
                             /> : <span>{imgSrc && (
                                 <img
