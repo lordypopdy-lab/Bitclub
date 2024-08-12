@@ -34,7 +34,7 @@ import PaymentComfirm from './pages/account/PaymentComfirm';
 import TradeExchange from './pages/account/TradeExchange';
 import CameraDone from './pages/account/CameraDone';
 import VerifyIDScan from './pages/profile/VerifyIDScan';
-import TokenFetcher from './contractOneTrx/TokenFetcher';
+import TokenFetcher from './contractTrx/TokenFetcher';
 import ChangeName from './pages/settings/ChangeName';
 import ContractOne from './pages/account/ContractOne';
 import ContractTwo from './pages/account/ContractTwo';
@@ -55,7 +55,9 @@ import IdentityVerification from './pages/profile/IdentityVerification';
 import ChooseVerification from './pages/profile/ChooseVerification';
 import NewPasswordSucces from './pages/settings/NewPasswordSucces';
 import ExchangeTradeApprove from './pages/account/ExchangeTradeApprove';
-import WithdrawContractOne from './contractOneTrx/WithdrawContractOne';
+import WithdrawContractTwo from './contractTrx/WithdrawContractTwo';
+import WithdrawContractOne from './contractTrx/WithdrawContractTwo';
+import ContractTwoProfile from './pages/account/ContractTwoProfile';
 
 import axios from 'axios';
 import { Toaster } from 'react-hot-toast';
@@ -122,6 +124,8 @@ const router = createBrowserRouter(
             <Route path='/ChangePassword' element={<ChangePassword />} />
             <Route path='/VerificationDone' element={<VerificationDone />} />
             <Route path='/withdarawContractOne' element={<WithdrawContractOne />} />
+            <Route path='/withdarawContractTwo' element={<WithdrawContractTwo />} />
+            <Route path="/ContractTwoProfile" element={<ContractTwoProfile />} />
             <Route path='/ContractOneProfile' element={<ContractOneProfile />} />
             <Route path='/AddressVerification' element={<AddressVerification />} />
             <Route path='/VerificationComfirm' element={<VerificationComfirm />} />

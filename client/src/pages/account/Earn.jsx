@@ -245,19 +245,19 @@ const Earn = () => {
 
     const toContractTwo = async () => {
         const email = localStorage.getItem('email');
-        // try {
-        //     const { data } = await axios.post('/getContractOne', { email });
-        //     if (data.success) {
-        //       setLoading(false);
-        //       location.href = '/ContractOneProfile'
-        //     } else {
-        //       setLoading(false);
-        //       location.href = '/ContractTwo'
-        //     }
-        //   } catch (error) {
-        //     setLoading(false);
-        //     console.log(`Contract is yet to Activated!: ${error}`)
-        //   }
+        try {
+            const { data } = await axios.post('/getContractTwo', { email });
+            if (data.success) {
+              setLoading(false);
+              location.href = '/ContractTwoProfile'
+            } else {
+              setLoading(false);
+              location.href = '/ContractTwo'
+            }
+          } catch (error) {
+            setLoading(false);
+            console.log(`Contract is yet to Activated!: ${error}`)
+          }
     }
 
     return (

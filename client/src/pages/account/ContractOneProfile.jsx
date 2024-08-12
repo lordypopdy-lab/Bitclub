@@ -1,4 +1,3 @@
-import { ethers } from 'ethers';
 import axios from 'axios';
 import { useState, useEffect } from "react";
 import FadeLoader from 'react-spinners/FadeLoader';
