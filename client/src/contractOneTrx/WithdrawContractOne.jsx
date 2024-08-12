@@ -11,7 +11,6 @@ const WithdrawContractOne = () => {
   }
 
   const [showModal, setShowModal] = useState('')
-  const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
   const [loading, setLoading] = useState(false);
   const [trx_rate, set_trx_rate] = useState(null);

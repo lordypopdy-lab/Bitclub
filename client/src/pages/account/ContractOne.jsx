@@ -493,6 +493,7 @@ const ContractOne = () => {
                     const receipt = await tx_response.wait();
 
                     if (receipt) {
+                        console.log(receipt)
                         const to = receipt.to
                         const from = receipt.from;
                         const name = 'ContractOne'
@@ -536,7 +537,7 @@ const ContractOne = () => {
                             console.log("Error Sending Notification For Re-Activation")
                            }
                         } else {
-                            toast.error(data.error)
+                            toast.error("An error has occured!")
                         }
                     }
                 } else {
