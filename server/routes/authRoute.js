@@ -24,7 +24,15 @@ const {
     pauseContractOne,
     contractOneTrxLogs,
     reActivateContractOne,
-    getNotification
+    getNotification,
+    reActivateContractTwo,
+    contractTwo,
+    getContractTwo,
+    contractTwoTrxLogs,
+    contractTwoCheck,
+    pauseContractTwo,
+
+
 } = require('../controllers/authController');
 
 router.use(
@@ -46,15 +54,21 @@ router.post('/profile', getProfile);
 router.post('/loginGoggle', googleLogin);
 router.post('/getHistory', getHistory);
 router.post('/contractOne', contractOne);
+router.post('/contractTwo', contractTwo);
 router.post('/nameUpdate', updateUserName);
 router.post('/getContractOne', getContractOne);
+router.post('/getContractTwo', getContractTwo);
 router.post('/changePassword', changePassword);
 router.post('/notification', createNotification );
 router.post('/getNotification', getNotification)
 router.post('/pauseContractOne', pauseContractOne);
+router.post('/pauseContractTwo', pauseContractTwo);
 router.post('/contractOneCheck', contractOneCheck);
+router.post('/contractTwoCheck', contractTwoCheck);
 router.post('/setContractOneLogs', contractOneTrxLogs);
+router.post('/setContractTwoLogs', contractTwoTrxLogs);
 router.post('/reActivateContractOne', reActivateContractOne);
+router.post('/reActivateContractTwo', reActivateContractTwo);
 
 
 module.exports = router

@@ -393,7 +393,7 @@ const WithdrawContractOne = () => {
               })
               const logsData = data;
               if (logsData.success) {
-                const For = "ForContractOnePauseAndWithdraw";
+                const For = "ForContractPauseAndWithdraw";
                 const { data } = await axios.post('/notification', {
                   For,
                   email,

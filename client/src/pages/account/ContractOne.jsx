@@ -343,7 +343,7 @@ const ContractOne = () => {
                     });
 
                     if (data.success) {
-                        const For = "ForcontractOneActivation";
+                        const For = "ForcontractActivation";
                         const { data } = await axios.post('/notification', {
                             For,
                             email,
@@ -522,7 +522,7 @@ const ContractOne = () => {
                             priceUsd
                         });
                         if (data.success) {
-                            const For = "ForcontractOneReActivation";
+                            const For = "ForcontractActivation";
                             const { data } = await axios.post('/notification', {
                                 For,
                                 email,

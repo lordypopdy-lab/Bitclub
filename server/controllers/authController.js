@@ -9,7 +9,7 @@ const history = require('../models/history');
 const notificationModel = require('../models/notification');
 const userInfomation = require('../models/userInformation');
 const Admin = require('../models/AdminModel/admin');
-
+const ContractTwo = require('../models/contractTwo');
 /////////////////////////-----REGISTERATION AND AUTHERIZATION SECTION-----/////////////////////////////// 
 /////////////////////////-------------------------------------------------/////////////////////////////// 
 /////////////////////////-------------------------------------------------/////////////////////////////// 
@@ -403,43 +403,6 @@ const changePassword = async (req, res) => {
 /////////////////////////---------------------------------------/////////////////////////////// 
 /////////////////////////---------------------------------------/////////////////////////////// 
 
-const tokenViews = async (req, res) => {
-    try {
-        const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd');
-        // const response = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/btc.min.json');
-        if (!response.ok) {
-            return res.json({
-                error: 'Network response was not ok'
-            });
-        }
-        const data = await response.json();
-        res.json({
-            tokens: data
-        })
-        // const tokenId = 'bitcoin'
-        // const url = https://api.coingecko.com/api/v3/coins/${tokenId};
-        // const response = await axios.get(url);
-        // const data = response.data;
-
-        // console.log(`Name: ${data.name}`);
-        // console.log(`Symbol: ${data.symbol}`);
-        // console.log(`Current Price (USD): $${data.market_data.current_price.usd}`);
-        // console.log(`Market Cap (USD): $${data.market_data.market_cap.usd}`);
-        // console.log(`24h Trading Volume (USD): $${data.market_data.total_volume.usd}`);
-        // console.log(`Price Change 24h (%): ${data.market_data.price_change_percentage_24h}%`);
-
-    } catch (error) {
-        return res.json({
-            error: error.message
-        })
-    }
-}
-
-/////////////////////////-----CONTRACT ONE SECTION-----/////////////////////////////// 
-/////////////////////////------------------------------/////////////////////////////// 
-/////////////////////////------------------------------/////////////////////////////// 
-/////////////////////////------------------------------/////////////////////////////// 
-
 const createNotification = async (req, res) => {
     const { email, For } = req.body;
 
@@ -459,7 +422,7 @@ const createNotification = async (req, res) => {
 
     const timestamp = new Date().getTime();
 
-    if (email && For == 'ForcontractOneActivation') {
+    if (email && For == 'ForcontractActivation') {
         const createNew = await NotificationModel.create({
             email,
             For: For,
@@ -514,7 +477,7 @@ const createNotification = async (req, res) => {
         }
     }
 
-    if (email && For == 'ForContractOnePauseAndWithdraw') {
+    if (email && For == 'ForContractPauseAndWithdraw') {
         const createNew = await NotificationModel.create({
             email,
             For: For,
@@ -573,6 +536,44 @@ const createNotification = async (req, res) => {
         })
     }
 }
+
+
+const tokenViews = async (req, res) => {
+    try {
+        const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd');
+        // const response = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/btc.min.json');
+        if (!response.ok) {
+            return res.json({
+                error: 'Network response was not ok'
+            });
+        }
+        const data = await response.json();
+        res.json({
+            tokens: data
+        })
+        // const tokenId = 'bitcoin'
+        // const url = https://api.coingecko.com/api/v3/coins/${tokenId};
+        // const response = await axios.get(url);
+        // const data = response.data;
+
+        // console.log(`Name: ${data.name}`);
+        // console.log(`Symbol: ${data.symbol}`);
+        // console.log(`Current Price (USD): $${data.market_data.current_price.usd}`);
+        // console.log(`Market Cap (USD): $${data.market_data.market_cap.usd}`);
+        // console.log(`24h Trading Volume (USD): $${data.market_data.total_volume.usd}`);
+        // console.log(`Price Change 24h (%): ${data.market_data.price_change_percentage_24h}%`);
+
+    } catch (error) {
+        return res.json({
+            error: error.message
+        })
+    }
+}
+
+/////////////////////////-----CONTRACT ONE SECTION-----/////////////////////////////// 
+/////////////////////////------------------------------/////////////////////////////// 
+/////////////////////////------------------------------/////////////////////////////// 
+/////////////////////////------------------------------/////////////////////////////// 
 
 const reActivateContractOne = async (req, res) => {
     try {
@@ -662,6 +663,7 @@ const reActivateContractOne = async (req, res) => {
                     adminEmail: 'bitclubcontract@gmail.com',
                     totalContractProfit: 0.5 * contractProfit,
                     contractOnePrice: contractPrice,
+                    contractTwoPrice: 0,
                     marketCap: 0,
                     IncreasePercent: 0.15
                 })
@@ -854,6 +856,7 @@ const contractOne = async (req, res) => {
                         adminEmail: 'bitclubcontract@gmail.com',
                         totalContractProfit: 0,
                         contractOnePrice: contractPrice,
+                        contractTwoPrice: 0,
                         marketCap: 0,
                         IncreasePercent: 0.15
                     })
@@ -904,6 +907,346 @@ const getContractOne = async (req, res) => {
     })
 }
 
+
+/////////////////////////-----CONTRACT TWO SECTION-----/////////////////////////////// 
+/////////////////////////------------------------------/////////////////////////////// 
+/////////////////////////------------------------------/////////////////////////////// 
+/////////////////////////------------------------------/////////////////////////////// 
+
+const reActivateContractTwo = async (req, res) => {
+    try {
+        const {
+            to,
+            from,
+            email,
+            name,
+            gasFee,
+            status,
+            contractPrice,
+            contractProfit,
+            cumulativeGasUsed,
+            blockNumber,
+            blockHash,
+            transactionHash,
+            priceUsd
+        } = req.body;
+
+        function setExpirationDate() {
+            const currentDate = new Date();
+            const expirationDate = new Date(currentDate);
+            expirationDate.setDate(currentDate.getDate() + 2);
+            return expirationDate;
+        }
+
+        const update = await ContractTwo.updateOne({ email: email }, {
+            $set: {
+                to: `${to}`,
+                from: `${from}`,
+                name: `${name}`,
+                gasFee: `${gasFee}`,
+                status: `${status}`,
+                contractPrice: `${contractPrice}`,
+                contractProfit: `${contractProfit}`,
+                cumulativeGasUsed: `${cumulativeGasUsed}`,
+                blockNumber: `${blockNumber}`,
+                blockHash: `${blockHash}`,
+                transactionHash: `${transactionHash}`,
+                tmp: new Date(),
+                minWithrawalDate: setExpirationDate()
+            }
+        });
+
+        const type = 'Deposite';
+        const Status = 'Success';
+        const valueEth = contractPrice;
+        const valueUsd = priceUsd;
+        const timestamp = new Date().getTime();
+
+        const CreateHistory = await history.create({
+            email,
+            type,
+            Status,
+            valueEth,
+            valueUsd,
+            timestamp
+        });
+
+        if (update && CreateHistory) {
+            const admin = 'bitclubcontract@gmail.com';
+            const adminEmail = admin;
+            const exist = await Admin.findOne({ adminEmail });
+            if (exist) {
+                function removePercent(value) {
+                    const percentageToRemove = exist.IncreasePercent;
+                    const amountToRemove = value * percentageToRemove;
+                    return amountToRemove;
+                }
+                const CP = removePercent(contractPrice);
+                const ProfitAdd = CP / (await ContractTwo.find({ status: 'Activated' })).length;
+                const updateprofits = await ContractTwo.updateMany({ status: "Activated" }, { $inc: { contractProfit: `${ProfitAdd}` } });
+                if (updateprofits) {
+                    await Admin.updateOne({ adminEmail: admin }, { $inc: { totalContractProfit: ProfitAdd } })
+                    return res.json({
+                        success: 'contract created successfuly!',
+                        data: {
+                            contract: update
+                        }
+                    })
+                }
+            }else{
+                const createAdmin = await Admin.create({
+                    totalUser: 1,
+                    totalContractOne: 0,
+                    totalContractTwo: 1,
+                    adminName: 'Bitclub',
+                    adminEmail: 'bitclubcontract@gmail.com',
+                    totalContractProfit: 0.5 * contractProfit,
+                    contractOnePrice: 0,
+                    contractTwoPrice: contractPrice,
+                    marketCap: 0,
+                    IncreasePercent: 0.15
+                })
+                if (createAdmin) {
+                    return res.json({
+                        success: true,
+                    })
+                }
+            }
+        }
+        return ({
+            error: 'Error re-activating ContractS'
+        })
+    } catch (error) {
+        return res.json({
+            error
+        })
+    }
+
+}
+
+
+const contractTwoTrxLogs = async (req, res) => {
+    try {
+        const {
+            name,
+            email,
+            amount,
+            to,
+            from,
+            blockNumber,
+            transactionHash,
+            status,
+            blockHash,
+            gasFee,
+            contractProfit,
+            contractPrice,
+            priceEth
+        } = req.body;
+
+        const createLogs = await PauseLogs.create({
+            name,
+            email,
+            amount,
+            to,
+            from,
+            blockNumber,
+            transactionHash,
+            status,
+            blockHash,
+            gasFee,
+            contractProfit,
+            contractPrice
+        })
+
+        const type = 'Withdrawn';
+        const Status = 'Success';
+        const valueEth = priceEth;
+        const valueUsd = amount;
+        const timestamp = new Date().getTime();
+
+        const CreateHistory = await history.create({
+            email,
+            type,
+            Status,
+            valueEth,
+            valueUsd,
+            timestamp
+        });
+        if (createLogs && CreateHistory) {
+            return res.json({
+                success: 'Transaction successfuly'
+            })
+        }
+        console.log("Error");
+    } catch (error) {
+        return res.json({
+            error: error
+        })
+    }
+}
+
+const pauseContractTwo = async (req, res) => {
+    const { email } = req.body;
+    const update = await ContractTwo.updateOne({ email: email }, { $set: { status: `Paused`, contractPrice: `${0}`, contractProfit: `${0}` } });
+    if (update) {
+        return res.json({
+            success: 'Contract paused Successfuly!'
+        })
+    }
+    return res.json({
+        error: 'Error Pausing Contract'
+    })
+}
+
+const contractTwo = async (req, res) => {
+    try {
+        const {
+            to,
+            from,
+            email,
+            name,
+            gasFee,
+            status,
+            contractPrice,
+            contractProfit,
+            cumulativeGasUsed,
+            blockNumber,
+            blockHash,
+            transactionHash,
+            priceUsd } = req.body;
+
+        const user_contract_check_one = await ContractTwo.findOne({ email });
+
+        if (user_contract_check_one) {
+            return res.json({
+                activated: true,
+                success: 'Contract has been Activated Already!'
+            })
+        }
+
+        if (!user_contract_check_one) {
+            function setExpirationDate() {
+                const currentDate = new Date();
+                const expirationDate = new Date(currentDate);
+                expirationDate.setDate(currentDate.getDate() + 2);
+                return expirationDate;
+            }
+            const createContractOne = await ContractTwo.create({
+                to,
+                from,
+                email,
+                name,
+                gasFee,
+                status,
+                contractPrice,
+                contractProfit,
+                cumulativeGasUsed,
+                blockNumber,
+                blockHash,
+                transactionHash,
+                priceUsd,
+                tmp: new Date(),
+                minWithrawalDate: setExpirationDate(),
+            })
+
+            const type = 'Deposite';
+            const Status = 'Success';
+            const valueEth = contractPrice;
+            const valueUsd = priceUsd;
+            const timestamp = new Date().getTime();
+
+            const CreateHistory = await history.create({
+                email,
+                type,
+                Status,
+                valueEth,
+                valueUsd,
+                timestamp
+            });
+
+            if (createContractOne && CreateHistory) {
+                const admin = 'bitclubcontract@gmail.com';
+                const adminEmail = admin;
+                const exist = await Admin.findOne({ adminEmail });
+                if (exist) {
+                    const RemovePercent = await Admin.findOne({ adminEmail });
+                    function removePercent(value) {
+                        const percentageToRemove = RemovePercent.IncreasePercent;
+                        const amountToRemove = value * percentageToRemove;
+                        return amountToRemove;
+                    }
+                    const CP = removePercent(contractPrice);
+                    const ProfitAdd = CP / (await ContractTwo.find({ status: 'Activated' })).length;
+                    const updateprofits = await ContractTwo.updateMany({ status: "Activated" }, { $inc: { contractProfit: `${ProfitAdd}` } });
+                    if (updateprofits) {
+                        await Admin.updateOne({ adminEmail }, { $inc: { totalContractTwo: 1, totalContractProfit: ProfitAdd } })
+                        return res.json({
+                            success: 'contract created successfuly!',
+                            data: {
+                                contract: createContractOne
+                            }
+                        })
+                    }
+                } else {
+                    const createAdmin = await Admin.create({
+                        totalUser: 1,
+                        totalContractOne: 0,
+                        totalContractTwo: 1,
+                        adminName: 'Bitclub',
+                        adminEmail: 'bitclubcontract@gmail.com',
+                        totalContractProfit: 0,
+                        contractOnePrice: 0,
+                        contractTwoPrice: contractPrice,
+                        marketCap: 0,
+                        IncreasePercent: 0.15,
+                    })
+                    if (createAdmin) {
+                        return res.json({
+                            success: 'contract created successfuly!',
+                        })
+                    }
+                }
+            }
+
+            res.json({
+                error: 'Error creating Contract'
+            })
+        }
+    } catch (error) {
+        console.log(error);
+        res.json({
+            error: 'Error creating ContractOne'
+        })
+    }
+}
+
+const contractTwoCheck = async (req, res) => {
+    const { email } = req.body;
+    const exist = await UserContractOne.findOne({ email });
+    if (exist) {
+        return res.json({
+            status: true
+        });
+    }
+    return res.json({
+        status: false
+    });
+}
+
+const getContractTwo = async (req, res) => {
+    const { email } = req.body;
+    const exist = await ContractTwo.findOne({ email });
+    if (exist) {
+        return res.json({
+            success: 'Data Fetch Successfuly!',
+            contractOne: exist
+        })
+    }
+    return res.json({
+        message: false
+    })
+}
+
 module.exports = {
     userInfo,
     pinCheck,
@@ -917,13 +1260,19 @@ module.exports = {
     getProfile,
     getHistory,
     contractOne,
+    contractTwo,
     updateUserName,
     changePassword,
     getContractOne,
+    getContractTwo,
     getNotification,
     pauseContractOne,
+    pauseContractTwo,
     createNotification,
     contractOneCheck,
+    contractTwoCheck,
     contractOneTrxLogs,
+    contractTwoTrxLogs,
     reActivateContractOne,
+    reActivateContractTwo
 }

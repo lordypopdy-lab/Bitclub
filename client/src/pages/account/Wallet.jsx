@@ -225,6 +225,23 @@ const Wallet = () => {
         }
     }
 
+    const toContractTwo = async () => {
+        const email = localStorage.getItem('email');
+        try {
+            const { data } = await axios.post('/getContractTwo', { email });
+            if (data.success && data.contractOne.status !== 'Paused') {
+                setLoading(false);
+                location.href = '/ContractTwoProfile'
+            } else {
+                setLoading(false);
+                location.href = '/ContractTwo'
+            }
+        } catch (error) {
+            setLoading(false);
+            console.log(`Contract is yet to Activated!: ${error}`)
+        }
+    }
+
     return (
         <>
             {/* <!-- preloade --> */}
@@ -313,7 +330,7 @@ const Wallet = () => {
                                     </li>
                                     <li className="mt-8">
                                         <div className="accent-box-v5 p-0 bg-menuDark" style={{ width: '100%' }}>
-                                            <a href="/ContractTwo" className="coin-item style-1 gap-12 bg-surface">
+                                            <a onClick={toContractTwo } className="coin-item style-1 gap-12 bg-surface">
                                                 <span className="icon-box bg-transparent bg-icon1"><i className="icon-book"></i></span>
                                                 <div className="mt-12">
                                                     <a href="#" className="text-small">Contract <span style={{ color: '#25C866' }}>Class two</span></a>
