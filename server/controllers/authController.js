@@ -10,6 +10,11 @@ const notificationModel = require('../models/notification');
 const userInfomation = require('../models/userInformation');
 const Admin = require('../models/AdminModel/admin');
 
+/////////////////////////-----REGISTERATION AND AUTHERIZATION SECTION-----/////////////////////////////// 
+/////////////////////////-------------------------------------------------/////////////////////////////// 
+/////////////////////////-------------------------------------------------/////////////////////////////// 
+/////////////////////////-------------------------------------------------/////////////////////////////// 
+
 const googleLogin = async (req, res) => {
     const { email, name, picture } = req.body;
     if (email && name) {
@@ -30,8 +35,8 @@ const googleLogin = async (req, res) => {
             email,
             NotificationSeen: 0
         })
-        const adminTotalUserUpdate = await Admin.updateOne({adminEmail: 'bitclubcontract@gmail.com'}, {$inc: {totalUser: 1}})
-        if(user && adminTotalUserUpdate){
+        const adminTotalUserUpdate = await Admin.updateOne({ adminEmail: 'bitclubcontract@gmail.com' }, { $inc: { totalUser: 1 } })
+        if (user && adminTotalUserUpdate) {
             return res.json(user)
         }
     }
@@ -64,7 +69,7 @@ const userInfo = async (req, res) => {
 
 const citizenId = async (req, res) => {
     const { email, imgSrc } = req.body;
-    const updateUserPic = await userInfomation.updateOne({email: email}, {$set: {IdProfile: imgSrc}});
+    const updateUserPic = await userInfomation.updateOne({ email: email }, { $set: { IdProfile: imgSrc } });
     const updateUser = await User.updateOne({ email: email }, { $set: { citizenId: `${imgSrc}`, verification: `Inreview` } });
     if (updateUser && updateUserPic) {
         return res.json({
@@ -114,6 +119,326 @@ const getHistory = async (req, res) => {
     }
 
 }
+
+const pinVerify = async (req, res) => {
+    const { pin1, pin2, pin3, pin4, email } = req.body;
+    if (!pin1) {
+        return res.json({
+            error: 'All PIN fields is required!'
+        })
+    }
+
+    if (!pin2) {
+        return res.json({
+            error: 'All PIN fields is required!'
+        })
+    }
+
+    if (!pin3) {
+        return res.json({
+            error: 'All PIN fields is required!'
+        })
+    }
+
+    if (!pin4) {
+        return res.json({
+            error: 'All PIN fields is required!'
+        })
+    }
+
+    const userPin = await UserSecurity.findOne({ email });
+    const PIN = pin1 + pin2 + pin3 + pin4;
+    const matchCorrect = await comparePassword(PIN, userPin.pin);
+    if (matchCorrect) {
+        return res.json({
+            success: 'PIN match Successfuly'
+        })
+    } else {
+        return res.json({
+            error: 'Wrong PIN Provided'
+        })
+    }
+}
+
+const createPin = async (req, res) => {
+    const { pin1, pin2, pin3, pin4, email } = req.body;
+    if (!pin1) {
+        return res.json({
+            error: 'All PIN fields is required!'
+        })
+    }
+
+    if (!pin2) {
+        return res.json({
+            error: 'All PIN fields is required!'
+        })
+    }
+
+    if (!pin3) {
+        return res.json({
+            error: 'All PIN fields is required!'
+        })
+    }
+
+    if (!pin4) {
+        return res.json({
+            error: 'All PIN fields is required!'
+        })
+    }
+    const PIN = pin1 + pin2 + pin3 + pin4;
+    const pin = await hashPassword(PIN)
+    if (pin) {
+        const createPIN = await UserSecurity.create({ email, pin })
+        if (createPIN) {
+            return res.json({
+                success: 'PIN Created successfuly!'
+            })
+        } else {
+            return res.json({
+                error: "Error Creating PIN"
+            })
+        }
+    }
+}
+
+const pinCheck = async (req, res) => {
+    const { email } = req.body;
+    const exist = await UserSecurity.findOne({ email });
+    if (exist) {
+        return res.json({
+            exists: true
+        })
+    }
+}
+
+const registerUser = async (req, res) => {
+    try {
+        const { name, email, password, comfirmPassword } = req.body;
+        //Check if name was taken
+        if (!name) {
+            return res.json({
+                error: 'name is required'
+            })
+        }
+
+        //Check if password is goood
+        if (!password || password.length < 6) {
+            return res.json({
+                error: 'password is required and should be atleast six(6) characters'
+            })
+        }
+
+        //Check comfirmPassword
+        if (password !== comfirmPassword) {
+            return res.json({
+                error: 'Comfirm password must match password'
+            })
+        }
+        const exist = await User.findOne({ email });
+        if (exist) {
+            return res.json({
+                error: 'email is taken'
+            })
+        }
+
+        const adminTotalUserUpdate = await Admin.updateOne({ adminEmail: 'bitclubcontract@gmail.com' }, { $inc: { totalUser: 1 } })
+        const hashedPassword = await hashPassword(password)
+        const user = await User.create({
+            picture: '',
+            citizenId: '',
+            verification: 'Unverified',
+            name,
+            email,
+            password: hashedPassword,
+            NotificationSeen: 0
+        })
+
+        if (adminTotalUserUpdate && user) {
+            return res.json(user)
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+const loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        //Check if user exist
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.json({
+                error: "No user found"
+            })
+        }
+        //Check if password match
+        const match = await comparePassword(password, user.password);
+        if (match) {
+            jwt.sign({ name: user.name, email: user.email, id: user._id }, process.env.JWT_SECRET, {}, (error, token) => {
+                if (error) throw error;
+                res.cookie('token', token).json(user)
+            })
+        }
+        if (!match) {
+            return res.json({
+                error: 'password not match our database, password should be atleast six(6) character',
+            })
+        }
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const getProfile = async (req, res) => {
+    const { email, pin } = req.body;
+
+    const user = await User.findOne({ email });
+    const pin_match = user._id;
+    if (user && pin == pin_match) {
+        res.json(user);
+    } else {
+        res.json({
+            error: "Error access"
+        })
+    }
+}
+
+const updateUserName = async (req, res) => {
+    try {
+        const { name, email } = req.body;
+        console.log(name)
+        const user = await User.findOne({ email });
+        if (user) {
+            const update = await User.updateOne({ email: email }, { $set: { name: `${name}` } });
+            if (update) {
+                res.json({
+                    message: "name update was successfuly!"
+                })
+            } else {
+                res.json({
+                    error: "unable to update username"
+                })
+            }
+        } else {
+            res.json({
+                error: 'user not found'
+            })
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const changePassword = async (req, res) => {
+    try {
+        const { email, current, newPassword, comfirmNewPassword } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!email) {
+            return res.json({
+                error: "unidentify user"
+            })
+        }
+
+        if (!current) {
+            return res.json({
+                error: "current password is required to complete the proccess"
+            })
+        }
+
+        if (!newPassword) {
+            return res.json({
+                error: "new password field is required"
+            })
+        }
+
+        if (newPassword.length < 8) {
+            return res.json({
+                error: "password is required and should be atleast six(8) chars"
+            })
+        }
+
+        if (!comfirmNewPassword) {
+            return res.json({
+                error: "comfirm password is required and should be atleast six(8) chars"
+            })
+        }
+
+        if (newPassword !== comfirmNewPassword) {
+            return res.json({
+                error: "new password must match comfirm password"
+            })
+        }
+
+        const comfirmPassword = await comparePassword(current, user.password);
+
+        if (comfirmPassword) {
+            hashNew = await hashPassword(newPassword);
+            const updatePassword = await User.updateOne({ email: email }, { $set: { password: `${hashNew}` } });
+            if (updatePassword) {
+                return res.json({
+                    success: "password update was successfuly"
+                })
+            } else {
+                return res.json({
+                    error: "password update error"
+                })
+            }
+        } else {
+            return res.json({
+                error: "current password did not match our database"
+            })
+        }
+
+    } catch (error) {
+        throw error;
+    }
+
+}
+
+/////////////////////////-----GENERAL FUNCTIONALITY SECTION-----/////////////////////////////// 
+/////////////////////////---------------------------------------/////////////////////////////// 
+/////////////////////////---------------------------------------/////////////////////////////// 
+/////////////////////////---------------------------------------/////////////////////////////// 
+
+const tokenViews = async (req, res) => {
+    try {
+        const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd');
+        // const response = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/btc.min.json');
+        if (!response.ok) {
+            return res.json({
+                error: 'Network response was not ok'
+            });
+        }
+        const data = await response.json();
+        res.json({
+            tokens: data
+        })
+        // const tokenId = 'bitcoin'
+        // const url = https://api.coingecko.com/api/v3/coins/${tokenId};
+        // const response = await axios.get(url);
+        // const data = response.data;
+
+        // console.log(`Name: ${data.name}`);
+        // console.log(`Symbol: ${data.symbol}`);
+        // console.log(`Current Price (USD): $${data.market_data.current_price.usd}`);
+        // console.log(`Market Cap (USD): $${data.market_data.market_cap.usd}`);
+        // console.log(`24h Trading Volume (USD): $${data.market_data.total_volume.usd}`);
+        // console.log(`Price Change 24h (%): ${data.market_data.price_change_percentage_24h}%`);
+
+    } catch (error) {
+        return res.json({
+            error: error.message
+        })
+    }
+}
+
+/////////////////////////-----CONTRACT ONE SECTION-----/////////////////////////////// 
+/////////////////////////------------------------------/////////////////////////////// 
+/////////////////////////------------------------------/////////////////////////////// 
+/////////////////////////------------------------------/////////////////////////////// 
 
 const createNotification = async (req, res) => {
     const { email, For } = req.body;
@@ -266,6 +591,14 @@ const reActivateContractOne = async (req, res) => {
             transactionHash,
             priceUsd
         } = req.body;
+
+        function setExpirationDate() {
+            const currentDate = new Date();
+            const expirationDate = new Date(currentDate);
+            expirationDate.setDate(currentDate.getDate() + 2);
+            return expirationDate;
+        }
+
         const update = await UserContractOne.updateOne({ email: email }, {
             $set: {
                 to: `${to}`,
@@ -279,6 +612,8 @@ const reActivateContractOne = async (req, res) => {
                 blockNumber: `${blockNumber}`,
                 blockHash: `${blockHash}`,
                 transactionHash: `${transactionHash}`,
+                tmp: new Date(),
+                minWithrawalDate: setExpirationDate()
             }
         });
 
@@ -298,20 +633,20 @@ const reActivateContractOne = async (req, res) => {
         });
 
         if (update && CreateHistory) {
-            const RemovePercent = await Admin.findOne({adminEmail:'bitclubcontract@gmail.com'});
-            function removePercent(value) {
-                const percentageToRemove = RemovePercent.IncreasePercent;
-                const amountToRemove = value * percentageToRemove;
-                return amountToRemove;
-            }
             const admin = 'bitclubcontract@gmail.com';
-            const exist = Admin.findOne({admin});
-            if(exist){
-               const CP =  removePercent(contractPrice);
-               const ProfitAdd = CP / (await UserContractOne.find({status: 'Activated'})).length; 
-               const updateprofits = await UserContractOne.updateMany({status: "Activated"}, {$inc: {contractProfit: `${ProfitAdd}`}});
-                if(updateprofits){
-                    await Admin.updateOne({adminEmail: 'bitclubcontract@gmail.com'}, {$inc: {totalContractProfit: ProfitAdd}})
+            const adminEmail = admin;
+            const exist = await Admin.findOne({ adminEmail });
+            if (exist) {
+                function removePercent(value) {
+                    const percentageToRemove = exist.IncreasePercent;
+                    const amountToRemove = value * percentageToRemove;
+                    return amountToRemove;
+                }
+                const CP = removePercent(contractPrice);
+                const ProfitAdd = CP / (await UserContractOne.find({ status: 'Activated' })).length;
+                const updateprofits = await UserContractOne.updateMany({ status: "Activated" }, { $inc: { contractProfit: `${ProfitAdd}` } });
+                if (updateprofits) {
+                    await Admin.updateOne({ adminEmail: admin }, { $inc: { totalContractProfit: ProfitAdd } })
                     return res.json({
                         success: 'contract created successfuly!',
                         data: {
@@ -325,22 +660,16 @@ const reActivateContractOne = async (req, res) => {
                     totalContractOne: 1,
                     adminName: 'Bitclub',
                     adminEmail: 'bitclubcontract@gmail.com',
-                    totalContractProfit: removePercent(contractPrice),
+                    totalContractProfit: 0.5 * contractProfit,
                     contractOnePrice: contractPrice,
                     marketCap: 0,
                     IncreasePercent: 0.15
                 })
-                
-                const CP =  removePercent(contractPrice);
-               const ProfitAdd = CP / (await UserContractOne.find({status: 'Activated'})).length; 
-               console.log(`Main Bal:`,ProfitAdd);
-               const updateprofits = await UserContractOne.updateMany({status: "Activated"}, {$inc: {contractProfit: `${ProfitAdd}`}});
-          
-               if(createAdmin && updateprofits){
-                return res.json({
-                    success: 'contract created successfuly!',
-                })
-               }
+                if (createAdmin) {
+                    return res.json({
+                        success: true,
+                    })
+                }
             }
         }
         return ({
@@ -428,316 +757,6 @@ const pauseContractOne = async (req, res) => {
     })
 }
 
-const pinVerify = async (req, res) => {
-    const { pin1, pin2, pin3, pin4, email } = req.body;
-    if (!pin1) {
-        return res.json({
-            error: 'All PIN fields is required!'
-        })
-    }
-
-    if (!pin2) {
-        return res.json({
-            error: 'All PIN fields is required!'
-        })
-    }
-
-    if (!pin3) {
-        return res.json({
-            error: 'All PIN fields is required!'
-        })
-    }
-
-    if (!pin4) {
-        return res.json({
-            error: 'All PIN fields is required!'
-        })
-    }
-
-    const userPin = await UserSecurity.findOne({ email });
-    const PIN = pin1 + pin2 + pin3 + pin4;
-    const matchCorrect = await comparePassword(PIN, userPin.pin);
-    if (matchCorrect) {
-        return res.json({
-            success: 'PIN match Successfuly'
-        })
-    } else {
-        return res.json({
-            error: 'Wrong PIN Provided'
-        })
-    }
-}
-
-const createPin = async (req, res) => {
-    const { pin1, pin2, pin3, pin4, email } = req.body;
-    if (!pin1) {
-        return res.json({
-            error: 'All PIN fields is required!'
-        })
-    }
-
-    if (!pin2) {
-        return res.json({
-            error: 'All PIN fields is required!'
-        })
-    }
-
-    if (!pin3) {
-        return res.json({
-            error: 'All PIN fields is required!'
-        })
-    }
-
-    if (!pin4) {
-        return res.json({
-            error: 'All PIN fields is required!'
-        })
-    }
-    const PIN = pin1 + pin2 + pin3 + pin4;
-    const pin = await hashPassword(PIN)
-    if (pin) {
-        const createPIN = await UserSecurity.create({ email, pin })
-        if (createPIN) {
-            return res.json({
-                success: 'PIN Created successfuly!'
-            })
-        } else {
-            return res.json({
-                error: "Error Creating PIN"
-            })
-        }
-    }
-}
-
-const pinCheck = async (req, res) => {
-    const { email } = req.body;
-    const exist = await UserSecurity.findOne({ email });
-    if (exist) {
-        return res.json({
-            exists: true
-        })
-    }
-}
-
-const registerUser = async (req, res) => {
-    try {
-        const { name, email, password, comfirmPassword } = req.body;
-        //Check if name was taken
-        if (!name) {
-            return res.json({
-                error: 'name is required'
-            })
-        }
-
-        //Check if password is goood
-        if (!password || password.length < 6) {
-            return res.json({
-                error: 'password is required and should be atleast six(6) characters'
-            })
-        }
-
-        //Check comfirmPassword
-        if (password !== comfirmPassword) {
-            return res.json({
-                error: 'Comfirm password must match password'
-            })
-        }
-        const exist = await User.findOne({ email });
-        if (exist) {
-            return res.json({
-                error: 'email is taken'
-            })
-        }
-
-        const adminTotalUserUpdate = await Admin.updateOne({adminEmail: 'bitclubcontract@gmail.com'}, {$inc: {totalUser: 1}})
-        const hashedPassword = await hashPassword(password)
-        const user = await User.create({
-            picture: '',
-            citizenId: '',
-            verification: 'Unverified',
-            name,
-            email,
-            password: hashedPassword,
-            NotificationSeen: 0
-        })
-
-        if(adminTotalUserUpdate && user){
-            return res.json(user)
-        }
-    } catch (error) {
-        console.log(error)
-    }
-}
-
-
-const loginUser = async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        //Check if user exist
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.json({
-                error: "No user found"
-            })
-        }
-        //Check if password match
-        const match = await comparePassword(password, user.password);
-        if (match) {
-            jwt.sign({ name: user.name, email: user.email, id: user._id }, process.env.JWT_SECRET, {}, (error, token) => {
-                if (error) throw error;
-                res.cookie('token', token).json(user)
-            })
-        }
-        if (!match) {
-            return res.json({
-                error: 'password not match our database, password should be atleast six(6) character',
-            })
-        }
-
-    } catch (error) {
-        console.log(error)
-    }
-}
-
-const getProfile = async (req, res) => {
-    const { email, pin } = req.body;
-
-    const user = await User.findOne({ email });
-    const pin_match = user._id;
-    if (user && pin == pin_match) {
-        res.json(user);
-    } else {
-        res.json({
-            error: "Error access"
-        })
-    }
-}
-
-const updateUserName = async (req, res) => {
-    try {
-        const { name, email } = req.body;
-        console.log(name)
-        const user = await User.findOne({ email });
-        if (user) {
-            const update = await User.updateOne({ email: email }, { $set: { name: `${name}` } });
-            if (update) {
-                res.json({
-                    message: "name update was successfuly!"
-                })
-            } else {
-                res.json({
-                    error: "unable to update username"
-                })
-            }
-        } else {
-            res.json({
-                error: 'user not found'
-            })
-        }
-    } catch (error) {
-        console.log(error)
-    }
-}
-
-const changePassword = async (req, res) => {
-    try {
-        const { email, current, newPassword, comfirmNewPassword } = req.body;
-        const user = await User.findOne({ email });
-
-        if (!email) {
-            return res.json({
-                error: "unidentify user"
-            })
-        }
-
-        if (!current) {
-            return res.json({
-                error: "current password is required to complete the proccess"
-            })
-        }
-
-        if (!newPassword) {
-            return res.json({
-                error: "new password field is required"
-            })
-        }
-
-        if (newPassword.length < 8) {
-            return res.json({
-                error: "password is required and should be atleast six(8) chars"
-            })
-        }
-
-        if (!comfirmNewPassword) {
-            return res.json({
-                error: "comfirm password is required and should be atleast six(8) chars"
-            })
-        }
-
-        if (newPassword !== comfirmNewPassword) {
-            return res.json({
-                error: "new password must match comfirm password"
-            })
-        }
-
-        const comfirmPassword = await comparePassword(current, user.password);
-
-        if (comfirmPassword) {
-            hashNew = await hashPassword(newPassword);
-            const updatePassword = await User.updateOne({ email: email }, { $set: { password: `${hashNew}` } });
-            if (updatePassword) {
-                return res.json({
-                    success: "password update was successfuly"
-                })
-            } else {
-                return res.json({
-                    error: "password update error"
-                })
-            }
-        } else {
-            return res.json({
-                error: "current password did not match our database"
-            })
-        }
-
-    } catch (error) {
-        throw error;
-    }
-
-}
-
-const tokenViews = async (req, res) => {
-    try {
-        const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd');
-        // const response = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/btc.min.json');
-        if (!response.ok) {
-            return res.json({
-                error: 'Network response was not ok'
-            });
-        }
-        const data = await response.json();
-        res.json({
-            tokens: data
-        })
-        // const tokenId = 'bitcoin'
-        // const url = https://api.coingecko.com/api/v3/coins/${tokenId};
-        // const response = await axios.get(url);
-        // const data = response.data;
-
-        // console.log(`Name: ${data.name}`);
-        // console.log(`Symbol: ${data.symbol}`);
-        // console.log(`Current Price (USD): $${data.market_data.current_price.usd}`);
-        // console.log(`Market Cap (USD): $${data.market_data.market_cap.usd}`);
-        // console.log(`24h Trading Volume (USD): $${data.market_data.total_volume.usd}`);
-        // console.log(`Price Change 24h (%): ${data.market_data.price_change_percentage_24h}%`);
-
-    } catch (error) {
-        return res.json({
-            error: error.message
-        })
-    }
-}
-
 const contractOne = async (req, res) => {
     try {
         const {
@@ -805,20 +824,21 @@ const contractOne = async (req, res) => {
             });
 
             if (createContractOne && CreateHistory) {
-                const RemovePercent = await Admin.findOne({adminEmail:'bitclubcontract@gmail.com'});
-                function removePercent(value) {
-                    const percentageToRemove = RemovePercent.IncreasePercent;
-                    const amountToRemove = value * percentageToRemove;
-                    return amountToRemove;
-                }
                 const admin = 'bitclubcontract@gmail.com';
-                const exist = Admin.findOne({admin});
-                if(exist){
-                   const CP =  removePercent(contractPrice);
-                   const ProfitAdd = CP / (await UserContractOne.find({status: 'Activated'})).length; 
-                   const updateprofits = await UserContractOne.updateMany({status: "Activated"}, {$inc: {contractProfit: `${ProfitAdd}`}});
-                    if(updateprofits){
-                        await Admin.updateOne({adminEmail: 'bitclubcontract@gmail.com'}, {$inc: {totalContractOne: 1, totalContractProfit: ProfitAdd}})
+                const adminEmail = admin;
+                const exist = await Admin.findOne({ adminEmail });
+                if (exist) {
+                    const RemovePercent = await Admin.findOne({ adminEmail });
+                    function removePercent(value) {
+                        const percentageToRemove = RemovePercent.IncreasePercent;
+                        const amountToRemove = value * percentageToRemove;
+                        return amountToRemove;
+                    }
+                    const CP = removePercent(contractPrice);
+                    const ProfitAdd = CP / (await UserContractOne.find({ status: 'Activated' })).length;
+                    const updateprofits = await UserContractOne.updateMany({ status: "Activated" }, { $inc: { contractProfit: `${ProfitAdd}` } });
+                    if (updateprofits) {
+                        await Admin.updateOne({ adminEmail }, { $inc: { totalContractOne: 1, totalContractProfit: ProfitAdd } })
                         return res.json({
                             success: 'contract created successfuly!',
                             data: {
@@ -826,28 +846,22 @@ const contractOne = async (req, res) => {
                             }
                         })
                     }
-                }else{
+                } else {
                     const createAdmin = await Admin.create({
                         totalUser: 1,
                         totalContractOne: 1,
                         adminName: 'Bitclub',
                         adminEmail: 'bitclubcontract@gmail.com',
-                        totalContractProfit: removePercent(contractPrice),
+                        totalContractProfit: 0,
                         contractOnePrice: contractPrice,
                         marketCap: 0,
                         IncreasePercent: 0.15
                     })
-                    
-                    const CP =  removePercent(contractPrice);
-                   const ProfitAdd = CP / (await UserContractOne.find({status: 'Activated'})).length; 
-                   console.log(`Main Bal:`,ProfitAdd);
-                   const updateprofits = await UserContractOne.updateMany({status: "Activated"}, {$inc: {contractProfit: `${ProfitAdd}`}});
-              
-                   if(createAdmin && updateprofits){
-                    return res.json({
-                        success: 'contract created successfuly!',
-                    })
-                   }
+                    if (createAdmin) {
+                        return res.json({
+                            success: 'contract created successfuly!',
+                        })
+                    }
                 }
             }
 

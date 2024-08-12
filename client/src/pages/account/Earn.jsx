@@ -252,7 +252,7 @@ const Earn = () => {
         //       location.href = '/ContractOneProfile'
         //     } else {
         //       setLoading(false);
-        //       location.href = '/ContractOne'
+        //       location.href = '/ContractTwo'
         //     }
         //   } catch (error) {
         //     setLoading(false);
