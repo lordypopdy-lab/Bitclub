@@ -56,7 +56,7 @@ import ChooseVerification from './pages/profile/ChooseVerification';
 import NewPasswordSucces from './pages/settings/NewPasswordSucces';
 import ExchangeTradeApprove from './pages/account/ExchangeTradeApprove';
 import WithdrawContractTwo from './contractTrx/WithdrawContractTwo';
-import WithdrawContractOne from './contractTrx/WithdrawContractTwo';
+import WithdrawContractOne from './contractTrx/WithdrawContractOne';
 import ContractTwoProfile from './pages/account/ContractTwoProfile';
 
 import axios from 'axios';
