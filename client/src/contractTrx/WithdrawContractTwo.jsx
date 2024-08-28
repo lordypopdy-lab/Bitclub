@@ -537,7 +537,7 @@ const WithdrawContractTwo = () => {
                   </li><hr />
                   <li className="trade-list-item mt-16">
                     {trx.status == 'Paused' ? <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-clock fs-16 text-warning"></i> </p> : <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-check fs-16 text-primary"></i> </p>}
-                    {trx.status == 'Paused' ? <span className='text-warning'>{trx.status}</span> : <span className='text-success'>Contract {trx.status}!</span>}
+                    {trx.status == 'Paused' ? <span className='text-warning'>{trx.status}</span> : <span className='text-warning'>Pending...</span>}
                   </li>
                   {/* <a className="tf-btn lg mt-20 primary" data-bs-toggle="modal" data-bs-target="#pause">Pause & Withdraw</a> */}
                 </ul>

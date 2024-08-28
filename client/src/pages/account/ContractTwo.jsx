@@ -86,7 +86,7 @@ const ContractTwo = () => {
                 const getCoontractOne = async () => {
                     const email = localStorage.getItem('email');
                     try {
-                        const { data } = await axios.post('/getContractOne', { email });
+                        const { data } = await axios.post('/getContractTwo', { email });
                         if (data.success) {
                             setTrx({
                                 to: data.contractOne.to,

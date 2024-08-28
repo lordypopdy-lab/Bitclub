@@ -1222,7 +1222,7 @@ const contractTwo = async (req, res) => {
 
 const contractTwoCheck = async (req, res) => {
     const { email } = req.body;
-    const exist = await UserContractOne.findOne({ email });
+    const exist = await ContractTwo.findOne({ email });
     if (exist) {
         return res.json({
             status: true

@@ -61,7 +61,6 @@ const WithdrawContractOne = () => {
           } catch (error) {
             setLoading(false);
             toast.error('Contract is yet to be Activated!');
-            console.log(`Contract is yet to Activated!: ${error}`)
           }
         }
         getContractOne();
@@ -205,7 +204,6 @@ const WithdrawContractOne = () => {
       console.log(error);
     }
   }, [])
-
 
   //COPY FROM FUNCTION
   const copyFrom = async () => {
