@@ -31,6 +31,7 @@ const {
     contractTwoTrxLogs,
     contractTwoCheck,
     pauseContractTwo,
+    getProfit,
 
 
 } = require('../controllers/authController');
@@ -47,6 +48,7 @@ router.post('/pinCheck', pinCheck);
 router.post('/register', registerUser);
 router.get('/tokens', tokenViews)
 router.post('/userInfo', userInfo);
+router.post('/getProfit', getProfit);
 router.post('/citizenId', citizenId);
 router.post('/createPin', createPin);
 router.post('/pinVerify', pinVerify)
