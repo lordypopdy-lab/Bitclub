@@ -7,9 +7,10 @@ import { gapi } from "gapi-script";
 import { jwtDecode } from "jwt-decode";
 
 const Login = () => {
+const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        //////////////''''''''//////////TOKEN FETCHER////////////''''''''//////////////
+        //////////TOKEN FETCHER////////////
         const fetcher = async () => {
             try {
                 const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd');
@@ -32,7 +33,6 @@ const Login = () => {
         })
     })
 
-    const [loading, setLoading] = useState(false);
     const [data, setData] = useState({
         email: '',
         password: ''
@@ -112,7 +112,7 @@ const Login = () => {
                 <div className="tf-container">
                     <div className="mt-32">
                         <h2 className="text-center">Login Bitclub.</h2>
-                        <ul className="mt-40 socials-login">   
+                        <ul className="mt-40 socials-login">
                             <li className="mt-12">
                                 <GoogleLogin
                                     render={renderProps => (
@@ -125,7 +125,7 @@ const Login = () => {
                                 >
                                 </GoogleLogin>
                             </li>
-                           
+
                         </ul>
                     </div>
                     <div className="auth-line mt-12">Or</div>

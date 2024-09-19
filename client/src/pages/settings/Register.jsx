@@ -5,12 +5,7 @@ import FadeLoader from 'react-spinners/FadeLoader';
 
 const Register = () => {
     const [loading, setLoading] = useState(false);
-    const [data, setData] = useState({
-        name: '',
-        email: '',
-        password: '',
-        comfirmPassword: ''
-    })
+    const [data, setData] = useState({ name: '', email: '', password: '', comfirmPassword: '' })
     const registerUser = async (e) => {
         e.preventDefault();
         setLoading(true)
@@ -67,7 +62,7 @@ const Register = () => {
                             color="#36d7b7"
                             loading={loading}
                             speedMultiplier={3}
-                            style={{ textAlign: 'center', position: 'relative', marginLeft: '50%'}}
+                            style={{ textAlign: 'center', position: 'relative', marginLeft: '50%' }}
                         />
                         <fieldset className="mt-16">
                             <label className="label-ip">

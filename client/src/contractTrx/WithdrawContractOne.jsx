@@ -25,18 +25,18 @@ const WithdrawContractOne = () => {
     setLoading(true);
     try {
       if (window.ethereum) {
-       const data = JSON.parse(localStorage.getItem('tokens'));
-          if (data) {
-            setUsdDetails({
-              eth_price: data[1].current_price,
-              eth_last_change: data[1].price_change_percentage_24h
-            })
-            const USD_PRICE = data[1].current_price;
-            set_trx_rate(USD_PRICE);
-            setLoading(false);
-          } else {
-            console.log('Error fetching Tokens!')
-          }
+        const data = JSON.parse(localStorage.getItem('tokens'));
+        if (data) {
+          setUsdDetails({
+            eth_price: data[1].current_price,
+            eth_last_change: data[1].price_change_percentage_24h
+          })
+          const USD_PRICE = data[1].current_price;
+          set_trx_rate(USD_PRICE);
+          setLoading(false);
+        } else {
+          console.log('Error fetching Tokens!')
+        }
 
         const getContractOne = async () => {
           const email = localStorage.getItem('email');
@@ -396,16 +396,16 @@ const WithdrawContractOne = () => {
                   For,
                   email,
                 })
-                if(data.success){
+                if (data.success) {
                   setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
                   toast.success('Ethers Sent successfuly');
                   setUserAddress('');
                   setLoading(false);
                   setShowModal('modal')
-                }else{
+                } else {
                   console.log('Error Pause and Withdrawing Contract');
                 }
-               
+
               } else {
                 console.log(`Upadating Contract One Error: ${data.error}`)
               }

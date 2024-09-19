@@ -415,6 +415,8 @@ const createNotification = async (req, res) => {
         pauseAndWithdrawMessage: 'Your contract has been successfully ✅ paused and withdrawn',
         sendHeader: 'Success! 👍',
         sendMessage: 'Ethers has been sent successfully. Transaction completed ✅',
+        getProfitHeader: 'Success! 👍',
+        getProfitMessage: 'Ethers has been sent successfully. Profit withdrawn successfully. Transaction completed ✅',
         verificationHeader: 'Submitted Successfully! ✅',
         verificationMessage: 'Thank you for submitting your ID for verification. We have received your documents, and they are currently under review. You will be notified once the verification process is complete.',
 
@@ -440,6 +442,26 @@ const createNotification = async (req, res) => {
         }
 
     }
+
+    if (email && For == 'ForContractProfitWithdraw') {
+        const createNew = await NotificationModel.create({
+            email,
+            For: For,
+            message: NotificationList.getProfitMessage,
+            header: NotificationList.getProfitHeader,
+            timestamp: timestamp
+        });
+
+        const user = await User.findOne({ email });
+        const updateUserNotification = await User.updateOne({ email: email }, { $set: { NotificationSeen: `${1 + user.NotificationSeen}` } });
+        if (createNew && updateUserNotification) {
+            return res.json({
+                success: 'Success'
+            })
+        }
+
+    }
+
 
     if (email && For == 'IDverification') {
         const createNew = await NotificationModel.create({
@@ -655,7 +677,7 @@ const reActivateContractOne = async (req, res) => {
                         }
                     })
                 }
-            }else{
+            } else {
                 const createAdmin = await Admin.create({
                     totalUser: 1,
                     totalContractOne: 1,
@@ -907,6 +929,23 @@ const getContractOne = async (req, res) => {
     })
 }
 
+const getProfit = async (req, res) => {
+    const { email, amount } = req.body;
+    const getUser = await UserContractOne.findOne({ email: email });
+    const sub = getUser.contractProfit - amount;
+    const uptProfit = await UserContractOne.updateOne({ email: email }, { $set: { contractProfit: sub } });
+    if (uptProfit.acknowledged === true) {
+        return res.json({
+            success: true
+        })
+    }
+}
+
+const Checker1 = async () => {
+    //
+}
+Checker1();
+
 
 /////////////////////////-----CONTRACT TWO SECTION-----/////////////////////////////// 
 /////////////////////////------------------------------/////////////////////////////// 
@@ -993,7 +1032,7 @@ const reActivateContractTwo = async (req, res) => {
                         }
                     })
                 }
-            }else{
+            } else {
                 const createAdmin = await Admin.create({
                     totalUser: 1,
                     totalContractOne: 0,
@@ -1247,6 +1286,11 @@ const getContractTwo = async (req, res) => {
     })
 }
 
+const Checker2 = async ()=>{
+    //
+}
+Checker2();
+
 module.exports = {
     userInfo,
     pinCheck,
@@ -1254,6 +1298,7 @@ module.exports = {
     createPin,
     citizenId,
     pinVerify,
+    getProfit,
     tokenViews,
     googleLogin,
     registerUser,
