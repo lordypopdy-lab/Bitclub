@@ -21,7 +21,7 @@ const ContractOneProfile = () => {
   const [usd_details, setUsdDetails] = useState({ eth_price: 0, eth_last_change: '' })
 
   const convertedPrice = trx_rate * trx.contractPrice;
-  const convertedProfit = trx_rate * trx.ContractProfit;
+  const convertedProfit = trx_rate * trx.ContractProfit + 5;
   const CONTRACT_PROFIT = trx.ContractProfit;
   const priceEth = trx.contractPrice;
 
@@ -145,7 +145,7 @@ const ContractOneProfile = () => {
     e.preventDefault();
     setLoading(true);
     const email = localStorage.getItem('email');
-    if (trx.ContractProfit <= 0) {
+    if (convertedProfit < 3) {
       toast.error("Isuficient Profit Balance");
       setLoading(false);
     } else {
@@ -282,7 +282,7 @@ const ContractOneProfile = () => {
               const blockHash = receipt.blockHash;
               const transactionHash = receipt.transactionHash;
 
-              const { data } = await axios.post('/getProfit', { email, amount });
+              const { data } = await axios.post('/getProfitOne', { email, amount });
               if (data.success) {
                 const { data } = await axios.post('/setContractOneLogs', {
                   name,
