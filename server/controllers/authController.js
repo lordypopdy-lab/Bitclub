@@ -929,7 +929,7 @@ const getContractOne = async (req, res) => {
     })
 }
 
-const getProfit = async (req, res) => {
+const getProfitOne = async (req, res) => {
     const { email, amount } = req.body;
     const getUser = await UserContractOne.findOne({ email: email });
     const sub = getUser.contractProfit - amount;
@@ -951,6 +951,17 @@ Checker1();
 /////////////////////////------------------------------/////////////////////////////// 
 /////////////////////////------------------------------/////////////////////////////// 
 /////////////////////////------------------------------/////////////////////////////// 
+const getProfitTwo = async (req, res) => {
+    const { email, amount } = req.body;
+    const getUser = await ContractTwo.findOne({ email: email });
+    const sub = getUser.contractProfit - amount;
+    const uptProfit = await ContractTwo.updateOne({ email: email }, { $set: { contractProfit: sub } });
+    if (uptProfit.acknowledged === true) {
+        return res.json({
+            success: true
+        })
+    }
+}
 
 const reActivateContractTwo = async (req, res) => {
     try {
@@ -1298,7 +1309,8 @@ module.exports = {
     createPin,
     citizenId,
     pinVerify,
-    getProfit,
+    getProfitOne,
+    getProfitTwo,
     tokenViews,
     googleLogin,
     registerUser,
