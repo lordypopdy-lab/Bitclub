@@ -96,6 +96,7 @@ const ContractTwoProfile = () => {
         getCoontractTwo();
 
       } else {
+        setLoading(false);
         toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
         console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
       }
@@ -330,6 +331,10 @@ const ContractTwoProfile = () => {
     }
   }
 
+  const Reload = async ()=>{
+    window.location.reload(false);
+  }
+
   return (
     <>
       <div className="app-wallet">
@@ -337,7 +342,7 @@ const ContractTwoProfile = () => {
           <h3 className="d-flex gap-12">
             <span style={{ color: '#25C866' }}>Profile Two+</span>
           </h3>
-          <i className="icon-question text-white"></i>
+          <i onClick={Reload} style={{fontSize:"20px", cursor: "pointer"}} className="icon-clockwise2 text-primary"></i>
         </div>
         <div className="pt-40 pb-120">
           <div className="tf-container">

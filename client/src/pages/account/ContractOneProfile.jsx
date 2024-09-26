@@ -21,7 +21,7 @@ const ContractOneProfile = () => {
   const [usd_details, setUsdDetails] = useState({ eth_price: 0, eth_last_change: '' })
 
   const convertedPrice = trx_rate * trx.contractPrice;
-  const convertedProfit = trx_rate * trx.ContractProfit + 5;
+  const convertedProfit = trx_rate * trx.ContractProfit;
   const CONTRACT_PROFIT = trx.ContractProfit;
   const priceEth = trx.contractPrice;
 
@@ -109,6 +109,7 @@ const ContractOneProfile = () => {
         getCoontractOne();
 
       } else {
+        setLoading(false);
         toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
         console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
       }
@@ -340,6 +341,10 @@ const ContractOneProfile = () => {
     }
   }
 
+  const Reload = async ()=>{
+    window.location.reload(false);
+  }
+
   return (
     <>
       <div className="app-wallet">
@@ -347,7 +352,7 @@ const ContractOneProfile = () => {
           <h3 className="d-flex gap-12">
             <span style={{ color: '#25C866' }}>Profile One+</span>
           </h3>
-          <i className="icon-question text-white"></i>
+          <i onClick={Reload} style={{fontSize:"20px", cursor: "pointer"}} className="icon-clockwise2 text-white"></i>
         </div>
         <div className="pt-40 pb-120">
           <div className="tf-container">
@@ -373,6 +378,12 @@ const ContractOneProfile = () => {
                   </ul>
                 </div>
               </div>
+              <FadeLoader
+                      color="#36d7b7"
+                      loading={loading}
+                      speedMultiplier={3}
+                      style={{ textAlign: 'center', position: 'relative', marginLeft: '50%' }}
+                    />
               <div className="tab-content  pb-16">
                 <div className="tab-pane fade active show" id="link" role="tabpanel">
                   <ul className="mt-10 accent-box line-border">
@@ -397,12 +408,6 @@ const ContractOneProfile = () => {
                         <i className="icon-arr-right fs-8"></i>
                       </a>
                     </li>
-                    <FadeLoader
-                      color="#36d7b7"
-                      loading={loading}
-                      speedMultiplier={3}
-                      style={{ textAlign: 'center', position: 'relative', marginLeft: '50%' }}
-                    />
                     <li className="trade-list-item mt-16">
                       {trx.status == 'Paused' ? <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-clock fs-16 text-warning"></i> </p> : <p className="d-flex align-items-center text-small gap-4">Status<i className="icon-check fs-16 text-primary"></i> </p>}
                       {trx.status == 'Paused' ? <span className='text-warning'>Paused</span> : <span className='text-success'>Contract {trx.status}!</span>}
@@ -510,7 +515,7 @@ const ContractOneProfile = () => {
               </div>
               <div className="modal-body">
                 <h5>Withdraw ETH(ERC20)</h5>
-                <div class="mt-16 d-flex justify-content-between">
+                <div className="mt-16 d-flex justify-content-between">
                   <span>I want to Withdraw <span className='text-success'>Profit</span></span>
                   <h5>${convertedProfit !== null && convertedProfit.toFixed(2)}</h5>
                 </div>
@@ -520,18 +525,18 @@ const ContractOneProfile = () => {
                   required
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="Please an ERC20 Address" />
-                <ul class="mt-8 d-flex gap-8">
+                <ul className="mt-8 d-flex gap-8">
                   <li>
-                    <a href="#" class="tag-sm dark">25%</a>
+                    <a href="#" className="tag-sm dark">25%</a>
                   </li>
                   <li>
-                    <a href="#" class="tag-sm dark">50%</a>
+                    <a href="#" className="tag-sm dark">50%</a>
                   </li>
                   <li>
-                    <a href="#" class="tag-sm dark">75%</a>
+                    <a href="#" className="tag-sm dark">75%</a>
                   </li>
                   <li>
-                    <a href="#" class="tag-sm dark">100%</a>
+                    <a href="#" className="tag-sm dark">100%</a>
                   </li>
                 </ul>
                 <button type='submit' data-bs-toggle="modal" data-bs-target="#otpPin" className="mt-40 tf-btn lg primary" >Confirm</button>
