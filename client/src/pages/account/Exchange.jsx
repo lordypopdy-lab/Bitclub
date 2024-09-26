@@ -278,7 +278,7 @@ const Exchange = () => {
     }
 
     const TradeExchang = async () => {
-        toast.success("Trade Exchange is Comming Sonn!");
+        toast.success("Trade Exchange is Comming Soon!");
     }
 
     return (
