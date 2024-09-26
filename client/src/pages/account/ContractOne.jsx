@@ -21,24 +21,9 @@ const ContractOne = () => {
     const [trx_rate, set_trx_rate] = useState(null);
     const [signer, setSigner] = useState(null);
     const [current_bal, setCurrent_bal] = useState(null);
-    const [pinInput, setPinInput] = useState({
-        pin1: '',
-        pin2: '',
-        pin3: '',
-        pin4: ''
-    })
-    const [trx, setTrx] = useState({
-        from: '',
-        to: '',
-        gas_used: null,
-        cumulative_gas_used: null,
-        cumulative_gas_price: null,
-    })
-    const [usd_details, setUsdDetails] = useState({
-        eth_price: 0,
-        eth_last_change: ''
-    })
-
+    const [pinInput, setPinInput] = useState({ pin1: '', pin2: '', pin3: '', pin4: '' })
+    const [trx, setTrx] = useState({ from: '', to: '', gas_used: null, cumulative_gas_used: null, cumulative_gas_price: null })
+    const [usd_details, setUsdDetails] = useState({ eth_price: 0, eth_last_change: '' })
 
     useEffect(() => {
         setLoading(true);

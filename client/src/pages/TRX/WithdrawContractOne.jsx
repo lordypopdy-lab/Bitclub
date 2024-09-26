@@ -196,6 +196,7 @@ const WithdrawContractOne = () => {
         Connect();
 
       } else {
+        setLoading(false);
         toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
         console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
       }
