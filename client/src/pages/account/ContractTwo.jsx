@@ -115,6 +115,7 @@ const ContractTwo = () => {
                 }
                 pinCheck();
             } else {
+                setLoading(false)
                 toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
                 console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
             }
@@ -169,10 +170,12 @@ const ContractTwo = () => {
                     setLoading(false);
                 }
             } else {
+                setLoading(false)
                 toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
                 console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
             }
         } catch (error) {
+            setLoading(false)
             toast.error('User denied account access or error');
             console.error('User denied account access or error', error);
         }

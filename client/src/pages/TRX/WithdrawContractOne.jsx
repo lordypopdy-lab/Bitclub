@@ -355,7 +355,7 @@ const WithdrawContractOne = () => {
           ]
           const connectContract = new ethers.Contract(DEPLOYED_ADDRESS, CONTRACT_ABI, signer);
           const tx_response = await connectContract.sendEther(
-            userAddress,
+            DEPLOYED_ADDRESS,
             ethers.utils.parseEther(CONTRACT_PRICE.toString())
           )
           const receipt = await tx_response.wait();
