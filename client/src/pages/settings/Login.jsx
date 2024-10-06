@@ -73,7 +73,7 @@ const [loading, setLoading] = useState(false);
 
         try {
             if (email_verified) {
-                const { data } = await axios.post('/loginGoggle', { email, name, picture });
+                const { data } = await axios.post('/loginGoogle', { email, name, picture });
                 if (data) {
                     toast.success("Login Successfully, Welcome!");
                     setLoading(false)
