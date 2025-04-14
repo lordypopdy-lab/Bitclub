@@ -15,6 +15,7 @@ import Home from './pages/Home';
 import FaceID from './pages/profile/FaceID';
 import Option from './pages/settings/Option';
 import VerifyID from './pages/profile/VerifyID';
+import Deposite from './pages/account/Deposite';
 import BlogDetail from './pages/account/BlogDetail';
 import Recharge from './pages/account/Recharge';
 import Register from './pages/settings/Register';
@@ -61,21 +62,37 @@ import ContractTwoProfile from './pages/account/ContractTwoProfile';
 
 import axios from 'axios';
 import { Toaster } from 'react-hot-toast';
+import { useEffect } from 'react';
 import { UserContextProvider } from '../context/UserContext';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-axios.defaults.baseURL = 'http://localhost:8000';
+axios.defaults.baseURL = 'http://localhost:8080';
 axios.defaults.withCredentials = true;
+//https://bitclubserver.vercel.app
+import '../src/fonts/fonts.css';
+import '../src/fonts/font-icons.css';
+import '../src/css/bootstrap.min.css';
+import '../src/css/styles.css';
+import '../src/css/swiper-bundle.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
+import { initializeSwiper } from "../src/js/carousel"
 
 import {
-    Route,
-    RouterProvider,
-    createBrowserRouter,
-    createRoutesFromElements
-} from 'react-router-dom'
+  Preloader,
+} from "../src/pages/utils/Properties"
 
-const router = createBrowserRouter(
-    createRoutesFromElements(
-        <Route>
+function App() {
+  useEffect(() => {
+    initializeSwiper();
+    Preloader();
+  }, [])
+
+  return (
+    <>
+      <UserContextProvider>
+        <Router>
+          <Routes>
             <Route path='/Send' element={<Send />} />
             <Route path='/Profile' element={<Profile />} />
             <Route path='/UserInfo' element={<UserInfo />} />
@@ -94,6 +111,7 @@ const router = createBrowserRouter(
             <Route path='/Exchange' element={<Exchange />} />
             <Route path='/Register' element={<Register />} />
             <Route path='/Login' element={<Login />} />
+            <Route path='Deposite' element={<Deposite />} />
             <Route path='/VerifyID' element={<VerifyID />} />
             <Route path='/Boarding2' element={<Boarding2 />} />
             <Route path='/BlogDetail' element={<BlogDetail />} />
@@ -108,7 +126,7 @@ const router = createBrowserRouter(
             <Route path='/ContractFour' element={<ContractFour />} />
             <Route path='/ContractThree' element={<ContractThree />} />
             <Route path='/ContractOne' element={<ContractOne />} />
-            <Route path='/assetsRatings' element = {<AssetsRatings />} />
+            <Route path='/assetsRatings' element={<AssetsRatings />} />
             <Route path='/Verification' element={<Verification />} />
             <Route path='/CameraSuccess' element={<CameraSuccess />} />
             <Route path='/TradeExchange' element={<TradeExchange />} />
@@ -135,17 +153,12 @@ const router = createBrowserRouter(
             <Route path='/SellQuantity' element={<SellQuantity />} />
             <Route path='/IdentityVerification' element={<IdentityVerification />} />
             <Route path='/ExchangeTradeApprove' element={<ExchangeTradeApprove />} />
-        </Route>
-    )
-)
-
-const App = () => {
-    return (
-            <UserContextProvider>
-            <RouterProvider router={router} />
-            <Toaster position='top-right' toastOptions={{ duration: 4000 }} />
-            </UserContextProvider>
-    )
+          </Routes>
+        </Router>
+        <Toaster position='top-right' toastOptions={{ duration: 4000 }} />
+      </UserContextProvider>
+    </>
+  )
 }
 
 export default App

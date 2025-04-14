@@ -1927,7 +1927,7 @@
   .coin-box {
     background-color: rgba(255, 255, 255, 0.12);
     display: flex;
-    padding: 16px 12px 17px 12px;
+    padding: 16px 19px 17px 12px;
     border-radius: 12px;
     position: relative;
     font-size: 11px;
@@ -1936,7 +1936,7 @@
   .coin-box .coin-logo {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
   }
   .coin-box .coin-logo .logo {
     width: 26px;
@@ -2936,4 +2936,3 @@
     opacity: 0.5;
   }
   
-  /*# sourceMappingURL=styles.css.map */

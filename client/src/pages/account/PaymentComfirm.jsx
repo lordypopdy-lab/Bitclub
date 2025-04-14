@@ -1,10 +1,7 @@
 import React from 'react'
 
 const PaymentComfirm = () => {
-    const e = localStorage.getItem('email');
-    if(!e){
-        location.href = '/login';
-    }
+if(!localStorage.getItem('email')){ location.href = '/login'; }
   return (
     <>
     <div className="header fixed-top bg-surface d-flex justify-content-center align-items-center">

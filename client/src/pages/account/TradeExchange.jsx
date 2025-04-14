@@ -1,10 +1,10 @@
 import React from 'react'
+import coin3 from "../../images/coin/coin3.jpg";
+import coin5 from "../../images/coin/coin5.jpg";
+import coin6 from "../../images/coin/coin6.jpg";
 
 const TradeExchange = () => {
-    const e = localStorage.getItem('email');
-    if(!e){
-        location.href = '/login';
-    }
+if(!localStorage.getItem('email')){ location.href = '/login'; }
     return (
         <>
             <div className="app-wallet">
@@ -44,7 +44,7 @@ const TradeExchange = () => {
                                                 </p>
                                             </div>
                                             <div className="coin-item style-1 gap-8 mt-20">
-                                                <img src="/src/images/coin/coin-3.jpg" alt="img" className="img" />
+                                                <img src={coin3} alt="img" className="img" />
                                                 <div className="content">
                                                     <div className="title">
                                                         <h3 className="mb-4"><a href="#" className="d-flex align-items-center">ETH&nbsp;<i className="icon-select-down"></i></a></h3>
@@ -67,7 +67,7 @@ const TradeExchange = () => {
                                                 </span>
                                             </div>
                                             <div className="coin-item style-1 gap-8 mt-20">
-                                                <img src="/src/images/coin/coin-5.jpg" alt="img" className="img" />
+                                                <img src={coin5} alt="img" className="img" />
                                                 <div className="content">
                                                     <div className="title">
                                                         <h3 className="mb-4"><a href="#" className="d-flex align-items-center">USDC&nbsp;<i className="icon-select-down"></i></a></h3>
@@ -98,9 +98,9 @@ const TradeExchange = () => {
                                         <li className="trade-list-item mt-16">
                                             <p className="d-flex align-items-center text-small gap-4">X Routing <i className="icon-question fs-16 text-secondary"></i> </p>
                                             <a href="#" className="d-flex gap-4 align-items-center">
-                                                <img src="/src/images/coin/coin-3.jpg" alt="img" className="img" />
+                                                <img src={coin3} alt="img" className="img" />
                                                     <i className="icon-select-right"></i>
-                                                    <img src="/src/images/coin/coin-5.jpg" alt="img" className="img" />
+                                                    <img src={coin5} alt="img" className="img" />
                                                         <i className="icon-arr-right fs-8"></i>
                                                     </a>
                                                 </li>
@@ -112,7 +112,7 @@ const TradeExchange = () => {
                                                 <div className="accent-box bg-menuDark">
                                                     <p className="text-small text-white">Sell</p>
                                                     <div className="coin-item style-1 gap-8 mt-20">
-                                                        <img src="/src/images/coin/coin-6.jpg" alt="img" className="img" />
+                                                        <img src={coin6} alt="img" className="img" />
                                                         <div className="content">
                                                             <div className="title">
                                                                 <h3 className="mb-4"><a href="#" className="d-flex align-items-center">ETH&nbsp;<i className="icon-select-down"></i></a></h3>
@@ -129,7 +129,7 @@ const TradeExchange = () => {
                                                 <div className="accent-box bg-menuDark mt-8">
                                                     <p className="text-small text-white">Pay</p>
                                                     <div className="coin-item style-1 gap-8 mt-20">
-                                                        <img src="/src/images/coin/coin-5.jpg" alt="img" className="img" />
+                                                        <img src={coin5} alt="img" className="img" />
                                                         <div className="content">
                                                             <div className="title">
                                                                 <h3 className="mb-4"><a href="#" className="d-flex align-items-center">USDC&nbsp;<i className="icon-select-down"></i></a></h3>

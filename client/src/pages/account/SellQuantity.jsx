@@ -1,10 +1,8 @@
 import React from 'react'
+import coin1 from "../../images/coin/coin1.jpg";
 
 const SellQuantity = () => {
-  const e = localStorage.getItem('email');
-  if(!e){
-      location.href = '/login';
-  }
+if(!localStorage.getItem('email')){ location.href = '/login'; }
   return (
    <>
    <div class="header fixed-top bg-surface d-flex justify-content-between align-items-center">
@@ -14,7 +12,7 @@ const SellQuantity = () => {
     <div class="pt-45 pb-16">
         <div class="tf-container">
           <div class="mt-4 coin-item style-2 gap-8">
-            <img src="/src/images/coin/coin-1.jpg" alt="img" class="img" />
+            <img src={coin1} alt="img" class="img" />
             <h5>Sell BTC</h5>
           </div>
           <div class="mt-16 d-flex justify-content-between">

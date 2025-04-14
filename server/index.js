@@ -3,22 +3,8 @@ const dotenv = require('dotenv').config();
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const bodyParser = require('body-parser');
 
 const app = express();
-
-app.use(bodyParser.json());
-
-app.use((req, res, next) => {
-    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
-    res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
-    next();
-  });
-
-app.use(cors({
-    origin: 'http://localhost:3000',
-    credentials: true,
-  }));
 
 mongoose.connect(process.env.MONGO_URL)
 .then(()=> console.log('Database Connected successfuly!'))
@@ -29,6 +15,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({extended: true}));
 app.use('/', require('./routes/authRoute'));
 
-const port = 8000;
-app.listen(port, ()=> console.log(`Server is running at port ${port}`));
-
+const PORT = 8080
+app.listen(PORT, ()=>{
+  console.log(`Bitclub New0147 is Running at Port: ${PORT}`);
+})

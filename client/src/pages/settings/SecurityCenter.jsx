@@ -1,12 +1,9 @@
-import { useContext } from "react"
-import { UserContext } from "../../../context/UserContext"
+import { useContext } from "react";
+import { UserContext } from "../../../context/UserContext";
 
 const SecurityCenter = () => {
-    const {user} = useContext(UserContext);
-    const e = localStorage.getItem('email');
-    if(!e){
-        location.href = '/login';
-    }
+const {user} = useContext(UserContext);
+if (!localStorage.getItem('email')) { location.href = '/login'; }
   return (
     <>
     <div className="header fixed-top bg-surface d-flex justify-content-center align-items-center">

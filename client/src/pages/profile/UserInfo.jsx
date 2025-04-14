@@ -1,17 +1,27 @@
 import React from 'react'
 import { useContext } from 'react';
+import coin3 from "../../images/coin/coin3.jpg";
+import coin1 from "../../images/coin/coin1.jpg";
+import coin9 from "../../images/coin/coin9.jpg";
+import coin7 from "../../images/coin/coin7.jpg";
+import coin4 from "../../images/coin/coin4.jpg";
+import coin8 from "../../images/coin/coin8.jpg";
+import coin5 from "../../images/coin/coin5.jpg";
+import coin6 from "../../images/coin/coin6.jpg";
+import coin14 from "../../images/coin/coin14.jpg";
+import coin11 from "../../images/coin/coin11.jpg";
+import logo144 from "../../images/logo/logo144.png";
 import { UserContext } from '../../../context/UserContext';
+
 const UserInfo = () => {
-    const {user} = useContext(UserContext);
-    const e = localStorage.getItem('email');
-    if(!e){
-        location.href = '/login';
-    }
+const {user} = useContext(UserContext);
+if (!localStorage.getItem('email')) { location.href = '/login'; }
+
     return (
         <>
             {/* <!-- preloade --> */}
             <div className="preload preload-container">
-                <div className="preload-logo" style={{ backgroundImage: `url('/src/images/logo/144.png')` }}>
+                <div className="preload-logo" style={{ backgroundImage: `url(${logo144})` }}>
                     <div className="spinner"></div>
                 </div>
             </div>
@@ -164,7 +174,7 @@ const UserInfo = () => {
                                 <ul className="mt-16">
                                     <li>
                                         <a href="#" className="coin-item style-2 gap-12">
-                                            <img src="/src/images/coin/coin-3.jpg" alt="img" className="img" />
+                                            <img src={coin3} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
                                                     <p className="mb-4 text-large">Ethereum</p>
@@ -176,7 +186,7 @@ const UserInfo = () => {
                                     </li>
                                     <li className="mt-16">
                                         <a href="#" className="coin-item style-2 gap-12">
-                                            <img src="/src/images/coin/coin-1.jpg" alt="img" className="img" />
+                                            <img src={coin1} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
                                                     <p className="mb-4 text-large">Bitcoin</p>
@@ -188,7 +198,7 @@ const UserInfo = () => {
                                     </li>
                                     <li className="mt-16">
                                         <a href="#" className="coin-item style-2 gap-12">
-                                            <img src="/src/images/coin/coin-14.jpg" alt="img" className="img" />
+                                            <img src={coin14} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
                                                     <p className="mb-4 text-large">TetherUS</p>
@@ -200,7 +210,7 @@ const UserInfo = () => {
                                     </li>
                                     <li className="mt-16">
                                         <a href="#" className="coin-item style-2 gap-12">
-                                            <img src="/src/images/coin/coin-7.jpg" alt="img" className="img" />
+                                            <img src={coin7} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
                                                     <p className="mb-4 text-large">BNB</p>
@@ -212,7 +222,7 @@ const UserInfo = () => {
                                     </li>
                                     <li className="mt-16">
                                         <a href="#" className="coin-item style-2 gap-12">
-                                            <img src="/src/images/coin/coin-9.jpg" alt="img" className="img" />
+                                            <img src={coin9} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
                                                     <p className="mb-4 text-large">Ripple</p>
@@ -224,7 +234,7 @@ const UserInfo = () => {
                                     </li>
                                     <li className="mt-16">
                                         <a href="#" className="coin-item style-2 gap-12">
-                                            <img src="/src/images/coin/coin-4.jpg" alt="img" className="img" />
+                                            <img src={coin4} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
                                                     <p className="mb-4 text-large">Cardano</p>
@@ -236,7 +246,7 @@ const UserInfo = () => {
                                     </li>
                                     <li className="mt-16">
                                         <a href="#" className="coin-item style-2 gap-12">
-                                            <img src="/src/images/coin/coin-11.jpg" alt="img" className="img" />
+                                            <img src={coin11} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
                                                     <p className="mb-4 text-large">BUSD</p>
@@ -248,7 +258,7 @@ const UserInfo = () => {
                                     </li>
                                     <li className="mt-16">
                                         <a href="#" className="coin-item style-2 gap-12">
-                                            <img src="/src/images/coin/coin-8.jpg" alt="img" className="img" />
+                                            <img src={coin8} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
                                                     <p className="mb-4 text-large">trueUSD</p>
@@ -260,7 +270,7 @@ const UserInfo = () => {
                                     </li>
                                     <li className="mt-16">
                                         <a href="#" className="coin-item style-2 gap-12">
-                                            <img src="/src/images/coin/coin-5.jpg" alt="img" className="img" />
+                                            <img src={coin5} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
                                                     <p className="mb-4 text-large">Coin98</p>
@@ -272,7 +282,7 @@ const UserInfo = () => {
                                     </li>
                                     <li className="mt-16">
                                         <a href="#" className="coin-item style-2 gap-12">
-                                            <img src="/src/images/coin/coin-6.jpg" alt="img" className="img" />
+                                            <img src={coin6} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
                                                     <p className="mb-4 text-large">Kurama</p>

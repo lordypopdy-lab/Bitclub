@@ -3,8 +3,6 @@ import axios from "axios";
 export const UserContext = createContext({});
 
 export function UserContextProvider({ children }) {
-    axios.defaults.baseURL = 'http://localhost:8000';
-    axios.defaults.withCredentials = true;
     const [user, setUser] = useState(null);
     useEffect(() => {
         try {
