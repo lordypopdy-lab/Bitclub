@@ -1,10 +1,13 @@
 import React from 'react'
+import blog1 from "../../images/blog/blog1.jpg";
+import blog2 from "../../images/blog/blog2.jpg";
+import blog3 from "../../images/blog/blog3.jpg";
+import blog4 from "../../images/blog/blog4.jpg";
+import blog5 from "../../images/blog/blog5.jpg";
+import blog6 from "../../images/blog/blog6.jpg";
 
 const ListBlog = () => {
-    const e = localStorage.getItem('email');
-    if(!e){
-        location.href = '/login';
-    }
+if(!localStorage.getItem('email')){ location.href = '/login'; }
   return (
     <>
       <div className="header fixed-top bg-surface d-flex justify-content-center align-items-center">
@@ -17,7 +20,7 @@ const ListBlog = () => {
             <ul className="mt-12 grid-2 gap-16">
                 <li>
                     <a href="/BlogDetail" className="blog-item">
-                        <img src="/src/images/blog/blog1.jpg" alt="img" />
+                        <img src={blog1} alt="img" />
                         <div className="content">
                             <p className="text-xsmall text-secondary title">Daria Morgen &#8226; Dec 21, 2023 </p>
                             <p className="mt-4">The Nightmare Before Christmas - Bomb Threats and Bitcoin</p>
@@ -26,7 +29,7 @@ const ListBlog = () => {
                 </li>
                 <li>
                     <a href="/BlogDetail" className="blog-item">
-                        <img src="/src/images/blog/blog2.jpg" alt="img" />
+                        <img src={blog2} alt="img" />
                         <div className="content">
                             <p className="text-xsmall text-secondary title">Jane Cooper &#8226; May 19, 2023 </p>
                             <p className="mt-4">The Crypto.com App Introduces Trusted Device Management</p>
@@ -35,7 +38,7 @@ const ListBlog = () => {
                 </li>
                 <li>
                     <a href="/BlogDetail" className="blog-item">
-                        <img src="/src/images/blog/blog3.jpg" alt="img" />
+                        <img src={blog3} alt="img" />
                         <div className="content">
                             <p className="text-xsmall text-secondary title">Wade Warren &#8226; June 9, 2023 </p>
                             <p className="mt-4">Cybersecurity Predictions 2023 – How did we do?</p>
@@ -44,7 +47,7 @@ const ListBlog = () => {
                 </li>
                 <li>
                     <a href="/BlogDetail" className="blog-item">
-                        <img src="/src/images/blog/blog4.jpg" alt="img" />
+                        <img src={blog4} alt="img" />
                         <div className="content">
                             <p className="text-xsmall text-secondary title">Esther Howard &#8226; Jan 27, 2023 </p>
                             <p className="mt-4">Cryptocurrency News: Building in Resiliency and International Co-Operation</p>
@@ -53,7 +56,7 @@ const ListBlog = () => {
                 </li>
                 <li>
                     <a href="/BlogDetail" className="blog-item">
-                        <img src="/src/images/blog/blog5.jpg" alt="img" />
+                        <img src={blog5} alt="img" />
                         <div className="content">
                             <p className="text-xsmall text-secondary title">Leslie Alex &#8226; Apr 19, 2023 </p>
                             <p className="mt-4">Blockchain, cryptocurrencies, and mining</p>
@@ -62,7 +65,7 @@ const ListBlog = () => {
                 </li>
                 <li>
                     <a href="/BlogDetail" className="blog-item">
-                        <img src="/src/images/blog/blog6.jpg" alt="img" />
+                        <img src={blog6} alt="img" />
                         <div className="content">
                             <p className="text-xsmall text-secondary title">Jenny Wilson &#8226; May 21, 2023 </p>
                             <p className="mt-4">Security Predictions 2023: how are we doing so far?</p>

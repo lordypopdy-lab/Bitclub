@@ -1,420 +1,417 @@
-import { ethers } from "ethers";
-import { useEffect, useState } from "react";
 import axios from "axios";
+import { ethers } from "ethers";
+import { useContext } from "react";
 import toast from "react-hot-toast";
-import FadeLoader from 'react-spinners/FadeLoader';
-import { useContext } from "react"
-import { UserContext } from "../../context/UserContext";
-import { timeAgo } from "./utils/timeAgo";
-
-import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode } from 'swiper/modules';
-
-import '../fonts/fonts.css'
-import '../fonts/font-icons.css'
-import '../css/bootstrap.min.css'
-import '../css/styles.css'
-import '../css/swiper-bundle.min.css'
+import avt2 from "../images/avt/avt2.jpg";
+import { timeAgo } from "./utils/timeAgo";
+import { useEffect, useState } from "react";
+import coin3 from "../images/coin/coin3.jpg";
+import logo144 from "../images/logo/logo144.png";
+import market1 from "../images/coin/market1.jpg";
+import market3 from "../images/coin/market3.jpg";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import FadeLoader from 'react-spinners/FadeLoader';
+import { UserContext } from "../../context/UserContext";
 
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/pagination';
 
+import tfLineChart from "../js/linechart";
+
 const Home = () => {
-    const e = localStorage.getItem('email');
-    if (!e) {
-        location.href = '/login';
+
+const { user } = useContext(UserContext);
+
+const [balance, setBalance] = useState(null);
+const [accountList, setAccountList] = useState(null);
+const [history, setHistory] = useState('')
+const [Notification, setNotification] = useState('');
+
+const [loading, setLoading] = useState(false);
+const [list1, setList1] = useState(null);
+const [list2, setList2] = useState(null);
+const [list3, setList3] = useState(null);
+const [list4, setList4] = useState(null);
+const [list5, setList5] = useState(null);
+const [listMain, setlistMain] = useState({
+btc_price: '',
+btc_symbol: '',
+btc_name: '',
+btc_change_percent: '',
+eth_name: '',
+eth_symbol: '',
+eth_price: '',
+eth_change_percent: '',
+bnb_name: '',
+bnb_symbol: '',
+bnb_price: '',
+bnb_change_percent: '',
+usdt_name: '',
+usdt_symbol: '',
+usdt_price: '',
+usdt_change_percent: '',
+doge_name: '',
+doge_symbol: '',
+doge_price: '',
+doge_change_percent: '',
+});
+const [details, setDetails] = useState({
+name: '',
+images: '',
+symbol: '',
+current_price: '',
+market_cap: '',
+lastTradindVolume24: '',
+pricePercentage: '',
+ath_change_percentage: ''
+});
+
+useEffect(() => {
+tfLineChart.load();
+setLoading(true);
+const getNotification = async () => {
+const email = localStorage.getItem('email');
+try {
+axios.post('/getNotification', { email }).then(({ data }) => {
+    const datas = data.notificationList.reverse()
+    const NotificationList = datas.map((data, index) => {
+        const time = data.timestamp;
+        return (
+            <>
+                <li key={index} className="mt-12">
+                    <a href="#" className="noti-item bg-menuDark">
+                        <div className="pb-8 line-bt d-flex">
+                            <p className="text-button fw-6">{data.header} {data.message}</p>
+                            <i className="dot-lg bg-primary"></i>
+                        </div>
+                        <span className="d-block mt-8">{timeAgo(time)}</span>
+                    </a>
+                </li>
+            </>
+        )
+    })
+    setNotification(NotificationList);
+})
+} catch (error) {
+console.log(error);
+}
+}
+getNotification();
+
+//////////////''''''''//////////TOKEN FETCHER////////////''''''''//////////////
+const fetcher = async () => {
+try {
+const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd');
+const datas = await response.json();
+if (datas.length > 0) {
+    localStorage.setItem('tokens', JSON.stringify(datas));
+}
+} catch (error) {
+console.log(`Error fetching tokens:`, error);
+}
+}
+fetcher();
+
+/////////'''''''''''////////TOKEN FORMATER AND MAPPER//////////'''''''''//////////
+const tokenFormatter = async ()=>{
+const getData = localStorage.getItem('tokens');
+const datas = JSON.parse(getData);
+const tokenList1 = datas.map((data, index) => {
+    const updateT = () => {
+        setDetails({
+            name: data.name,
+            images: data.image,
+            symbol: data.symbol,
+            current_price: data.current_price,
+            market_cap: data.market_cap,
+            lastTradindVolume24: data.price_change_24h,
+            pricePercentage: data.price_change_percentage_24h,
+            ath_change_percentage: data.ath_change_percentage
+        })
     }
 
-    const { user } = useContext(UserContext);
+    return (
+        <li key={index} style={{ marginTop: '18px' }}>
+            <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
+                <img src={data.image} alt="img" className="img" />
+                <div className="content">
+                    <div className="title">
+                        <p className="mb-4 text-button">{data.symbol.toUpperCase()}</p>
+                        <span className="text-secondary">${data.market_cap}M</span>
+                    </div>
+                    <div className="d-flex align-items-center gap-12">
+                        <span className="text-small">${data.current_price}</span>
+                        {data.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{data.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{data.price_change_percentage_24h}2%</span>}
+                    </div>
+                </div>
+            </a>
+        </li>
+    )
+})
 
-    const [balance, setBalance] = useState(null);
-    const [accountList, setAccountList] = useState(null);
-    const [history, setHistory] = useState('')
-    const [Notification, setNotification] = useState('');
+const tokenList2 = datas.map((data, index) => {
+    const updateT = () => {
+        setDetails({
+            name: data.name,
+            images: data.image,
+            symbol: data.symbol,
+            current_price: data.current_price,
+            market_cap: data.market_cap,
+            lastTradindVolume24: data.price_change_24h,
+            pricePercentage: data.price_change_percentage_24h,
+            ath_change_percentage: data.ath_change_percentage
+        })
+    }
 
-    const [loading, setLoading] = useState(false);
-    const [list1, setList1] = useState(null);
-    const [list2, setList2] = useState(null);
-    const [list3, setList3] = useState(null);
-    const [list4, setList4] = useState(null);
-    const [list5, setList5] = useState(null);
-    const [listMain, setlistMain] = useState({
-        btc_price: '',
-        btc_symbol: '',
-        btc_name: '',
-        btc_change_percent: '',
-        eth_name: '',
-        eth_symbol: '',
-        eth_price: '',
-        eth_change_percent: '',
-        bnb_name: '',
-        bnb_symbol: '',
-        bnb_price: '',
-        bnb_change_percent: '',
-        usdt_name: '',
-        usdt_symbol: '',
-        usdt_price: '',
-        usdt_change_percent: '',
-        doge_name: '',
-        doge_symbol: '',
-        doge_price: '',
-        doge_change_percent: '',
-    });
-    const [details, setDetails] = useState({
-        name: '',
-        images: '',
-        symbol: '',
-        current_price: '',
-        market_cap: '',
-        lastTradindVolume24: '',
-        pricePercentage: '',
-        ath_change_percentage: ''
-    });
+    return (
+        <li key={index} style={{ marginTop: '18px' }}>
+            <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
+                <img src={data.image} alt="img" className="img" />
+                <div className="content">
+                    <div className="title">
+                        <p className="mb-4 text-button">{data.symbol.toUpperCase()}</p>
+                        <span className="text-secondary">${data.market_cap}M</span>
+                    </div>
+                    <div className="d-flex align-items-center gap-12">
+                        <span className="text-small">${data.current_price}</span>
+                        {data.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{data.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{data.price_change_percentage_24h}2%</span>}
+                    </div>
+                </div>
+            </a>
+        </li>
+    )
+})
 
-    useEffect(() => {
-        setLoading(true);
-        const getNotification = async () => {
-            const email = localStorage.getItem('email');
-            try {
-                axios.post('/getNotification', { email }).then(({ data }) => {
-                    const datas = data.notificationList.reverse()
-                    const NotificationList = datas.map((data, index) => {
-                        const time = data.timestamp;
-                        return (
-                            <>
-                                <li key={index} className="mt-12">
-                                    <a href="#" className="noti-item bg-menuDark">
-                                        <div className="pb-8 line-bt d-flex">
-                                            <p className="text-button fw-6">{data.header} {data.message}</p>
-                                            <i className="dot-lg bg-primary"></i>
-                                        </div>
-                                        <span className="d-block mt-8">{timeAgo(time)}</span>
-                                    </a>
-                                </li>
-                            </>
-                        )
-                    })
-                    setNotification(NotificationList);
-                })
-            } catch (error) {
-                console.log(error);
+const tokenList3 = datas.map((data, index) => {
+    const updateT = () => {
+        setDetails({
+            name: data.name,
+            images: data.image,
+            symbol: data.symbol,
+            current_price: data.current_price,
+            market_cap: data.market_cap,
+            lastTradindVolume24: data.price_change_24h,
+            pricePercentage: data.price_change_percentage_24h,
+            ath_change_percentage: data.ath_change_percentage
+        })
+    }
+
+    return (
+        <li key={index} style={{ marginTop: '18px' }}>
+            <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
+                <img src={data.image} alt="img" className="img" />
+                <div className="content">
+                    <div className="title">
+                        <p className="mb-4 text-button">{data.symbol.toUpperCase()}</p>
+                        <span className="text-secondary">${data.market_cap}M</span>
+                    </div>
+                    <div className="d-flex align-items-center gap-12">
+                        <span className="text-small">${data.current_price}</span>
+                        {data.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{data.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{data.price_change_percentage_24h}2%</span>}
+                    </div>
+                </div>
+            </a>
+        </li>
+    )
+})
+
+const tokenList4 = datas.map((data, index) => {
+    const updateT = () => {
+        setDetails({
+            name: data.name,
+            images: data.image,
+            symbol: data.symbol,
+            current_price: data.current_price,
+            market_cap: data.market_cap,
+            lastTradindVolume24: data.price_change_24h,
+            pricePercentage: data.price_change_percentage_24h,
+            ath_change_percentage: data.ath_change_percentage
+        })
+    }
+    return (
+        <li key={index} style={{ marginTop: '18px' }}>
+            <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
+                <div className="d-flex align-items-center gap-12 flex-1">
+                    <h4 className="text-primary">{index}</h4>
+                    <p>
+                        <span className="mb-4 text-button fw-6">{data.symbol.toLocaleUpperCase()}</span>
+                        <span className="text-secondary">/ USDT</span>
+                    </p>
+                </div>
+                <div className="d-flex justify-content-between align-items-center flex-st2">
+                    <span className="text-small">${data.high_24h}</span>
+                    <div className="text-end">
+                        {data.price_change_percentage_24h > 1 ? <p className="text-button text-primary">{data.price_change_percentage_24h}</p> : <p className="text-button text-red">{data.price_change_percentage_24h}</p>}
+                        <p className="mt-4 text-secondary">${data.current_price}</p>
+                    </div>
+                </div>
+            </a>
+        </li>
+    )
+})
+
+const tokenList5 = datas.map((data, index) => {
+    const updateT = () => {
+        setDetails({
+            name: data.name,
+            images: data.image,
+            symbol: data.symbol,
+            current_price: data.current_price,
+            market_cap: data.market_cap,
+            lastTradindVolume24: data.price_change_24h,
+            pricePercentage: data.price_change_percentage_24h,
+            ath_change_percentage: data.ath_change_percentage
+        })
+    }
+    return (
+        <li key={index} style={{ marginTop: '18px' }}>
+            <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
+                <div className="d-flex align-items-center gap-12 flex-1">
+                    <h4 className="text-primary">{index}</h4>
+                    <p>
+                        <span className="mb-4 text-button fw-6">{data.symbol.toLocaleUpperCase()}</span>
+                        <span className="text-secondary">/ USDT</span>
+                    </p>
+                </div>
+                <div className="d-flex justify-content-between align-items-center flex-st2">
+                    <span className="text-small">${data.high_24h}</span>
+                    <div className="text-end">
+                        {data.price_change_percentage_24h > 1 ? <p className="text-button text-primary">{data.price_change_percentage_24h}</p> : <p className="text-button text-red">{data.price_change_percentage_24h}</p>}
+                        <p className="mt-4 text-secondary">${data.current_price}</p>
+                    </div>
+                </div>
+            </a>
+        </li>
+    )
+})
+
+const connectMetaMask = async () => {
+    if (window.ethereum) {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send('eth_requestAccounts', []);
+        const signer = provider.getSigner();
+        const USER_ADDRESS = signer.getAddress();
+        const GET_BALANCE = await provider.getBalance(USER_ADDRESS);
+        const FORMATED_BALANCE = ethers.utils.formatEther(GET_BALANCE);
+
+        const ACCOUNT_LISTS = await provider.listAccounts();
+        const acc_list = ACCOUNT_LISTS.map((ACCOUNT_LIST, index) => {
+            const handleCopy = async () => {
+                try {
+                    await navigator.clipboard.writeText(ACCOUNT_LIST);
+                    toast.success('Copied!');
+                } catch (error) {
+                    toast.error('Fail to Copy!');
+                }
             }
-        }
-        getNotification();
-       
-        //////////////''''''''//////////TOKEN FETCHER////////////''''''''//////////////
-        const fetcher = async () => {
-            try {
-                const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd');
-                const datas = await response.json();
-                if (datas.length > 0) {
-                    localStorage.setItem('tokens', JSON.stringify(datas));
-                }
-            } catch (error) {
-                console.log(`Error fetching tokens:`, error);
-            }
-        }
-        fetcher();
+            return (
+                <>
+                    <li key={index} data-bs-dismiss="modal">
+                        <div className="d-flex justify-content-between align-items-center gap-8 text-large item-check active dom-value">Account {index}</div>
+                        <div className="mb-1">
+                            <span className="text-secondary" style={{ fontSize: '14px' }}>{ACCOUNT_LIST.slice(0, 30)}...</span> <i title="Copy" onClick={handleCopy} style={{ fontSize: '22px', cursor: 'pointer' }} className="icon icon-copy text-primary"></i>
+                        </div>
+                    </li>
+                </>
+            )
+        })
+        setAccountList(acc_list);
 
-        /////////'''''''''''////////TOKEN FORMATER AND MAPPER//////////'''''''''//////////
-        const tokenFormatter = async ()=>{
-            const getData = localStorage.getItem('tokens');
-            const datas = JSON.parse(getData);
-                const tokenList1 = datas.map((data, index) => {
-                    const updateT = () => {
-                        setDetails({
-                            name: data.name,
-                            images: data.image,
-                            symbol: data.symbol,
-                            current_price: data.current_price,
-                            market_cap: data.market_cap,
-                            lastTradindVolume24: data.price_change_24h,
-                            pricePercentage: data.price_change_percentage_24h,
-                            ath_change_percentage: data.ath_change_percentage
-                        })
-                    }
+        const BALANCE_IN_USDC = datas[1].current_price;
+        const BALANCE_IN_USDC_CONVERTED = BALANCE_IN_USDC * FORMATED_BALANCE;
+        setBalance(BALANCE_IN_USDC_CONVERTED);
 
-                    return (
-                        <li key={index} style={{ marginTop: '18px' }}>
-                            <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
-                                <img src={data.image} alt="img" className="img" />
-                                <div className="content">
-                                    <div className="title">
-                                        <p className="mb-4 text-button">{data.symbol.toUpperCase()}</p>
-                                        <span className="text-secondary">${data.market_cap}M</span>
-                                    </div>
-                                    <div className="d-flex align-items-center gap-12">
-                                        <span className="text-small">${data.current_price}</span>
-                                        {data.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{data.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{data.price_change_percentage_24h}2%</span>}
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                    )
-                })
-
-                const tokenList2 = datas.map((data, index) => {
-                    const updateT = () => {
-                        setDetails({
-                            name: data.name,
-                            images: data.image,
-                            symbol: data.symbol,
-                            current_price: data.current_price,
-                            market_cap: data.market_cap,
-                            lastTradindVolume24: data.price_change_24h,
-                            pricePercentage: data.price_change_percentage_24h,
-                            ath_change_percentage: data.ath_change_percentage
-                        })
-                    }
-
-                    return (
-                        <li key={index} style={{ marginTop: '18px' }}>
-                            <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
-                                <img src={data.image} alt="img" className="img" />
-                                <div className="content">
-                                    <div className="title">
-                                        <p className="mb-4 text-button">{data.symbol.toUpperCase()}</p>
-                                        <span className="text-secondary">${data.market_cap}M</span>
-                                    </div>
-                                    <div className="d-flex align-items-center gap-12">
-                                        <span className="text-small">${data.current_price}</span>
-                                        {data.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{data.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{data.price_change_percentage_24h}2%</span>}
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                    )
-                })
-
-                const tokenList3 = datas.map((data, index) => {
-                    const updateT = () => {
-                        setDetails({
-                            name: data.name,
-                            images: data.image,
-                            symbol: data.symbol,
-                            current_price: data.current_price,
-                            market_cap: data.market_cap,
-                            lastTradindVolume24: data.price_change_24h,
-                            pricePercentage: data.price_change_percentage_24h,
-                            ath_change_percentage: data.ath_change_percentage
-                        })
-                    }
-
-                    return (
-                        <li key={index} style={{ marginTop: '18px' }}>
-                            <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
-                                <img src={data.image} alt="img" className="img" />
-                                <div className="content">
-                                    <div className="title">
-                                        <p className="mb-4 text-button">{data.symbol.toUpperCase()}</p>
-                                        <span className="text-secondary">${data.market_cap}M</span>
-                                    </div>
-                                    <div className="d-flex align-items-center gap-12">
-                                        <span className="text-small">${data.current_price}</span>
-                                        {data.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{data.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{data.price_change_percentage_24h}2%</span>}
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                    )
-                })
-
-                const tokenList4 = datas.map((data, index) => {
-                    const updateT = () => {
-                        setDetails({
-                            name: data.name,
-                            images: data.image,
-                            symbol: data.symbol,
-                            current_price: data.current_price,
-                            market_cap: data.market_cap,
-                            lastTradindVolume24: data.price_change_24h,
-                            pricePercentage: data.price_change_percentage_24h,
-                            ath_change_percentage: data.ath_change_percentage
-                        })
-                    }
-                    return (
-                        <li key={index} style={{ marginTop: '18px' }}>
-                            <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
-                                <div className="d-flex align-items-center gap-12 flex-1">
-                                    <h4 className="text-primary">{index}</h4>
-                                    <p>
-                                        <span className="mb-4 text-button fw-6">{data.symbol.toLocaleUpperCase()}</span>
-                                        <span className="text-secondary">/ USDT</span>
-                                    </p>
-                                </div>
-                                <div className="d-flex justify-content-between align-items-center flex-st2">
-                                    <span className="text-small">${data.high_24h}</span>
-                                    <div className="text-end">
-                                        {data.price_change_percentage_24h > 1 ? <p className="text-button text-primary">{data.price_change_percentage_24h}</p> : <p className="text-button text-red">{data.price_change_percentage_24h}</p>}
-                                        <p className="mt-4 text-secondary">${data.current_price}</p>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                    )
-                })
-
-                const tokenList5 = datas.map((data, index) => {
-                    const updateT = () => {
-                        setDetails({
-                            name: data.name,
-                            images: data.image,
-                            symbol: data.symbol,
-                            current_price: data.current_price,
-                            market_cap: data.market_cap,
-                            lastTradindVolume24: data.price_change_24h,
-                            pricePercentage: data.price_change_percentage_24h,
-                            ath_change_percentage: data.ath_change_percentage
-                        })
-                    }
-                    return (
-                        <li key={index} style={{ marginTop: '18px' }}>
-                            <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
-                                <div className="d-flex align-items-center gap-12 flex-1">
-                                    <h4 className="text-primary">{index}</h4>
-                                    <p>
-                                        <span className="mb-4 text-button fw-6">{data.symbol.toLocaleUpperCase()}</span>
-                                        <span className="text-secondary">/ USDT</span>
-                                    </p>
-                                </div>
-                                <div className="d-flex justify-content-between align-items-center flex-st2">
-                                    <span className="text-small">${data.high_24h}</span>
-                                    <div className="text-end">
-                                        {data.price_change_percentage_24h > 1 ? <p className="text-button text-primary">{data.price_change_percentage_24h}</p> : <p className="text-button text-red">{data.price_change_percentage_24h}</p>}
-                                        <p className="mt-4 text-secondary">${data.current_price}</p>
-                                    </div>
-                                </div>
-                            </a>
-                        </li>
-                    )
-                })
-
-                const connectMetaMask = async () => {
-                    if (window.ethereum) {
-                        const provider = new ethers.providers.Web3Provider(window.ethereum);
-                        await provider.send('eth_requestAccounts', []);
-                        const signer = provider.getSigner();
-                        const USER_ADDRESS = signer.getAddress();
-                        const GET_BALANCE = await provider.getBalance(USER_ADDRESS);
-                        const FORMATED_BALANCE = ethers.utils.formatEther(GET_BALANCE);
-
-                        const ACCOUNT_LISTS = await provider.listAccounts();
-                        const acc_list = ACCOUNT_LISTS.map((ACCOUNT_LIST, index) => {
-                            const handleCopy = async () => {
-                                try {
-                                    await navigator.clipboard.writeText(ACCOUNT_LIST);
-                                    toast.success('Copied!');
-                                } catch (error) {
-                                    toast.error('Fail to Copy!');
-                                }
-                            }
-                            return (
-                                <>
-                                    <li key={index} data-bs-dismiss="modal">
-                                        <div className="d-flex justify-content-between align-items-center gap-8 text-large item-check active dom-value">Account {index}</div>
-                                        <div className="mb-1">
-                                            <span className="text-secondary" style={{ fontSize: '14px' }}>{ACCOUNT_LIST.slice(0, 30)}...</span> <i title="Copy" onClick={handleCopy} style={{ fontSize: '22px', cursor: 'pointer' }} className="icon icon-copy text-primary"></i>
-                                        </div>
-                                    </li>
-                                </>
-                            )
-                        })
-                        setAccountList(acc_list);
-
-                        const BALANCE_IN_USDC = datas[1].current_price;
-                        const BALANCE_IN_USDC_CONVERTED = BALANCE_IN_USDC * FORMATED_BALANCE;
-                        setBalance(BALANCE_IN_USDC_CONVERTED);
-
-                    } else {
-                        toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
-                        console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
-                    }
-                }
-                connectMetaMask();
-
-                const getHistory = async () => {
-                    const email = localStorage.getItem('email');
-                    try {
-                        const { data } = await axios.post('/getHistory', { email });
-                        const datas  = data.historyList.reverse();
-                        if (datas) {
-                            const historyList = datas.map((history, index) => {
-                                return (
-                                    <>
-                                        <li key={index} className="mt-8">
-                                            <a href="#" className="line-bt coin-item mb-1 style-1 gap-12 bg-menuDark">
-                                                <span className="box-round d-flex justify-content-center align-items-center"><i style={{ fontSize: '20px' }} className="icon icon-delete"></i></span>
-                                                <div className="content">
-                                                    <div className="title">
-                                                        <p className="mb-4 text-large">{history.type}</p>
-                                                        {history.Status == 'Success' ? <span className="text-success">{history.Status}</span> : <span className="text-warning">{history.Status}</span>}
-                                                    </div>
-                                                    <div className="box-price">
-                                                        {history.type == 'Deposite' || history.type == 'Sent' ? <p className="text-small mb-2"><span className="text-danger">-</span> ETH {history.valueEth}</p> : <p className="text-small mb-4"><span className="text-primary">+</span> ETH {history.valueEth}</p>}
-                                                        {history.type == 'Deposite' || history.type == 'Sent' ? <p className="text-small"><span className="text-danger">-</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p> : <p className="text-small"><span className="text-primary">+</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p>}
-                                                        <span className="mt-2" style={{marginLeft: '60px'}}>{timeAgo(history.timestamp)}</span>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </li>
-                                    </>
-                                )
-                            })
-                            setHistory(historyList);
-                        }
-                    } catch (error) {
-                        console.log(error);
-                    }
-                }
-                getHistory();
-
-                setlistMain({
-                    btc_price: datas[0].current_price,
-                    btc_symbol: datas[0].symbol,
-                    btc_name: datas[0].name,
-                    btc_change_percent: datas[0].market_cap_change_percentage_24h,
-                    eth_name: datas[1].name,
-                    eth_symbol: datas[1].symbol,
-                    eth_price: datas[1].current_price,
-                    eth_change_percent: datas[1].market_cap_change_percentage_24h,
-                    bnb_name: datas[3].name,
-                    bnb_symbol: datas[3].symbol,
-                    bnb_price: datas[3].current_price,
-                    bnb_change_percent: datas[3].market_cap_change_percentage_24h,
-                    usdt_name: datas[2].name,
-                    usdt_symbol: datas[2].symbol,
-                    usdt_price: datas[2].current_price,
-                    usdt_change_percent: datas[2].market_cap_change_percentage_24h,
-                    doge_name: datas[8].name,
-                    doge_symbol: datas[8].symbol,
-                    doge_price: datas[8].current_price,
-                    doge_change_percent: datas[8].market_cap_change_percentage_24h,
-                })
-                setList1(tokenList1.slice(60, 80));
-                setList2(tokenList2.slice(0, 9));
-                setList3(tokenList3.slice(0, 9))
-                setList4(tokenList4.slice(0, 11))
-                setList5(tokenList5.slice(50, 60))
-                setLoading(false);
-            
-        
+    } else {
+        toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
+        console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
     }
-    tokenFormatter();
+}
+connectMetaMask();
 
-
-    }, [])
-
-    const getData = localStorage.getItem('tokens');
-    if(!getData){
-        location.href='/home'
+const getHistory = async () => {
+    const email = localStorage.getItem('email');
+    try {
+        const { data } = await axios.post('/getHistory', { email });
+        const datas  = data.historyList.reverse();
+        if (datas) {
+            const historyList = datas.map((history, index) => {
+                return (
+                    <>
+                        <li key={index} className="mt-8">
+                            <a href="#" className="line-bt coin-item mb-1 style-1 gap-12 bg-menuDark">
+                                <span className="box-round d-flex justify-content-center align-items-center"><i style={{ fontSize: '20px' }} className="icon icon-delete"></i></span>
+                                <div className="content">
+                                    <div className="title">
+                                        <p className="mb-4 text-large">{history.type}</p>
+                                        {history.Status == 'Success' ? <span className="text-success">{history.Status}</span> : <span className="text-warning">{history.Status}</span>}
+                                    </div>
+                                    <div className="box-price">
+                                        {history.type == 'Deposite' || history.type == 'Sent' ? <p className="text-small mb-2"><span className="text-danger">-</span> ETH {history.valueEth}</p> : <p className="text-small mb-4"><span className="text-primary">+</span> ETH {history.valueEth}</p>}
+                                        {history.type == 'Deposite' || history.type == 'Sent' ? <p className="text-small"><span className="text-danger">-</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p> : <p className="text-small"><span className="text-primary">+</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p>}
+                                        <span className="mt-2" style={{marginLeft: '60px'}}>{timeAgo(history.timestamp)}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    </>
+                )
+            })
+            setHistory(historyList);
+        }
+    } catch (error) {
+        console.log(error);
     }
+}
+getHistory();
+
+setlistMain({
+    btc_price: datas[0].current_price,
+    btc_symbol: datas[0].symbol,
+    btc_name: datas[0].name,
+    btc_change_percent: datas[0].market_cap_change_percentage_24h,
+    eth_name: datas[1].name,
+    eth_symbol: datas[1].symbol,
+    eth_price: datas[1].current_price,
+    eth_change_percent: datas[1].market_cap_change_percentage_24h,
+    bnb_name: datas[3].name,
+    bnb_symbol: datas[3].symbol,
+    bnb_price: datas[3].current_price,
+    bnb_change_percent: datas[3].market_cap_change_percentage_24h,
+    usdt_name: datas[2].name,
+    usdt_symbol: datas[2].symbol,
+    usdt_price: datas[2].current_price,
+    usdt_change_percent: datas[2].market_cap_change_percentage_24h,
+    doge_name: datas[8].name,
+    doge_symbol: datas[8].symbol,
+    doge_price: datas[8].current_price,
+    doge_change_percent: datas[8].market_cap_change_percentage_24h,
+})
+setList1(tokenList1.slice(60, 80));
+setList2(tokenList2.slice(0, 9));
+setList3(tokenList3.slice(0, 9))
+setList4(tokenList4.slice(0, 11))
+setList5(tokenList5.slice(50, 60))
+setLoading(false);
+
+
+}
+tokenFormatter();
+
+}, [])
+
+const getData = localStorage.getItem('tokens');
+if(!getData){
+location.href='/login'
+}
+if (!localStorage.getItem('email')) { location.href = '/login'; }
 
     return (
         <>
             {/* <!-- preloade --> */}
             <div className="preload preload-container">
-                <div className="preload-logo" style={{ backgroundImage: `url('/src/images/logo/144.png')` }}>
+                <div className="preload-logo" style={{ backgroundImage: `url(${logo144})` }}>
                     <div className="spinner"></div>
                 </div>
             </div>
@@ -423,7 +420,7 @@ const Home = () => {
                 <div className="d-flex justify-content-between align-items-center gap-14">
                     <div className="box-account style-2">
                         <a href="/UserInfo">
-                        {!!user && user.picture !== '' ? <img src={!!user && user.picture} alt="img" className="avt" /> : <img src="/src/images/avt/avt2.jpg" alt="img" className="avt" />} 
+                        {!!user && user.picture !== '' ? <img src={!!user && user.picture} alt="img" className="avt" /> : <img src={avt2} alt="img" className="avt" />} 
                         </a>
                         <div className="search-box box-input-field style-2">
                             <a href="home-search.html" className="icon-search"></a>
@@ -472,8 +469,8 @@ const Home = () => {
                 </div>
                 <div className="bg-menuDark tf-container">
                     <Swiper
-                        slidesPerView={2.7}
-                        spaceBetween={12}
+                        slidesPerView={2.4}
+                        spaceBetween={7}
                         freeMode={true}
                         pagination={{
                             clickable: true,
@@ -484,11 +481,10 @@ const Home = () => {
                         <div className="pt-12 pb-12 mt-4">
                             <h5>Market</h5>
                             <div className="swiper" >
-                                {/* <div className="swiper-wrapper"> */}
                                 <SwiperSlide>
                                     <a href="/Exchange" className="coin-box d-block">
                                         <div className="coin-logo">
-                                            <img src="/src/images/coin/market-1.jpg" alt="img" className="logo" />
+                                            <img src={market1} alt="img" className="logo" />
                                             <div className="title">
                                                 <p>{listMain.btc_name}</p>
                                                 <span>{listMain.btc_symbol.toLocaleUpperCase()}</span>
@@ -509,7 +505,7 @@ const Home = () => {
                                 <SwiperSlide>
                                     <a href="/Exchange" className="coin-box d-block">
                                         <div className="coin-logo">
-                                            <img src="/src/images/coin/market-3.jpg" alt="img" className="logo" />
+                                            <img src={market3} alt="img" className="logo" />
                                             <div className="title">
                                                 <p>Binance</p>
                                                 <span>{listMain.bnb_symbol.toUpperCase()}</span>
@@ -529,7 +525,7 @@ const Home = () => {
                                 <SwiperSlide>
                                     <a href="/Exchange" className="coin-box d-block">
                                         <div className="coin-logo">
-                                            <img src="/src/images/coin/coin-3.jpg" alt="img" className="logo" />
+                                            <img src={coin3} alt="img" className="logo" />
                                             <div className="title">
                                                 <p>{listMain.eth_name}</p>
                                                 <span>{listMain.eth_symbol.toUpperCase()}</span>
@@ -549,8 +545,6 @@ const Home = () => {
                             </div>
 
                         </div>
-
-                        {/* </div> */}
                     </Swiper>
                 </div>
 

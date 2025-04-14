@@ -1,7 +1,13 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
 import toast from "react-hot-toast";
+import { FreeMode } from 'swiper/modules';
+import { useEffect, useState } from "react";
 import FadeLoader from 'react-spinners/FadeLoader';
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+import 'swiper/css';
+import 'swiper/css/free-mode';
+import 'swiper/css/pagination';
+
 const AssetsRatings = () => {
     const [loading, setLoading] = useState(false);
     const [list1, setList1] = useState(null);
@@ -18,6 +24,7 @@ const AssetsRatings = () => {
         lastTradindVolume24: '',
         pricePercentage: ''
     });
+
     useEffect(() => {
         setLoading(true);
 
@@ -226,12 +233,10 @@ const AssetsRatings = () => {
         }
     }, [])
 
-    const e = localStorage.getItem('email');
-    if (!e) {
-        location.href = '/login';
-    }
+    if (!localStorage.getItem('email')) { location.href = '/login'; }
     return (
         <>
+
             <div class="header fixed-top bg-surface d-flex justify-content-center align-items-center">
                 <a href="javascript:void(0);" class="left back-btn"><i class="icon-left-btn"></i></a>
                 <h3>Cryptex rating</h3>
@@ -239,23 +244,44 @@ const AssetsRatings = () => {
             <div class="pt-45 pb-16">
                 <div class="tf-container">
                     <div class="mt-8">
-                        <div class="swiper swiper-wrapper-r market-swiper line-bt" data-space-between="20" data-preview="auto">
+                        <div class="swiper swiper-wrapper-r market-swiper line-bt" data-space-between="100" data-preview="auto">
                             <div class="swiper-wrapper menu-tab-v3" role="tablist">
-                                <div class="swiper-slide nav-link active" data-bs-toggle="tab" data-bs-target="#popular" role="tab" aria-controls="popular" aria-selected="true">
-                                    Popular |
-                                </div>
-                                <div class="swiper-slide nav-link" data-bs-toggle="tab" data-bs-target="#tokenIncrease" role="tab" aria-controls="tokenIncrease" aria-selected="false">
-                                    Token Increase |
-                                </div>
-                                <div class="swiper-slide nav-link" data-bs-toggle="tab" data-bs-target="#cryptocurrency" role="tab" aria-controls="cryptocurrency " aria-selected="false">
-                                    Discount Cryptocurrency |
-                                </div>
-                                <div class="swiper-slide nav-link" data-bs-toggle="tab" data-bs-target="#newToken" role="tab" aria-controls="newToken" aria-selected="false">
-                                    New token |
-                                </div>
-                                <div class="swiper-slide nav-link" data-bs-toggle="tab" data-bs-target="#mass" role="tab" aria-controls="mass" aria-selected="false">
-                                    Mass
-                                </div>
+                                <Swiper
+                                    slidesPerView={2.7}
+                                    spaceBetween={25}
+                                    freeMode={true}
+                                    pagination={{
+                                        clickable: true,
+                                    }}
+                                    modules={[FreeMode]}
+                                    className="mySwiper"
+                                >
+                                    <SwiperSlide>
+                                        <div class="active" data-bs-toggle="tab" data-bs-target="#popular" role="tab" aria-controls="popular" aria-selected="true">
+                                            Popular |
+                                        </div>
+                                    </SwiperSlide>
+                                    <SwiperSlide>
+                                        <div data-bs-toggle="tab" data-bs-target="#tokenIncrease" role="tab" aria-controls="tokenIncrease" aria-selected="false">
+                                            Token Increase |
+                                        </div>
+                                    </SwiperSlide>
+                                    <SwiperSlide>
+                                        <div data-bs-toggle="tab" data-bs-target="#cryptocurrency" role="tab" aria-controls="cryptocurrency " aria-selected="false">
+                                            Discount Cryptocurrency |
+                                        </div>
+                                    </SwiperSlide>
+                                    <SwiperSlide>
+                                        <div data-bs-toggle="tab" data-bs-target="#newToken" role="tab" aria-controls="newToken" aria-selected="false">
+                                            New token |
+                                        </div>
+                                    </SwiperSlide>
+                                    <SwiperSlide>
+                                        <div data-bs-toggle="tab" data-bs-target="#mass" role="tab" aria-controls="mass" aria-selected="false">
+                                            Mass
+                                        </div>
+                                    </SwiperSlide>
+                                </Swiper>
                             </div>
                         </div>
 

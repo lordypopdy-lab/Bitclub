@@ -1,460 +1,454 @@
-import { ethers } from 'ethers';
 import axios from 'axios';
-import { useState, useEffect } from "react";
-import FadeLoader from 'react-spinners/FadeLoader';
+import { ethers } from 'ethers';
 import toast from 'react-hot-toast';
+import { useState, useEffect } from "react";
+import coin3 from "../../images/coin/coin3.jpg";
+import coin5 from "../../images/coin/coin5.jpg";
+import FadeLoader from 'react-spinners/FadeLoader';
 
 const WithdrawContractTwo = () => {
-    const e = localStorage.getItem('email');
-    if (!e) {
-      location.href = '/login';
-    }
   
-    const [showModal, setShowModal] = useState('')
-    const [signer, setSigner] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [trx_rate, set_trx_rate] = useState(null);
-    const [pinError, setPinError] = useState('')
-    const [checkPin, setCheckPin] = useState(false);
-    const [trx, setTrx] = useState({ from: '', to: '', contractPrice: null, ContractProfit: null, status: null, id: null, blockNumber: null, priceInUsd: null })
-    const [usd_details, setUsdDetails] = useState({ eth_price: 0, eth_last_change: '' });
-    const [pinInput, setPinInput] = useState({ pin1: '', pin2: '', pin3: '', pin4: '' });
-    const [userAddress, setUserAddress] = useState('');
-  
-    useEffect(() => {
-      setLoading(true);
-      try {
-        if (window.ethereum) {
-         const data = JSON.parse(localStorage.getItem('tokens'));
-            if (data) {
-              setUsdDetails({
-                eth_price: data[1].current_price,
-                eth_last_change: data[1].price_change_percentage_24h
-              })
-              const USD_PRICE = data[1].current_price;
-              set_trx_rate(USD_PRICE);
-              setLoading(false);
-            } else {
-              console.log('Error fetching Tokens!')
-            }
-  
-          const getContractTwo = async () => {
-            const email = localStorage.getItem('email');
-            try {
-              const { data } = await axios.post('/getContractTwo', { email });
-              if (data.success) {
-                setTrx({
-                  to: data.contractOne.to,
-                  from: data.contractOne.from,
-                  contractPrice: data.contractOne.contractPrice,
-                  ContractProfit: data.contractOne.contractProfit,
-                  status: data.contractOne.status,
-                  id: data.contractOne._id,
-                  blockNumber: data.contractOne.blockNumber,
-                  priceInUsd: data.contractOne.contractPrice
-                })
-                setLoading(false)
-              } else {
-                setLoading(false);
-                console.log(`Contract is yet to Activated!: ${error}`)
-              }
-            } catch (error) {
-              setLoading(false);
-              toast.error('Contract is yet to be Activated!');
-              console.log(`Contract is yet to Activated!: ${error}`)
-            }
-          }
-          getContractTwo();
-  
-          const pinCheck = async () => {
-            const email = localStorage.getItem('email');
-            const { data } = await axios.post('pinCheck', { email });
-            if (data.exists == true) {
-              setCheckPin(true);
-            }
-          }
-          pinCheck();
-  
-          const Connect = async () => {
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            await provider.send('eth_requestAccounts', []);
-            const signer = provider.getSigner();
-            const USER_ADDRESS = signer.getAddress();
-            const GET_BALANCE = await provider.getBalance(USER_ADDRESS);
-            const FORMATED_BALANCE = ethers.utils.formatEther(GET_BALANCE);
-  
-            const DEPLOYED_ADDRESS = '0xEeD4d31F9b81d550A370f2cddAef7763698ef32a';
-            const CONTRACT_ABI = [
-              {
-                "anonymous": false,
-                "inputs": [
-                  {
-                    "indexed": false,
-                    "internalType": "string",
-                    "name": "messages",
-                    "type": "string"
-                  },
-                  {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "gas",
-                    "type": "uint256"
-                  }
-                ],
-                "name": "Log",
-                "type": "event"
-              },
-              {
-                "anonymous": false,
-                "inputs": [
-                  {
-                    "indexed": false,
-                    "internalType": "address",
-                    "name": "sender",
-                    "type": "address"
-                  },
-                  {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                  }
-                ],
-                "name": "Received",
-                "type": "event"
-              },
-              {
-                "inputs": [],
-                "name": "recieveEther",
-                "outputs": [],
-                "stateMutability": "payable",
-                "type": "function"
-              },
-              {
-                "inputs": [
-                  {
-                    "internalType": "address payable",
-                    "name": "recipient",
-                    "type": "address"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                  }
-                ],
-                "name": "sendEther",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-              },
-              {
-                "stateMutability": "payable",
-                "type": "fallback"
-              },
-              {
-                "stateMutability": "payable",
-                "type": "receive"
-              },
-              {
-                "inputs": [],
-                "name": "Address",
-                "outputs": [
-                  {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                  }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-              },
-              {
-                "inputs": [],
-                "name": "getBalance",
-                "outputs": [
-                  {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                  }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-              }
-            ]
-  
-            const connectContract = new ethers.Contract(DEPLOYED_ADDRESS, CONTRACT_ABI, signer);
-  
-            const contractAddr = await connectContract.Address();
-            const CONTRACT_BALANCE = await connectContract.getBalance();
-            const test = ethers.utils.formatEther(CONTRACT_BALANCE)
-            console.log(`Contract Balance: $${trx_rate * test}`);
-            console.log(`Contract Address: ${contractAddr}`);
-  
-            setSigner(signer);
-          }
-          Connect();
-  
-        } else {
+const [signer, setSigner] = useState(null);
+const [pinError, setPinError] = useState('');
+const [loading, setLoading] = useState(false);
+const [showModal, setShowModal] = useState('');
+const [trx_rate, set_trx_rate] = useState(null);
+const [checkPin, setCheckPin] = useState(false);
+const [userAddress, setUserAddress] = useState('');
+const [usd_details, setUsdDetails] = useState({ eth_price: 0, eth_last_change: '' });
+const [pinInput, setPinInput] = useState({ pin1: '', pin2: '', pin3: '', pin4: '' });
+const [trx, setTrx] = useState({ from: '', to: '', contractPrice: null, ContractProfit: null, status: null, id: null, blockNumber: null, priceInUsd: null });
+if (!localStorage.getItem('email')) { location.href = '/login'; }
+useEffect(() => {
+  setLoading(true);
+  try {
+    if (window.ethereum) {
+      const data = JSON.parse(localStorage.getItem('tokens'));
+        if (data) {
+          setUsdDetails({
+            eth_price: data[1].current_price,
+            eth_last_change: data[1].price_change_percentage_24h
+          })
+          const USD_PRICE = data[1].current_price;
+          set_trx_rate(USD_PRICE);
           setLoading(false);
-          toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
-          console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
-        }
-      } catch (error) {
-        toast.error("Error fetching API refresh App");
-        console.log(error);
-      }
-    }, [])
-  
-  
-    //COPY FROM FUNCTION
-    const copyFrom = async () => {
-      try {
-        await navigator.clipboard.writeText(trx.from);
-        toast.success('Address Copied!');
-      } catch (error) {
-        console.log(error);
-        toast.error('Fail to Copy!');
-      }
-    }
-  
-    //COPY TO FUNCTION
-    const copyTo = async () => {
-      try {
-        await navigator.clipboard.writeText(trx.to);
-        toast.success('Address Copied!');
-      } catch (error) {
-        console.log(error);
-        toast.error("Failed to copy!")
-      }
-    }
-  
-    //GET TOTAL WITHDRAWAL
-    const CONTRACT_PRICE = trx.contractPrice + trx.ContractProfit;
-    const convertedPrice = trx_rate * trx.contractPrice;
-    const convertedProfit = trx_rate * trx.ContractProfit;
-    const addedBalance = convertedPrice + convertedProfit;
-    const priceEth = trx.contractPrice + trx.ContractProfit
-  
-    //TRX
-    const withdrawlFunction = async (e) => {
-      const email = localStorage.getItem('email');
-      setLoading(true);
-      e.preventDefault();
-      if (userAddress !== '') {
-        if (trx.status == 'Paused') {
-          toast.error('Transaction Failed contract De-activated');
-          setUserAddress('');
-          setShowModal('modal');
-          setLoading(false);
-          setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
         } else {
-          const { pin1, pin2, pin3, pin4 } = pinInput;
-          const { data } = await axios.post('/pinVerify', {
-            pin1, pin2, pin3, pin4, email
-          });
-          if (data.success) {
-            const DEPLOYED_ADDRESS = '0xEeD4d31F9b81d550A370f2cddAef7763698ef32a';
-            const CONTRACT_ABI = [
-              {
-                "anonymous": false,
-                "inputs": [
-                  {
-                    "indexed": false,
-                    "internalType": "string",
-                    "name": "messages",
-                    "type": "string"
-                  },
-                  {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "gas",
-                    "type": "uint256"
-                  }
-                ],
-                "name": "Log",
-                "type": "event"
-              },
-              {
-                "anonymous": false,
-                "inputs": [
-                  {
-                    "indexed": false,
-                    "internalType": "address",
-                    "name": "sender",
-                    "type": "address"
-                  },
-                  {
-                    "indexed": false,
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                  }
-                ],
-                "name": "Received",
-                "type": "event"
-              },
-              {
-                "inputs": [],
-                "name": "recieveEther",
-                "outputs": [],
-                "stateMutability": "payable",
-                "type": "function"
-              },
-              {
-                "inputs": [
-                  {
-                    "internalType": "address payable",
-                    "name": "recipient",
-                    "type": "address"
-                  },
-                  {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                  }
-                ],
-                "name": "sendEther",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-              },
-              {
-                "stateMutability": "payable",
-                "type": "fallback"
-              },
-              {
-                "stateMutability": "payable",
-                "type": "receive"
-              },
-              {
-                "inputs": [],
-                "name": "Address",
-                "outputs": [
-                  {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                  }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-              },
-              {
-                "inputs": [],
-                "name": "getBalance",
-                "outputs": [
-                  {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                  }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-              }
-            ]
-            const connectContract = new ethers.Contract(DEPLOYED_ADDRESS, CONTRACT_ABI, signer);
-            const tx_response = await connectContract.sendEther(
-              userAddress,
-              ethers.utils.parseEther(CONTRACT_PRICE.toString())
-            )
-            const receipt = await tx_response.wait();
-            if (receipt) {
-              setLoading(false);
-              const to = receipt.to
-              const from = receipt.from;
-              const name = 'ContractTwo'
-              const status = 'Success'
-              const amount = addedBalance;
-              const contractProfit = convertedPrice
-              const contractPrice = convertedPrice
-              const gasFee = trx_rate * ethers.utils.formatEther(receipt.effectiveGasPrice);
-              const blockNumber = receipt.blockNumber;
-              const blockHash = receipt.blockHash;
-              const transactionHash = receipt.transactionHash;
-  
-              const { data } = await axios.post('/pauseContractTwo', { email });
-              if (data.success) {
-                const { data } = await axios.post('/setContractTwoLogs', {
-                  name,
-                  email,
-                  amount,
-                  to,
-                  from,
-                  blockNumber,
-                  transactionHash,
-                  status,
-                  blockHash,
-                  gasFee,
-                  contractProfit,
-                  contractPrice,
-                  priceEth
-                })
-                const logsData = data;
-                if (logsData.success) {
-                  const For = "ForContractPauseAndWithdraw";
-                  const { data } = await axios.post('/notification', {
-                    For,
-                    email,
-                  })
-                  if(data.success){
-                    setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
-                    toast.success('Ethers Sent successfuly');
-                    setUserAddress('');
-                    setLoading(false);
-                    setShowModal('modal')
-                  }else{
-                    console.log('Error Pause and Withdrawing Contract');
-                  }
-                 
-                } else {
-                  console.log(`Upadating Contract One Error: ${data.error}`)
-                }
-              } else {
-                toast.error('Transaction Error');
-              }
-            } else {
-              setLoading(false);
-              toast.error('Transaction Fail!');
-              setLoading(false);
-            }
-          } else if (data.error) {
-            toast.error(data.error);
-            setLoading(false);
-            console.log(data)
-          }
+          console.log('Error fetching Tokens!')
         }
-      } else {
-        toast.error("Please Insert a valid ERC20 address");
-        setLoading(false)
-      }
-    }
-  
-  
-    //CREATE PIN
-    const createPin = async (e) => {
-      e.preventDefault();
-      const email = localStorage.getItem('email');
-      const { pin1, pin2, pin3, pin4 } = pinInput;
-  
-      const { data } = await axios.post('/createPin', {
-        pin1, pin2, pin3, pin4, email
-      })
-  
-      if (data.error) {
-        setPinError('All PIN field is required')
-      } else {
-        setPinError('')
-        setCheckPin(true);
-        toast.success(data.success);
-        setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
-      }
-  
-    }
-  
 
+      const getContractTwo = async () => {
+        const email = localStorage.getItem('email');
+        try {
+          const { data } = await axios.post('/api/getContractTwo', { email });
+          if (data.success) {
+            setTrx({
+              to: data.contractOne.to,
+              from: data.contractOne.from,
+              contractPrice: data.contractOne.contractPrice,
+              ContractProfit: data.contractOne.contractProfit,
+              status: data.contractOne.status,
+              id: data.contractOne._id,
+              blockNumber: data.contractOne.blockNumber,
+              priceInUsd: data.contractOne.contractPrice
+            })
+            setLoading(false)
+          } else {
+            setLoading(false);
+            console.log(`Contract is yet to Activated!: ${error}`)
+          }
+        } catch (error) {
+          setLoading(false);
+          toast.error('Contract is yet to be Activated!');
+          console.log(`Contract is yet to Activated!: ${error}`)
+        }
+      }
+      getContractTwo();
+
+      const pinCheck = async () => {
+        const email = localStorage.getItem('email');
+        const { data } = await axios.post('pinCheck', { email });
+        if (data.exists == true) {
+          setCheckPin(true);
+        }
+      }
+      pinCheck();
+
+      const Connect = async () => {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send('eth_requestAccounts', []);
+        const signer = provider.getSigner();
+        const USER_ADDRESS = signer.getAddress();
+        const GET_BALANCE = await provider.getBalance(USER_ADDRESS);
+        const FORMATED_BALANCE = ethers.utils.formatEther(GET_BALANCE);
+
+        const DEPLOYED_ADDRESS = '0xEeD4d31F9b81d550A370f2cddAef7763698ef32a';
+        const CONTRACT_ABI = [
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": false,
+                "internalType": "string",
+                "name": "messages",
+                "type": "string"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "gas",
+                "type": "uint256"
+              }
+            ],
+            "name": "Log",
+            "type": "event"
+          },
+          {
+            "anonymous": false,
+            "inputs": [
+              {
+                "indexed": false,
+                "internalType": "address",
+                "name": "sender",
+                "type": "address"
+              },
+              {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "name": "Received",
+            "type": "event"
+          },
+          {
+            "inputs": [],
+            "name": "recieveEther",
+            "outputs": [],
+            "stateMutability": "payable",
+            "type": "function"
+          },
+          {
+            "inputs": [
+              {
+                "internalType": "address payable",
+                "name": "recipient",
+                "type": "address"
+              },
+              {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+              }
+            ],
+            "name": "sendEther",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+          },
+          {
+            "stateMutability": "payable",
+            "type": "fallback"
+          },
+          {
+            "stateMutability": "payable",
+            "type": "receive"
+          },
+          {
+            "inputs": [],
+            "name": "Address",
+            "outputs": [
+              {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          },
+          {
+            "inputs": [],
+            "name": "getBalance",
+            "outputs": [
+              {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+              }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+          }
+        ]
+
+        const connectContract = new ethers.Contract(DEPLOYED_ADDRESS, CONTRACT_ABI, signer);
+
+        const contractAddr = await connectContract.Address();
+        const CONTRACT_BALANCE = await connectContract.getBalance();
+        const test = ethers.utils.formatEther(CONTRACT_BALANCE)
+        console.log(`Contract Balance: $${trx_rate * test}`);
+        console.log(`Contract Address: ${contractAddr}`);
+
+        setSigner(signer);
+      }
+      Connect();
+
+    } else {
+      setLoading(false);
+      toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
+      console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
+    }
+  } catch (error) {
+    toast.error("Error fetching API refresh App");
+    console.log(error);
+  }
+}, [])
+  
+//COPY FROM FUNCTION
+const copyFrom = async () => {
+try {
+  await navigator.clipboard.writeText(trx.from);
+  toast.success('Address Copied!');
+} catch (error) {
+  console.log(error);
+  toast.error('Fail to Copy!');
+}
+}
+  
+//COPY TO FUNCTION
+const copyTo = async () => {
+try {
+  await navigator.clipboard.writeText(trx.to);
+  toast.success('Address Copied!');
+} catch (error) {
+  console.log(error);
+  toast.error("Failed to copy!")
+}
+}
+  
+//GET TOTAL WITHDRAWAL
+const convertedPrice = trx_rate * trx.contractPrice;
+const convertedProfit = trx_rate * trx.ContractProfit;
+const addedBalance = convertedPrice + convertedProfit;
+const priceEth = trx.contractPrice + trx.ContractProfit;
+const CONTRACT_PRICE = trx.contractPrice + trx.ContractProfit;
+  
+//TRX
+const withdrawlFunction = async (e) => {
+const email = localStorage.getItem('email');
+setLoading(true);
+e.preventDefault();
+if (userAddress !== '') {
+  if (trx.status == 'Paused') {
+    toast.error('Transaction Failed contract De-activated');
+    setUserAddress('');
+    setShowModal('modal');
+    setLoading(false);
+    setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
+  } else {
+    const { pin1, pin2, pin3, pin4 } = pinInput;
+    const { data } = await axios.post('/api/pinVerify', {
+      pin1, pin2, pin3, pin4, email
+    });
+    if (data.success) {
+      const DEPLOYED_ADDRESS = '0xEeD4d31F9b81d550A370f2cddAef7763698ef32a';
+      const CONTRACT_ABI = [
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "string",
+              "name": "messages",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "gas",
+              "type": "uint256"
+            }
+          ],
+          "name": "Log",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "Received",
+          "type": "event"
+        },
+        {
+          "inputs": [],
+          "name": "recieveEther",
+          "outputs": [],
+          "stateMutability": "payable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address payable",
+              "name": "recipient",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "sendEther",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "stateMutability": "payable",
+          "type": "fallback"
+        },
+        {
+          "stateMutability": "payable",
+          "type": "receive"
+        },
+        {
+          "inputs": [],
+          "name": "Address",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "getBalance",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function"
+        }
+      ]
+      const connectContract = new ethers.Contract(DEPLOYED_ADDRESS, CONTRACT_ABI, signer);
+      const tx_response = await connectContract.sendEther(
+        userAddress,
+        ethers.utils.parseEther(CONTRACT_PRICE.toString())
+      )
+      const receipt = await tx_response.wait();
+      if (receipt) {
+        setLoading(false);
+        const to = receipt.to
+        const from = receipt.from;
+        const name = 'ContractTwo'
+        const status = 'Success'
+        const amount = addedBalance;
+        const contractProfit = convertedPrice
+        const contractPrice = convertedPrice
+        const gasFee = trx_rate * ethers.utils.formatEther(receipt.effectiveGasPrice);
+        const blockNumber = receipt.blockNumber;
+        const blockHash = receipt.blockHash;
+        const transactionHash = receipt.transactionHash;
+
+        const { data } = await axios.post('/api/pauseContractTwo', { email });
+        if (data.success) {
+          const { data } = await axios.post('/api/setContractTwoLogs', {
+            name,
+            email,
+            amount,
+            to,
+            from,
+            blockNumber,
+            transactionHash,
+            status,
+            blockHash,
+            gasFee,
+            contractProfit,
+            contractPrice,
+            priceEth
+          })
+          const logsData = data;
+          if (logsData.success) {
+            const For = "ForContractPauseAndWithdraw";
+            const { data } = await axios.post('/api/notification', {
+              For,
+              email,
+            })
+            if(data.success){
+              setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
+              toast.success('Ethers Sent successfuly');
+              setUserAddress('');
+              setLoading(false);
+              setShowModal('modal')
+            }else{
+              console.log('Error Pause and Withdrawing Contract');
+            }
+            
+          } else {
+            console.log(`Upadating Contract One Error: ${data.error}`)
+          }
+        } else {
+          toast.error('Transaction Error');
+        }
+      } else {
+        setLoading(false);
+        toast.error('Transaction Fail!');
+        setLoading(false);
+      }
+    } else if (data.error) {
+      toast.error(data.error);
+      setLoading(false);
+      console.log(data)
+    }
+  }
+} else {
+  toast.error("Please Insert a valid ERC20 address");
+  setLoading(false)
+}
+}
+
+//CREATE PIN
+const createPin = async (e) => {
+e.preventDefault();
+const email = localStorage.getItem('email');
+const { pin1, pin2, pin3, pin4 } = pinInput;
+
+const { data } = await axios.post('/api/createPin', {
+  pin1, pin2, pin3, pin4, email
+})
+
+if (data.error) {
+  setPinError('All PIN field is required')
+} else {
+  setPinError('')
+  setCheckPin(true);
+  toast.success(data.success);
+  setPinInput({ ...pinInput, pin1: '', pin2: '', pin3: '', pin4: '' });
+}
+
+}
     return (
         <>
           <div class="header fixed-top bg-surface d-flex justify-content-between align-items-center">
@@ -464,7 +458,7 @@ const WithdrawContractTwo = () => {
           <div class="pt-45 pb-16">
             <div class="tf-container">
               <div class="mt-4 coin-item style-2 gap-8">
-                <img src="/src/images/coin/coin-3.jpg" alt="img" class="img" />
+                <img src={coin3} alt="img" class="img" />
                 <h5>Withdraw ETH(ERC20)</h5>
               </div>
               <div class="mt-16 d-flex justify-content-between">
@@ -530,9 +524,9 @@ const WithdrawContractTwo = () => {
                   <li className="trade-list-item mt-16">
                     <p className="d-flex align-items-center text-small gap-4">X Routing <i className="icon-question fs-16 text-secondary"></i> </p>
                     <a href="#" className="d-flex gap-4 align-items-center">
-                      <img src="/src/images/coin/coin-3.jpg" alt="img" className="img" />
+                      <img src={coin3} alt="img" className="img" />
                       <i className="icon-select-right"></i>
-                      <img src="/src/images/coin/coin-5.jpg" alt="img" className="img" />
+                      <img src={coin5} alt="img" className="img" />
                       <i className="icon-arr-right fs-8"></i>
                     </a>
                   </li><hr />

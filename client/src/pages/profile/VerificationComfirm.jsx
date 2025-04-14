@@ -1,10 +1,7 @@
-import React from 'react'
+import React from 'react';
 
 const VerificationComfirm = () => {
-    const e = localStorage.getItem('email');
-    if(!e){
-        location.href = '/login';
-    }
+
     return (
         <>
           <div className="header fixed-top bg-surface d-flex justify-content-center align-items-center">

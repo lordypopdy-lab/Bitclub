@@ -2,14 +2,28 @@ import { useState, useEffect } from "react"
 import axios from 'axios';
 import toast from "react-hot-toast";
 import FadeLoader from 'react-spinners/FadeLoader';
-import { GoogleLogin } from 'react-google-login';
+import { GoogleLogin } from '@react-oauth/google';
 import { gapi } from "gapi-script";
+import google from "../../images/logo/google.jpg"
+import logo144 from "../../images/logo/logo144.png"
 import { jwtDecode } from "jwt-decode";
+import { Icon } from 'react-icons-kit';
+import { eyeOff } from 'react-icons-kit/feather/eyeOff';
+import { eye } from 'react-icons-kit/feather/eye'
+import { Preloader } from "../utils/Properties";
 
 const Login = () => {
-const [loading, setLoading] = useState(false);
+
+    const [loading, setLoading] = useState(false);
+    const [type, setType] = useState('password');
+    const [icon, setIcon] = useState(eyeOff);
+    const [data, setData] = useState({
+        email: '',
+        password: ''
+    })
 
     useEffect(() => {
+        Preloader()
         //////////TOKEN FETCHER////////////
         const fetcher = async () => {
             try {
@@ -33,10 +47,6 @@ const [loading, setLoading] = useState(false);
         })
     })
 
-    const [data, setData] = useState({
-        email: '',
-        password: ''
-    })
     const loginUser = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -45,41 +55,59 @@ const [loading, setLoading] = useState(false);
             const { data } = await axios.post('/login', {
                 email,
                 password
+            },{
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                withCredentials: true,
             })
             if (!data.error) {
                 setData({});
                 toast.success('Login successful. Welcome!');
                 localStorage.setItem('email', email);
                 localStorage.setItem('pin', data._id);
-                location.href = '/Home'
+                setTimeout(() => {
+                    location.href = '/Home'
+                }, 1000)
             } else {
                 toast.error(data.error)
                 setLoading(false)
             }
         } catch (error) {
             toast.error(error.message)
-            console.log(error.message);
+            console.log(`${error.message} Here...`);
             setLoading(false);
 
         }
     }
-
-
-    const handleLoginSuccess = async (response) => {
+    const login = async (credentialResponse) => {
+        console.log("Success")
         setLoading(true)
-        const { tokenId } = response;
-        const decoded = jwtDecode(tokenId);
+        const { credential } = credentialResponse;
+        const decoded = jwtDecode(credential);
         const { email, name, picture, email_verified } = decoded
 
         try {
             if (email_verified) {
-                const { data } = await axios.post('/loginGoogle', { email, name, picture });
+                const { data } = await axios.post('/loginGoogle',
+                    {
+                        email,
+                        name,
+                        picture
+                    }, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    withCredentials: true,
+                });
                 if (data) {
                     toast.success("Login Successfully, Welcome!");
                     setLoading(false)
                     localStorage.setItem('email', email);
                     localStorage.setItem('pin', data._id);
-                    location.href = '/Home'
+                    setTimeout(() => {
+                        location.href = '/Home';
+                    }, 1000);
                 } else {
                     toast.error("Login Error");
                     setLoading(false)
@@ -90,17 +118,23 @@ const [loading, setLoading] = useState(false);
             toast.error("Login failed")
             setLoading(false)
         }
-    };
 
-    const handleLoginFailure = (response) => {
-        console.log('Login Failed:', response);
-    };
+    }
+    const handleToggle = () => {
+        if (type === 'password') {
+            setIcon(eye);
+            setType('text')
+        } else {
+            setIcon(eyeOff)
+            setType('password')
+        }
+    }
 
     return (
         <>
             {/* <!-- preloade --> */}
             <div className="preload preload-container">
-                <div className="preload-logo" style={{ backgroundImage: `url('/src/images/logo/144.png')` }}>
+                <div className="preload-logo" style={{ backgroundImage: `url(${logo144})` }}>
                     <div className="spinner"></div>
                 </div>
             </div>
@@ -114,16 +148,16 @@ const [loading, setLoading] = useState(false);
                         <h2 className="text-center">Login Bitclub.</h2>
                         <ul className="mt-40 socials-login">
                             <li className="mt-12">
-                                <GoogleLogin
-                                    render={renderProps => (
-                                        <a className="tf-btn md social dark" onClick={renderProps.onClick} disabled={renderProps.disabled}><img src="/src/images/logo/google.jpg" alt="img" />  Sign in with Google</a>
-                                    )}
-                                    clientId="170268353832-0fn4qbgklemeb9s0o5elvi99ronia9ov.apps.googleusercontent.com"
-                                    onSuccess={handleLoginSuccess}
-                                    onFailure={handleLoginFailure}
-                                    cookiePolicy={'single_host_origin'}
-                                >
-                                </GoogleLogin>
+                                <a className="tf-btn md p-2 social dark">
+                                    <GoogleLogin
+                                        theme="filled_black"
+                                        onSuccess={credentialResponse => {
+                                            login(credentialResponse);
+                                        }}
+                                        onError={() => {
+                                            console.log('Login Failed');
+                                        }}
+                                    /></a>
                             </li>
 
                         </ul>
@@ -152,16 +186,15 @@ const [loading, setLoading] = useState(false);
                                 <p className="mb-8 text-small">Password</p>
                                 <div className="box-auth-pass">
                                     <input
-                                        type="password"
+                                        type={type}
                                         required
                                         placeholder="Your password"
                                         className="password-field"
                                         value={data.password}
                                         onChange={(e) => setData({ ...data, password: e.target.value })}
                                     />
-                                    <span className="show-pass">
-                                        <i className="icon-view"></i>
-                                        <i className="icon-view-hide"></i>
+                                    <span className="show-pass" onClick={handleToggle}>
+                                        <Icon class="absolute mr-10" icon={icon} size={15} />
                                     </span>
                                 </div>
                             </label>

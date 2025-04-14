@@ -1,11 +1,14 @@
-import React from 'react'
+import React from 'react';
+import logo144 from "../../images/logo/logo144.png";
+import banner2 from "../../images/banner/banner2.jpg";
 
 const RessetPassword = () => {
+if (!localStorage.getItem('email')) { location.href = '/login'; }
   return (
     <>
       {/* <!-- preloade --> */}
       <div className="preload preload-container">
-        <div className="preload-logo" style={{ backgroundImage: `url('/src/images/logo/144.png')` }}>
+        <div className="preload-logo" style={{ backgroundImage: `url(${logo144})` }}>
           <div className="spinner"></div>
         </div>
       </div>
@@ -18,7 +21,7 @@ const RessetPassword = () => {
     <div className="pt-45 pb-16">
         <div className="tf-container">
             <div className="banner-reset position-relative text-center mt-60">
-                <img src="/src/images/banner/banner2.jpg" alt="img" />
+                <img src={banner2} alt="img" />
                 <svg className="blur" xmlns="http://www.w3.org/2000/svg" width="350" height="301" viewBox="0 0 350 301" fill="none">
                   <g opacity="0.8" filter="url(#filter0_f_1_1698)">
                     <path d="M226.051 150.5C160.067 200.368 203.683 200.368 176.092 200.368C148.5 200.368 201.857 210.404 126.133 150.5C50.4085 90.5959 148.5 100.632 176.092 100.632C203.683 100.632 292.034 100.632 226.051 150.5Z" fill="url(#paint0_linear_1_1698)"/>
@@ -47,7 +50,7 @@ const RessetPassword = () => {
               <fieldset className="mt-40">
                 <label className="label-ip">
                     <p className="mb-8 text-small">Email/PhoneNumber</p>
-                    <input type="text" value="themesflat@gmail.com" />
+                    <input type="text" value="bitclubcontract@gmail.com" />
                 </label>
               </fieldset>
               <button className="mt-40">Next</button>

@@ -1,8 +1,3 @@
-/*!
- * ApexCharts v3.29.0
-
- * Released under the MIT License.
- */
 !function(t, e) {
     "object" == typeof exports && "undefined" != typeof module ? module.exports = e() : "function" == typeof define && define.amd ? define(e) : (t = "undefined" != typeof globalThis ? globalThis : t || self).ApexCharts = e()
 }(this, (function() {
@@ -18576,9 +18571,7 @@
         return Mt(t, t.document)
     }
     : Tt.SVG = Mt(Tt, Tt.document),
-    /*! svg.filter.js - v2.0.2 - 2016-02-24
-  * https://github.com/wout/svg.filter.js
-  * Copyright (c) 2016 Wout Fierens; Licensed MIT */
+
     function() {
         SVG.Filter = SVG.invent({
             create: "filter",
@@ -19191,9 +19184,7 @@
             }
         })
     }(),
-    /*! svg.draggable.js - v2.2.2 - 2019-01-08
-  * https://github.com/svgdotjs/svg.draggable.js
-  * Copyright (c) 2019 Wout Fierens; Licensed MIT */
+
     function() {
         function t(t) {
             t.remember("_draggable", this),

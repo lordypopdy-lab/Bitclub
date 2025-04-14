@@ -1,15 +1,15 @@
-import React from 'react'
+import React from 'react';
+import coin1 from "../../images/coin/coin1.jpg";
+import logo144 from "../../images/logo/logo144.png";
 
 const BuyQuantity = () => {
-    const e = localStorage.getItem('email');
-    if(!e){
-        location.href = '/login';
-    }
+if(!localStorage.getItem('email')){ location.href = '/login'; }
+
     return (
         <>
             {/* <!-- preloade --> */}
             <div className="preload preload-container">
-                <div className="preload-logo" style={{ backgroundImage: `url('/src/images/logo/144.png')` }}>
+                <div className="preload-logo" style={{ backgroundImage: `url(${logo144})` }}>
                     <div className="spinner"></div>
                 </div>
             </div>
@@ -21,7 +21,7 @@ const BuyQuantity = () => {
             <div className="pt-45 pb-16">
                 <div className="tf-container">
                     <div className="mt-4 coin-item style-2 gap-8">
-                        <img src="/src/images/coin/coin-1.jpg" alt="img" className="img" />
+                        <img src={coin1} alt="img" className="img" />
                         <h5>Buy BTC</h5>
                     </div>
                     <div className="mt-16 d-flex justify-content-between">

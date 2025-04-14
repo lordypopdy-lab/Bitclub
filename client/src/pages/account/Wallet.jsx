@@ -1,11 +1,12 @@
-import { ethers } from "ethers";
-import { useContext } from "react"
-import { UserContext } from "../../../context/UserContext"
-import { useEffect, useState } from "react";
 import axios from "axios";
+import { ethers } from "ethers";
+import { useContext } from "react";
 import toast from "react-hot-toast";
-import FadeLoader from 'react-spinners/FadeLoader';
 import { timeAgo } from "../utils/timeAgo";
+import { useEffect, useState } from "react";
+import logo144 from "../../images/logo/logo144.png";
+import FadeLoader from 'react-spinners/FadeLoader';
+import { UserContext } from "../../../context/UserContext";
 
 const Wallet = () => {
     const [loading, setLoading] = useState(false);
@@ -25,8 +26,6 @@ const Wallet = () => {
         pricePercentage: '',
         ath_change_percentage: ''
     });
-
-
 
     useEffect(() => {
         setLoading(true);
@@ -201,13 +200,6 @@ const Wallet = () => {
         }
     }, [])
 
-
-    const { user } = useContext(UserContext);
-    const e = localStorage.getItem('email');
-    if (!e) {
-        location.href = '/login';
-    }
-
     const toContractOne = async () => {
         const email = localStorage.getItem('email');
         try {
@@ -242,11 +234,14 @@ const Wallet = () => {
         }
     }
 
+const { user } = useContext(UserContext);
+if (!localStorage.getItem('email')) { location.href = '/login'; }
+
     return (
         <>
             {/* <!-- preloade --> */}
             <div className="preload preload-container">
-                <div className="preload-logo" style={{ backgroundImage: `url('/src/images/logo/144.png')` }}>
+                <div className="preload-logo" style={{ backgroundImage: `url(${logo144})` }}>
                     <div className="spinner"></div>
                 </div>
             </div>
@@ -280,7 +275,7 @@ const Wallet = () => {
                                 </a>
                             </li>
                             <li>
-                                <a href="/AddressScan" className="tf-list-item d-flex flex-column gap-8 align-items-center">
+                                <a href="/deposite" className="tf-list-item d-flex flex-column gap-8 align-items-center">
                                     <span className="box-round bg-surface d-flex justify-content-center align-items-center"><i className="icon icon-way2"></i></span>
                                     Receive
                                 </a>
@@ -330,7 +325,7 @@ const Wallet = () => {
                                     </li>
                                     <li className="mt-8">
                                         <div className="accent-box-v5 p-0 bg-menuDark" style={{ width: '100%' }}>
-                                            <a onClick={toContractTwo } className="coin-item style-1 gap-12 bg-surface">
+                                            <a onClick={toContractTwo} className="coin-item style-1 gap-12 bg-surface">
                                                 <span className="icon-box bg-transparent bg-icon1"><i className="icon-book"></i></span>
                                                 <div className="mt-12">
                                                     <a href="#" className="text-small">Contract <span style={{ color: '#25C866' }}>Class two</span></a>
@@ -556,7 +551,7 @@ const Wallet = () => {
                                         </a>
                                     </li>
                                 </ul>
-                                <button className="mt-20">Buy Assets</button>
+                                <button onClick={(() => { location.href = "/Deposite" })} className="mt-20">Buy Assets</button>
                             </div>
                         </div>
                     </div>
