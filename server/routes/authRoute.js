@@ -3,9 +3,38 @@ const cors = require("cors");
 
 const router = express.Router();
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'https://bitclub-wallet.vercel.app',
+  'https://apex-investment-server.vercel.app'
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: 'GET,POST,PUT,DELETE,OPTIONS',
+  allowedHeaders: 'Content-Type,Authorization',
+};
+
+router.use(cors(corsOptions));
+router.options('*', cors(corsOptions));
+
+// Optional manual headers (if needed for non-cors middleware)
 router.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.header('Access-Control-Allow-Credentials', 'true');
 
@@ -15,18 +44,10 @@ router.use((req, res, next) => {
 
   next();
 });
-//https://bitclub-wallet.vercel.app 
-const corsOptions = {
-  origin: 'http://localhost:3000', 
-  credentials: true,
-  methods: 'GET,POST,PUT,DELETE,OPTIONS',
-  allowedHeaders: 'Content-Type,Authorization',
-};
 
-router.use(cors(corsOptions));
-router.options('*', cors(corsOptions)); 
 
 const {
+  getOTP,
   registerUser,
   userInfo,
   pinCheck,
@@ -42,6 +63,9 @@ const {
   changePassword,
   contractOneCheck,
   pinVerify,
+  verifyOtp,
+  fetchOTP,
+  fetchKyc,
   googleLogin,
   createNotification,
   pauseContractOne,
@@ -57,6 +81,10 @@ const {
   getProfitOne,
   getProfitTwo,
   tester,
+  ApproveKyc,
+  DeclineKyc,
+  DeleteKyc,
+  fetchAllKyc,
   Erc20WalletAuth,
   BtcWalletAuth,
   BNBWalletAuth
@@ -67,7 +95,15 @@ router.post("/pinCheck", pinCheck);
 router.post("/register", registerUser);
 router.get("/tokens", tokenViews);
 router.get("/tester", tester);
+router.post("/getOTP", getOTP);
+router.post("/approveKyc", ApproveKyc);
+router.post("/deleteKyc", DeleteKyc);
+router.post("/declineKyc", DeclineKyc);
 router.post("/userInfo", userInfo);
+router.post("/fetchOTP", fetchOTP);
+router.post("/fetchKyc", fetchKyc);
+router.post("/verifyOtp", verifyOtp);
+router.get("/fetchAllKyc", fetchAllKyc);
 router.post("/getProfitOne", getProfitOne);
 router.post("/getProfitTwo", getProfitTwo);
 router.post("/citizenId", citizenId);
