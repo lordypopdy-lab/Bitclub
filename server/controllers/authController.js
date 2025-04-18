@@ -172,7 +172,17 @@ const getOTP = async (req, res) => {
       from: process.env.EMAIL_USER,
       to: email,
       subject: "Your OTP Code",
-      text: `Testing OTP from Apex-Investment Your One-Time Password (OTP) is: ${otp}\n\nIt will expire in 10 minutes.`,
+      text: `Hi [${email}],
+Your verification code is:
+
+[${otp}]
+
+Enter this code to verify your email address.
+This code will expire in 15 minutes.
+
+If you didn’t request this, you can ignore the email.
+
+Thanks.`,
     };
 
     try {
