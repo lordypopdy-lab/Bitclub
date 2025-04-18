@@ -6,6 +6,7 @@ const router = express.Router();
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
+  'https://kyc-rho.vercel.app',
   'https://bitclub-wallet.vercel.app',
   'https://apex-investment.vercel.app'
 ];
