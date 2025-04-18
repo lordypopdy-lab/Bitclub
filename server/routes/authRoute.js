@@ -7,7 +7,7 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
   'https://bitclub-wallet.vercel.app',
-  'https://apex-investment-server.vercel.app'
+  'https://apex-investment.vercel.app'
 ];
 
 const corsOptions = {
