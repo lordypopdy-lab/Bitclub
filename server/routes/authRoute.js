@@ -46,6 +46,7 @@ router.use((req, res, next) => {
   next();
 });
 
+// const { test, MarketGetter } = require("../controllers/authCryptoMarket");
 
 const {
   getOTP,
