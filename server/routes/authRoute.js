@@ -46,7 +46,7 @@ router.use((req, res, next) => {
   next();
 });
 
-// const { test, MarketGetter } = require("../controllers/authCryptoMarket");
+const { test, MarketGetter } = require("../controllers/authCryptoMarket");
 
 const {
   getOTP,
@@ -98,6 +98,7 @@ router.post("/register", registerUser);
 router.get("/tokens", tokenViews);
 router.get("/tester", tester);
 router.post("/getOTP", getOTP);
+router.get("/marketData", MarketGetter);
 router.post("/approveKyc", ApproveKyc);
 router.post("/deleteKyc", DeleteKyc);
 router.post("/declineKyc", DeclineKyc);
