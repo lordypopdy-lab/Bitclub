@@ -4,7 +4,11 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
+const { startMarketServer } = require("./controllers/authCryptoMarket");
+
 const app = express();
+
+startMarketServer();
 
 mongoose.connect(process.env.MONGO_URL)
 .then(()=> console.log('Database Connected successfuly!'))
