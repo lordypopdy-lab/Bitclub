@@ -19,7 +19,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({extended: true}));
 app.use('/', require('./routes/authRoute'));
 
-const PORT = 8080
+const PORT = 3001
 app.listen(PORT, ()=>{
   console.log(`Bitclub New0147 is Running at Port: ${PORT}`);
 })
