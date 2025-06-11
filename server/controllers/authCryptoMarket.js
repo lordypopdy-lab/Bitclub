@@ -1,6 +1,8 @@
-import express from "express";
-import http from "http";
-import WebSocket, { WebSocketServer } from "ws";
+const express = require("express");
+const http = require("http");
+const WebSocket = require("ws");
+const { WebSocketServer } = WebSocket;
+
 
 const MarketGetter = async (req, res)=> {
 
