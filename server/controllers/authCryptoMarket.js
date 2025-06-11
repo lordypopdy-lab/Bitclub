@@ -1,13 +1,8 @@
-import WebSocket, { WebSocketServer } from 'ws';
-import http from 'http';
-import express from 'express';
+// controllers/authCryptoMarket.js
+const WebSocket = require("ws");
 
-export const startMarketServer = () => {
-
-  const app = express();
-  const server = http.createServer(app);
-  const wss = new WebSocketServer({ server });
-
+const startMarketServer = (server) => {
+  const wss = new WebSocket.Server({ server });
   const clients = new Set();
 
   wss.on('connection', (ws) => {
@@ -92,8 +87,9 @@ export const startMarketServer = () => {
   };
 
   connectToBinance();
-
 };
+
+module.exports = { startMarketServer };
 
 
 // const MarketGetter = async (req, res)=> {
