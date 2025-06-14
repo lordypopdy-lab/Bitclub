@@ -56,9 +56,6 @@ const Login = () => {
                 email,
                 password
             },{
-                headers: {
-                    'Content-Type': 'application/json',
-                },
                 withCredentials: true,
             })
             if (!data.error) {
@@ -95,9 +92,6 @@ const Login = () => {
                         name,
                         picture
                     }, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
                     withCredentials: true,
                 });
                 if (data) {

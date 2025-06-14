@@ -66,8 +66,9 @@ import { useEffect } from 'react';
 import { UserContextProvider } from '../context/UserContext';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-axios.defaults.baseURL = 'http://localhost:8080';
-axios.defaults.withCredentials = true;
+axios.defaults.baseURL = import.meta.env.VITE_API_URL ;
+// axios.defaults.withCredentials = true;
+//'http://localhost:8080'
 //https://bitclubserver.vercel.app
 import '../src/fonts/fonts.css';
 import '../src/fonts/font-icons.css';
