@@ -64,6 +64,12 @@ export default defineConfig({
     }),
   ],
   server: {
-    port: 3000
+    port: 3000,
+    proxy: {
+      '/ws': {
+        target: 'https://bitclub.onrender.com',
+        ws: true
+      }
+    }
   }
 })
