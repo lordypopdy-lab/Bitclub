@@ -540,7 +540,7 @@ const Home = () => {
                                             <span>
                                                 {prices.BTCUSDT?.markPrice
                                                     ? `$${Number(prices.BTCUSDT.markPrice).toFixed(2)}`
-                                                    : `$${listMain?.btc_price}`}
+                                                    : `$${priceBackup?.BTC?.current_price.toFixed(2) || '0.00'}`}
                                             </span>
                                             {priceBackup?.BTC?.price_change_percentage_24h > 0 ? (
                                                 <span className="text-primary d-flex align-items-center gap-2">
@@ -573,9 +573,10 @@ const Home = () => {
                                         </div>
                                         <div className="coin-price d-flex justify-content-between">
                                             <span>
-                                                {prices.BNBUSDT?.price
+                                                {prices?.BNBUSDT?.price
                                                     ? `$${Number(prices.BNBUSDT.price).toFixed(2)}`
-                                                    : `$${listMain?.bnb_price}`}
+                                                    : `$${priceBackup?.BNB?.current_price.toFixed(2) || '0.00'}`}
+
                                             </span>
                                             {priceBackup?.BNB?.price_change_percentage_24h > 0 ? (
                                                 <span className="text-primary d-flex align-items-center gap-2">
@@ -611,7 +612,7 @@ const Home = () => {
                                                     ? `$${Number(prices.ETHUSDT.price).toFixed(2)}`
                                                     : `$${listMain?.eth_price}`}
                                             </span>
-                                            {priceBackup?.ETH?.price_change_percentage_24h > 0 ? (
+                                            {prices?.ETHUSDT?.quantity > 0 ? (
                                                 <span className="text-primary d-flex align-items-center gap-2">
                                                     <i className="icon-select-up"></i>
                                                     {Number(priceBackup.ETH.price_change_percentage_24h).toFixed(4)}%
@@ -619,7 +620,7 @@ const Home = () => {
                                             ) : (
                                                 <span className="text-danger d-flex align-items-center gap-2">
                                                     <i className="icon-select-down"></i>
-                                                    {Number(priceBackup?.ETH?.price_change_percentage_24h || 0).toFixed(4)}%
+                                                    {Number(prices?.ETHUSDT?.quantity || 0).toFixed(4)}%
                                                 </span>
                                             )}
                                         </div>
@@ -660,7 +661,7 @@ const Home = () => {
                         <div className="tab-content mt-8">
                             <div className="tab-pane fade show active" id="favorites" role="tabpanel">
                                 <div className="d-flex justify-content-between">
-                                    Name
+                                    Index/Name
                                     <p className="d-flex gap-8">
                                         <span>Current Price(USD)/</span>
                                         <span>Change(%)</span>
@@ -691,11 +692,233 @@ const Home = () => {
                                                         : `$${listMain?.btc_price}`}
                                                 </span>
                                                 <div className="text-end">
-                                                    {priceBackup?.BTC?.price_change_percentage_24h > 0 ? <p className="text-button text-primary"> {Number(priceBackup.BTC.price_change_percentage_24h).toFixed(4)}%</p> : <p className="text-button text-red"> {Number(priceBackup.BTC.price_change_percentage_24h).toFixed(4)}%</p>}
+                                                    {Number(priceBackup?.BTC?.price_change_percentage_24h || 0) > 0 ? (
+                                                        <p className="text-button text-primary">
+                                                            {Number(priceBackup.BTC.price_change_percentage_24h).toFixed(4)}%
+                                                        </p>
+                                                    ) : (
+                                                        <p className="text-button text-red">
+                                                            {Number(priceBackup?.BTC?.price_change_percentage_24h || 0).toFixed(4)}%
+                                                        </p>
+                                                    )}
+
                                                     <p className="mt-4 text-secondary">
                                                         ${Number(prices?.BTCUSDT?.quantity || 0).toFixed(2)}
                                                     </p>
                                                 </div>
+
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li style={{ marginTop: '18px' }}>
+                                        <a data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
+                                            <div className="d-flex align-items-center gap-12 flex-1">
+                                                <h4 className="text-primary">02</h4>
+                                                <p>
+                                                    <span className="mb-4 text-button fw-6">ETH</span>
+                                                    <span className="text-secondary">/ USDT</span>
+                                                </p>
+                                            </div>
+                                            <div className="d-flex justify-content-between align-items-center flex-st2">
+                                                <span className="text-small">$
+                                                    {prices.ETHUSDT?.price
+                                                        ? `$${Number(prices.ETHUSDT.price).toFixed(2)}`
+                                                        : `$${listMain?.eth_price}`}
+                                                </span>
+                                                <div className="text-end">
+                                                    {Number(prices?.ETHUSDT?.quantity || 0) > 1 ? (
+                                                        <p className="text-button text-primary">
+                                                            {Number(priceBackup.ETH.price_change_percentage_24h).toFixed(4)}%
+                                                        </p>
+                                                    ) : (
+                                                        <p className="text-button text-red">
+                                                            {Number(prices?.ETHUSDT?.quantity || 0).toFixed(4)}%
+                                                        </p>
+                                                    )}
+
+                                                    <p className="mt-4 text-secondary">
+                                                        ${Number(prices?.ETHUSDT?.quantity || 0).toFixed(2)}
+                                                    </p>
+                                                </div>
+
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li style={{ marginTop: '18px' }}>
+                                        <a data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
+                                            <div className="d-flex align-items-center gap-12 flex-1">
+                                                <h4 className="text-primary">03</h4>
+                                                <p>
+                                                    <span className="mb-4 text-button fw-6">BNB</span>
+                                                    <span className="text-secondary">/ USDT</span>
+                                                </p>
+                                            </div>
+                                            <div className="d-flex justify-content-between align-items-center flex-st2">
+                                                <span className="text-small">$
+                                                    {prices?.BNBUSDT?.price
+                                                        ? `$${Number(prices.BNBUSDT.price).toFixed(2)}`
+                                                        : `$${priceBackup?.BNB?.current_price.toFixed(2) || '0.00'}`}
+                                                </span>
+                                                <div className="text-end">
+                                                    {Number(prices?.BNBUSDT?.quantity  || 0) > 1 ? (
+                                                        <p className="text-button text-primary">
+                                                            {Number(prices?.BNBUSDT?.quantity ).toFixed(4)}%
+                                                        </p>
+                                                    ) : (
+                                                        <p className="text-button text-red">
+                                                            {Number(prices?.BNBUSDT?.quantity || 0).toFixed(4)}%
+                                                        </p>
+                                                    )}
+
+                                                    <p className="mt-4 text-secondary">
+                                                        ${Number(prices?.BNBUSDT?.quantity || 0).toFixed(2)}
+                                                    </p>
+                                                </div>
+
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li style={{ marginTop: '18px' }}>
+                                        <a data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
+                                            <div className="d-flex align-items-center gap-12 flex-1">
+                                                <h4 className="text-primary">04</h4>
+                                                <p>
+                                                    <span className="mb-4 text-button fw-6">LTC</span>
+                                                    <span className="text-secondary">/ USDT</span>
+                                                </p>
+                                            </div>
+                                            <div className="d-flex justify-content-between align-items-center flex-st2">
+                                                <span className="text-small">$
+                                                    {prices?.LTCUSDT?.price
+                                                        ? `$${Number(prices.LTCUSDT.price).toFixed(3)}`
+                                                        : prices?.LTCUSDT?.markPrice
+                                                            ? `$${Number(prices.LTCUSDT.markPrice).toFixed(3)}`
+                                                            : `$${Number(priceBackup?.LTC?.current_price || 0).toFixed(2)}`}
+                                                </span>
+                                                <div className="text-end">
+                                                    {Number(prices?.LTCUSDT?.quantity || 0) > 1 ? (
+                                                        <p className="text-button text-primary">
+                                                            {Number(prices?.LTCUSDT?.quantity).toFixed(4)}%
+                                                        </p>
+                                                    ) : (
+                                                        <p className="text-button text-red">
+                                                            {Number(prices?.LTCUSDT?.quantity  || 0).toFixed(4)}%
+                                                        </p>
+                                                    )}
+
+                                                    <p className="mt-4 text-secondary">
+                                                        ${Number(prices?.LTCUSDT?.quantity || 0).toFixed(2)}
+                                                    </p>
+                                                </div>
+
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li style={{ marginTop: '18px' }}>
+                                        <a data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
+                                            <div className="d-flex align-items-center gap-12 flex-1">
+                                                <h4 className="text-primary">05</h4>
+                                                <p>
+                                                    <span className="mb-4 text-button fw-6">SOL</span>
+                                                    <span className="text-secondary">/ USDT</span>
+                                                </p>
+                                            </div>
+                                            <div className="d-flex justify-content-between align-items-center flex-st2">
+                                                <span className="text-small">$
+                                                    {prices?.SOLUSDT?.price
+                                                        ? `$${Number(prices.SOLUSDT.price).toFixed(2)}`
+                                                        : prices?.SOLUSDT?.markPrice
+                                                            ? `$${Number(prices.SOLUSDT.markPrice).toFixed(2)}`
+                                                            : `$${Number(priceBackup?.SOL?.current_price || 0).toFixed(2)}`}
+                                                </span>
+                                                <div className="text-end">
+                                                    {Number(priceBackup?.SOL?.price_change_percentage_24h || 0) > 0 ? (
+                                                        <p className="text-button text-primary">
+                                                            {Number(priceBackup.SOL.price_change_percentage_24h).toFixed(4)}%
+                                                        </p>
+                                                    ) : (
+                                                        <p className="text-button text-red">
+                                                            {Number(priceBackup?.SOL?.price_change_percentage_24h || 0).toFixed(4)}%
+                                                        </p>
+                                                    )}
+
+                                                    <p className="mt-4 text-secondary">
+                                                        ${Number(prices?.SOLUSDT?.quantity || 0).toFixed(2)}
+                                                    </p>
+                                                </div>
+
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li style={{ marginTop: '18px' }}>
+                                        <a data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
+                                            <div className="d-flex align-items-center gap-12 flex-1">
+                                                <h4 className="text-primary">06</h4>
+                                                <p>
+                                                    <span className="mb-4 text-button fw-6">XRP</span>
+                                                    <span className="text-secondary">/ USDT</span>
+                                                </p>
+                                            </div>
+                                            <div className="d-flex justify-content-between align-items-center flex-st2">
+                                                <span className="text-small">$
+                                                    {prices?.XRPUSDT?.price
+                                                        ? `$${Number(prices.XRPUSDT.price).toFixed(4)}`
+                                                        : prices?.XRPUSDT?.markPrice
+                                                            ? `$${Number(prices.XRPUSDT.markPrice).toFixed(4)}`
+                                                            : `$${Number(priceBackup?.TRX?.current_price || 0).toFixed(2)}`}
+                                                </span>
+                                                <div className="text-end">
+                                                    {Number(prices?.XRPUSDT?.quantity || 0) > 1 ? (
+                                                        <p className="text-button text-primary">
+                                                            {Number(prices?.XRPUSDT?.quantity).toFixed(2)}%
+                                                        </p>
+                                                    ) : (
+                                                        <p className="text-button text-red">
+                                                            {Number(prices?.XRPUSDT?.quantity || 0).toFixed(2)}%
+                                                        </p>
+                                                    )}
+
+                                                    <p className="mt-4 text-secondary">
+                                                        ${Number(prices?.XRPUSDT?.quantity || 0).toFixed(2)}
+                                                    </p>
+                                                </div>
+
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li style={{ marginTop: '18px' }}>
+                                        <a data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
+                                            <div className="d-flex align-items-center gap-12 flex-1">
+                                                <h4 className="text-primary">06</h4>
+                                                <p>
+                                                    <span className="mb-4 text-button fw-6">DOT</span>
+                                                    <span className="text-secondary">/ USDT</span>
+                                                </p>
+                                            </div>
+                                            <div className="d-flex justify-content-between align-items-center flex-st2">
+                                                <span className="text-small">$
+                                                    {prices?.DOTUSDT?.price
+                                                        ? `$${Number(prices.DOTUSDT.price).toFixed(4)}`
+                                                        : prices?.DOTUSDT?.markPrice
+                                                            ? `$${Number(prices.DOTUSDT.markPrice).toFixed(4)}`
+                                                            : `$${Number(priceBackup?.AVAX?.current_price || 0).toFixed(2)}`}
+                                                </span>
+                                                <div className="text-end">
+                                                    {Number(prices?.DOTUSDT?.quantity || 0) > 1 ? (
+                                                        <p className="text-button text-primary">
+                                                            {Number(prices?.DOTUSDT?.quantity).toFixed(2)}%
+                                                        </p>
+                                                    ) : (
+                                                        <p className="text-button text-red">
+                                                            {Number(prices?.DOTUSDT?.quantity || 0).toFixed(2)}%
+                                                        </p>
+                                                    )}
+
+                                                    <p className="mt-4 text-secondary">
+                                                        ${Number(prices?.DOTUSDT?.quantity || 0).toFixed(2)}
+                                                    </p>
+                                                </div>
+
                                             </div>
                                         </a>
                                     </li>
