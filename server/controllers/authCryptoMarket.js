@@ -1,98 +1,4 @@
-// // controllers/authCryptoMarket.js
-// const WebSocket = require("ws");
-
-// const startMarketServer = (server) => {
-//   const wss = new WebSocket.Server({ server });
-//   const clients = new Set();
-
-//   wss.on('connection', (ws) => {
-//     console.log('📡 Frontend connected');
-//     clients.add(ws);
-
-//     const pingInterval = setInterval(() => {
-//       if (ws.readyState === WebSocket.OPEN) ws.ping();
-//     }, 10000);
-
-//     ws.on('close', () => {
-//       console.log('❌ Frontend disconnected');
-//       clearInterval(pingInterval);
-//       clients.delete(ws);
-//     });
-//   });
-
-//   const streams = [
-//     'bnbusdt@aggTrade', 'btcusdt@markPrice', 'ethusdt@aggTrade',
-//     'solusdt@markPrice', 'xrpusdt@aggTrade', 'adausdt@markPrice',
-//     'dogeusdt@aggTrade', 'maticusdt@markPrice', 'ltcusdt@aggTrade',
-//     'trxusdt@markPrice', 'dotusdt@aggTrade', 'avaxusdt@markPrice',
-//   ];
-
-//   const binanceUrl = `wss://fstream.binance.com/stream?streams=${streams.join('/')}`;
-//   let binanceSocket;
-
-//   const connectToBinance = () => {
-//     console.log('🔗 Connecting to Binance WebSocket...');
-//     binanceSocket = new WebSocket(binanceUrl);
-
-//     binanceSocket.on('open', () => {
-//       console.log('✅ Connected to Binance WebSocket');
-//     });
-
-//     binanceSocket.on('message', (data) => {
-//       try {
-//         const parsed = JSON.parse(data);
-//         const stream = parsed.stream;
-//         const payload = parsed.data;
-
-//         let formatted;
-
-//         if (stream.endsWith('@aggTrade')) {
-//           formatted = {
-//             type: 'trade',
-//             symbol: stream.split('@')[0],
-//             price: payload.p,
-//             quantity: payload.q,
-//             timestamp: payload.T,
-//           };
-//         } else if (stream.endsWith('@markPrice')) {
-//           formatted = {
-//             type: 'markPrice',
-//             symbol: stream.split('@')[0],
-//             markPrice: payload.p,
-//             time: payload.E,
-//           };
-//         }
-
-//         if (formatted) {
-//           for (const client of clients) {
-//             if (client.readyState === WebSocket.OPEN) {
-//               client.send(JSON.stringify(formatted));
-//             }
-//           }
-//         }
-//       } catch (err) {
-//         console.error('❌ Binance data error:', err);
-//       }
-//     });
-
-//     binanceSocket.on('close', () => {
-//       console.warn('🔌 Binance WebSocket closed. Reconnecting...');
-//       setTimeout(connectToBinance, 5000);
-//     });
-
-//     binanceSocket.on('error', (err) => {
-//       console.error('🚨 Binance WebSocket error:', err);
-//       binanceSocket.close();
-//     });
-//   };
-
-//   connectToBinance();
-// };
-
-// module.exports = { startMarketServer };
-
-
-// controllers/authCryptoMarket.js
+controllers/authCryptoMarket.js
 const WebSocket = require("ws");
 
 const startMarketServer = (server) => {
@@ -114,45 +20,58 @@ const startMarketServer = (server) => {
     });
   });
 
-  const symbols = [
-    'btcusdt', 'ethusdt', 'bnbusdt', 'solusdt', 'adausdt',
-    'dogeusdt', 'xrpusdt', 'maticusdt', 'ltcusdt', 'trxusdt'
+  const streams = [
+    'bnbusdt@aggTrade', 'btcusdt@markPrice', 'ethusdt@aggTrade',
+    'solusdt@markPrice', 'xrpusdt@aggTrade', 'adausdt@markPrice',
+    'dogeusdt@aggTrade', 'maticusdt@markPrice', 'ltcusdt@aggTrade',
+    'trxusdt@markPrice', 'dotusdt@aggTrade', 'avaxusdt@markPrice',
   ];
-  const streamUrl = `wss://stream.binance.com:9443/stream?streams=${symbols.map(s => `${s}@ticker`).join('/')}`;
+
+  const binanceUrl = `wss://fstream.binance.com/stream?streams=${streams.join('/')}`;
   let binanceSocket;
 
   const connectToBinance = () => {
-    binanceSocket = new WebSocket(streamUrl);
     console.log('🔗 Connecting to Binance WebSocket...');
+    binanceSocket = new WebSocket(binanceUrl);
 
-    binanceSocket.on('open', () => console.log('✅ Connected to Binance WebSocket'));
+    binanceSocket.on('open', () => {
+      console.log('✅ Connected to Binance WebSocket');
+    });
 
-    binanceSocket.on('message', (msg) => {
+    binanceSocket.on('message', (data) => {
       try {
-        const parsed = JSON.parse(msg);
-        const data = parsed.data;
+        const parsed = JSON.parse(data);
+        const stream = parsed.stream;
+        const payload = parsed.data;
 
-        const formatted = {
-          symbol: data.s,
-          lastPrice: data.c,
-          priceChange: data.p,
-          priceChangePercent: data.P,
-          highPrice: data.h,
-          lowPrice: data.l,
-          volume: data.v,
-          quoteVolume: data.q,
-          openTime: data.O,
-          closeTime: data.C,
-          eventTime: data.E,
-        };
+        let formatted;
 
-        for (const client of clients) {
-          if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(formatted));
+        if (stream.endsWith('@aggTrade')) {
+          formatted = {
+            type: 'trade',
+            symbol: stream.split('@')[0],
+            price: payload.p,
+            quantity: payload.q,
+            timestamp: payload.T,
+          };
+        } else if (stream.endsWith('@markPrice')) {
+          formatted = {
+            type: 'markPrice',
+            symbol: stream.split('@')[0],
+            markPrice: payload.p,
+            time: payload.E,
+          };
+        }
+
+        if (formatted) {
+          for (const client of clients) {
+            if (client.readyState === WebSocket.OPEN) {
+              client.send(JSON.stringify(formatted));
+            }
           }
         }
       } catch (err) {
-        console.error("❌ Binance data error:", err);
+        console.error('❌ Binance data error:', err);
       }
     });
 
@@ -171,3 +90,6 @@ const startMarketServer = (server) => {
 };
 
 module.exports = { startMarketServer };
+
+
+controllers/authCryptoMarket.js
