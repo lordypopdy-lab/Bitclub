@@ -6,7 +6,7 @@ const cors = require('cors');
 const http = require('http');
 
 const app = express();
-const server = http.createServer(app); // create HTTP server from Express
+const server = http.createServer(app); 
 
 // === CORS Configuration ===
 const allowedOrigins = [
