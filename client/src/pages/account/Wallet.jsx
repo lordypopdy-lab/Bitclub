@@ -146,7 +146,6 @@ const Wallet = () => {
                         setBalance(BALANCE_IN_USDC_CONVERTED);
 
                     } else {
-                        toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
                         console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
                     }
                 }

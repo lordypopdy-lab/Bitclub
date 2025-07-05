@@ -2,17 +2,22 @@ import axios from "axios";
 import { ethers } from "ethers";
 import { useContext } from "react";
 import toast from "react-hot-toast";
-import { FreeMode } from 'swiper/modules';
 import avt2 from "../images/avt/avt2.jpg";
 import { timeAgo } from "./utils/timeAgo";
 import { useEffect, useState } from "react";
-import coin3 from "../images/coin/coin3.jpg";
 import logo144 from "../images/logo/logo144.png";
-import market1 from "../images/coin/market1.jpg";
-import market3 from "../images/coin/market3.jpg";
-import { Swiper, SwiperSlide } from 'swiper/react';
 import FadeLoader from 'react-spinners/FadeLoader';
 import { UserContext } from "../../context/UserContext";
+
+import Top from "./components/homeData/Top";
+import Losers from "./components/homeData/Losers";
+import Gainers from "./components/homeData/Gainers";
+import Popular from "./components/homeData/Popular";
+import Favourite from "./components/homeData/Favourite";
+import MarketCap from "./components/homeData/MarketCap";
+import HomeActionMenu from "./components/HomeAction/HomeActionMenu";
+import HomeMenuSwiper from "./components/HomeSwiper/HomeMenuSwiper";
+import HomeMenuSwiperList from "./components/HomeSwiper/HomeMenuSwiperList";
 
 import 'swiper/css';
 import 'swiper/css/free-mode';
@@ -23,43 +28,12 @@ import tfLineChart from "../js/linechart";
 const Home = () => {
 
     const { user } = useContext(UserContext);
-
-    const [prices, setPrices] = useState({});
+    const [pricesAggTrade, setPricesAggTrade] = useState({});
     const [priceBackup, setPriceBack] = useState({});
-
-    const [balance, setBalance] = useState(null);
     const [accountList, setAccountList] = useState(null);
     const [history, setHistory] = useState('')
     const [Notification, setNotification] = useState('');
-
     const [loading, setLoading] = useState(false);
-    const [list1, setList1] = useState(null);
-    const [list2, setList2] = useState(null);
-    const [list3, setList3] = useState(null);
-    const [list4, setList4] = useState(null);
-    const [list5, setList5] = useState(null);
-    const [listMain, setlistMain] = useState({
-        btc_price: '',
-        btc_symbol: '',
-        btc_name: '',
-        btc_change_percent: '',
-        eth_name: '',
-        eth_symbol: '',
-        eth_price: '',
-        eth_change_percent: '',
-        bnb_name: '',
-        bnb_symbol: '',
-        bnb_price: '',
-        bnb_change_percent: '',
-        usdt_name: '',
-        usdt_symbol: '',
-        usdt_price: '',
-        usdt_change_percent: '',
-        doge_name: '',
-        doge_symbol: '',
-        doge_price: '',
-        doge_change_percent: '',
-    });
     const [details, setDetails] = useState({
         name: '',
         images: '',
@@ -75,8 +49,6 @@ const Home = () => {
         tfLineChart.load();
         setLoading(true);
         const tokenLoader = async () => {
-
-            // setPriceBack(JSON.parse(localStorage.getItem("tokens")));
             const rawData = JSON.parse(localStorage.getItem("tokens")) || [];
 
             const transformed = {};
@@ -130,17 +102,21 @@ const Home = () => {
             }
         }
         const getMarketPrices = async () => {
-            const socket = new WebSocket('wss://bitclub.onrender.com');
+            const socketAggTrade = new WebSocket(import.meta.env.VITE_API_AGGTRADE);
 
-            socket.onmessage = (event) => {
+            //=======WebSocket AggTrade Section========//
+
+            socketAggTrade.onopen = () => {
+                console.log('✅ AggTrade WebSocket connected');
+            };
+
+            socketAggTrade.onmessage = (event) => {
                 const msg = JSON.parse(event.data);
                 const symbol = msg.symbol?.toUpperCase();
 
-                // console.log(msg)
-
                 if (!symbol) return;
 
-                setPrices((prev) => ({
+                setPricesAggTrade((prev) => ({
                     ...prev,
                     [symbol]: {
                         ...prev[symbol],
@@ -149,296 +125,23 @@ const Home = () => {
                 }));
             };
 
-            return () => socket.close();
-        }
-        const tokenFormatter = async () => {
-            const getData = localStorage.getItem('tokens');
-            const datas = JSON.parse(getData);
-            const tokenList1 = datas.map((data, index) => {
-                const updateT = () => {
-                    setDetails({
-                        name: data.name,
-                        images: data.image,
-                        symbol: data.symbol,
-                        current_price: data.current_price,
-                        market_cap: data.market_cap,
-                        lastTradindVolume24: data.price_change_24h,
-                        pricePercentage: data.price_change_percentage_24h,
-                        ath_change_percentage: data.ath_change_percentage
-                    })
-                }
+            socketAggTrade.onerror = (err) => {
+                console.error('❌ AggTrade WebSocket error:', err);
+            };
 
-                return (
-                    <li key={index} style={{ marginTop: '18px' }}>
-                        <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
-                            <img src={data.image} alt="img" className="img" />
-                            <div className="content">
-                                <div className="title">
-                                    <p className="mb-4 text-button">{data.symbol.toUpperCase()}</p>
-                                    <span className="text-secondary">${data.market_cap}M</span>
-                                </div>
-                                <div className="d-flex align-items-center gap-12">
-                                    <span className="text-small">${data.current_price}</span>
-                                    {data.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{data.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{data.price_change_percentage_24h}2%</span>}
-                                </div>
-                            </div>
-                        </a>
-                    </li>
-                )
-            })
+            socketAggTrade.onclose = () => {
+                console.warn('🔌 AggTrade WebSocket disconnected');
+            };
 
-            const tokenList2 = datas.map((data, index) => {
-                const updateT = () => {
-                    setDetails({
-                        name: data.name,
-                        images: data.image,
-                        symbol: data.symbol,
-                        current_price: data.current_price,
-                        market_cap: data.market_cap,
-                        lastTradindVolume24: data.price_change_24h,
-                        pricePercentage: data.price_change_percentage_24h,
-                        ath_change_percentage: data.ath_change_percentage
-                    })
-                }
-
-                return (
-                    <li key={index} style={{ marginTop: '18px' }}>
-                        <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
-                            <img src={data.image} alt="img" className="img" />
-                            <div className="content">
-                                <div className="title">
-                                    <p className="mb-4 text-button">{data.symbol.toUpperCase()}</p>
-                                    <span className="text-secondary">${data.market_cap}M</span>
-                                </div>
-                                <div className="d-flex align-items-center gap-12">
-                                    <span className="text-small">${data.current_price}</span>
-                                    {data.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{data.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{data.price_change_percentage_24h}2%</span>}
-                                </div>
-                            </div>
-                        </a>
-                    </li>
-                )
-            })
-
-            const tokenList3 = datas.map((data, index) => {
-                const updateT = () => {
-                    setDetails({
-                        name: data.name,
-                        images: data.image,
-                        symbol: data.symbol,
-                        current_price: data.current_price,
-                        market_cap: data.market_cap,
-                        lastTradindVolume24: data.price_change_24h,
-                        pricePercentage: data.price_change_percentage_24h,
-                        ath_change_percentage: data.ath_change_percentage
-                    })
-                }
-
-                return (
-                    <li key={index} style={{ marginTop: '18px' }}>
-                        <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
-                            <img src={data.image} alt="img" className="img" />
-                            <div className="content">
-                                <div className="title">
-                                    <p className="mb-4 text-button">{data.symbol.toUpperCase()}</p>
-                                    <span className="text-secondary">${data.market_cap}M</span>
-                                </div>
-                                <div className="d-flex align-items-center gap-12">
-                                    <span className="text-small">${data.current_price}</span>
-                                    {data.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{data.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{data.price_change_percentage_24h}2%</span>}
-                                </div>
-                            </div>
-                        </a>
-                    </li>
-                )
-            })
-
-            const tokenList4 = datas.map((data, index) => {
-                const updateT = () => {
-                    setDetails({
-                        name: data.name,
-                        images: data.image,
-                        symbol: data.symbol,
-                        current_price: data.current_price,
-                        market_cap: data.market_cap,
-                        lastTradindVolume24: data.price_change_24h,
-                        pricePercentage: data.price_change_percentage_24h,
-                        ath_change_percentage: data.ath_change_percentage
-                    })
-                }
-                return (
-                    <li key={index} style={{ marginTop: '18px' }}>
-                        <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
-                            <div className="d-flex align-items-center gap-12 flex-1">
-                                <h4 className="text-primary">{index}</h4>
-                                <p>
-                                    <span className="mb-4 text-button fw-6">{data.symbol.toLocaleUpperCase()}</span>
-                                    <span className="text-secondary">/ USDT</span>
-                                </p>
-                            </div>
-                            <div className="d-flex justify-content-between align-items-center flex-st2">
-                                <span className="text-small">${data.high_24h}</span>
-                                <div className="text-end">
-                                    {data.price_change_percentage_24h > 1 ? <p className="text-button text-primary">{data.price_change_percentage_24h}</p> : <p className="text-button text-red">{data.price_change_percentage_24h}</p>}
-                                    <p className="mt-4 text-secondary">${data.current_price}</p>
-                                </div>
-                            </div>
-                        </a>
-                    </li>
-                )
-            })
-
-            const tokenList5 = datas.map((data, index) => {
-                const updateT = () => {
-                    setDetails({
-                        name: data.name,
-                        images: data.image,
-                        symbol: data.symbol,
-                        current_price: data.current_price,
-                        market_cap: data.market_cap,
-                        lastTradindVolume24: data.price_change_24h,
-                        pricePercentage: data.price_change_percentage_24h,
-                        ath_change_percentage: data.ath_change_percentage
-                    })
-                }
-                return (
-                    <li key={index} style={{ marginTop: '18px' }}>
-                        <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
-                            <div className="d-flex align-items-center gap-12 flex-1">
-                                <h4 className="text-primary">{index}</h4>
-                                <p>
-                                    <span className="mb-4 text-button fw-6">{data.symbol.toLocaleUpperCase()}</span>
-                                    <span className="text-secondary">/ USDT</span>
-                                </p>
-                            </div>
-                            <div className="d-flex justify-content-between align-items-center flex-st2">
-                                <span className="text-small">${data.high_24h}</span>
-                                <div className="text-end">
-                                    {data.price_change_percentage_24h > 1 ? <p className="text-button text-primary">{data.price_change_percentage_24h}</p> : <p className="text-button text-red">{data.price_change_percentage_24h}</p>}
-                                    <p className="mt-4 text-secondary">${data.current_price}</p>
-                                </div>
-                            </div>
-                        </a>
-                    </li>
-                )
-            })
-
-            const connectMetaMask = async () => {
-                if (window.ethereum) {
-                    const provider = new ethers.providers.Web3Provider(window.ethereum);
-                    await provider.send('eth_requestAccounts', []);
-                    const signer = provider.getSigner();
-                    const USER_ADDRESS = signer.getAddress();
-                    const GET_BALANCE = await provider.getBalance(USER_ADDRESS);
-                    const FORMATED_BALANCE = ethers.utils.formatEther(GET_BALANCE);
-
-                    const ACCOUNT_LISTS = await provider.listAccounts();
-                    const acc_list = ACCOUNT_LISTS.map((ACCOUNT_LIST, index) => {
-                        const handleCopy = async () => {
-                            try {
-                                await navigator.clipboard.writeText(ACCOUNT_LIST);
-                                toast.success('Copied!');
-                            } catch (error) {
-                                toast.error('Fail to Copy!');
-                            }
-                        }
-                        return (
-                            <>
-                                <li key={index} data-bs-dismiss="modal">
-                                    <div className="d-flex justify-content-between align-items-center gap-8 text-large item-check active dom-value">Account {index}</div>
-                                    <div className="mb-1">
-                                        <span className="text-secondary" style={{ fontSize: '14px' }}>{ACCOUNT_LIST.slice(0, 30)}...</span> <i title="Copy" onClick={handleCopy} style={{ fontSize: '22px', cursor: 'pointer' }} className="icon icon-copy text-primary"></i>
-                                    </div>
-                                </li>
-                            </>
-                        )
-                    })
-                    setAccountList(acc_list);
-
-                    const BALANCE_IN_USDC = datas[1].current_price;
-                    const BALANCE_IN_USDC_CONVERTED = BALANCE_IN_USDC * FORMATED_BALANCE;
-                    setBalance(BALANCE_IN_USDC_CONVERTED);
-
-                } else {
-                    toast.error('Non-Ethereum browser detected. Consider trying MetaMask!')
-                    console.log('Non-Ethereum browser detected. Consider trying MetaMask!');
-                }
-            }
-            connectMetaMask();
-
-            const getHistory = async () => {
-                const email = localStorage.getItem('email');
-                try {
-                    const { data } = await axios.post('/getHistory', { email });
-                    const datas = data.historyList.reverse();
-                    if (datas) {
-                        const historyList = datas.map((history, index) => {
-                            return (
-                                <>
-                                    <li key={index} className="mt-8">
-                                        <a href="#" className="line-bt coin-item mb-1 style-1 gap-12 bg-menuDark">
-                                            <span className="box-round d-flex justify-content-center align-items-center"><i style={{ fontSize: '20px' }} className="icon icon-delete"></i></span>
-                                            <div className="content">
-                                                <div className="title">
-                                                    <p className="mb-4 text-large">{history.type}</p>
-                                                    {history.Status == 'Success' ? <span className="text-success">{history.Status}</span> : <span className="text-warning">{history.Status}</span>}
-                                                </div>
-                                                <div className="box-price">
-                                                    {history.type == 'Deposite' || history.type == 'Sent' ? <p className="text-small mb-2"><span className="text-danger">-</span> ETH {history.valueEth}</p> : <p className="text-small mb-4"><span className="text-primary">+</span> ETH {history.valueEth}</p>}
-                                                    {history.type == 'Deposite' || history.type == 'Sent' ? <p className="text-small"><span className="text-danger">-</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p> : <p className="text-small"><span className="text-primary">+</span> ${history.valueUsd && history.valueUsd.toFixed(2)}</p>}
-                                                    <span className="mt-2" style={{ marginLeft: '60px' }}>{timeAgo(history.timestamp)}</span>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                </>
-                            )
-                        })
-                        setHistory(historyList);
-                    }
-                } catch (error) {
-                    console.log(error);
-                }
-            }
-            getHistory();
-
-            setlistMain({
-                btc_price: datas[0].current_price,
-                btc_symbol: datas[0].symbol,
-                btc_name: datas[0].name,
-                btc_change_percent: datas[0].market_cap_change_percentage_24h,
-                eth_name: datas[1].name,
-                eth_symbol: datas[1].symbol,
-                eth_price: datas[1].current_price,
-                eth_change_percent: datas[1].market_cap_change_percentage_24h,
-                bnb_name: datas[3].name,
-                bnb_symbol: datas[3].symbol,
-                bnb_price: datas[3].current_price,
-                bnb_change_percent: datas[3].market_cap_change_percentage_24h,
-                usdt_name: datas[2].name,
-                usdt_symbol: datas[2].symbol,
-                usdt_price: datas[2].current_price,
-                usdt_change_percent: datas[2].market_cap_change_percentage_24h,
-                doge_name: datas[8].name,
-                doge_symbol: datas[8].symbol,
-                doge_price: datas[8].current_price,
-                doge_change_percent: datas[8].market_cap_change_percentage_24h,
-            })
-            setList1(tokenList1.slice(60, 80));
-            setList2(tokenList2.slice(0, 9));
-            setList3(tokenList3.slice(0, 9))
-            setList4(tokenList4.slice(0, 11))
-            setList5(tokenList5.slice(50, 60))
-            setLoading(false);
-
+            return () => socketAggTrade.close();
 
         }
+
         fetcher();
         tokenLoader();
-        tokenFormatter();
         getMarketPrices();
         getNotification();
-
+        setLoading(false);
     }, [])
 
     const getData = localStorage.getItem('tokens');
@@ -447,7 +150,7 @@ const Home = () => {
     }
     if (!localStorage.getItem('email')) { location.href = '/login'; }
 
-    //console.log(prices)
+    //console.log(pricesAggTrade)
     //console.log(priceBackup)
     return (
         <>
@@ -478,478 +181,53 @@ const Home = () => {
             </div>
             <div className="pt-68 pb-80">
                 <div className="bg-menuDark tf-container">
-                    <div className="pt-12 pb-12 mt-4">
-                        <h5><span className="text-primary">My Wallet</span> - <a href="#" className="choose-account" data-bs-toggle="modal" data-bs-target="#accountWallet"><span className="dom-text">Account 1 </span> &nbsp;<i className="icon-select-down"></i></a> </h5>
-                        {balance == null ? <h1 className="mt-16"><a href="#">$0.00</a></h1> : <h1 className="mt-16"><a href="#">${balance !== null && balance.toFixed(2)}</a></h1>}
-                        <ul className="mt-16 grid-4 m--16">
-                            <li>
-                                <a href="/Send" className="tf-list-item d-flex flex-column gap-8 align-items-center">
-                                    <span className="box-round bg-surface d-flex justify-content-center align-items-center"><i className="icon icon-way"></i></span>
-                                    Send
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/AddressScan" className="tf-list-item d-flex flex-column gap-8 align-items-center">
-                                    <span className="box-round bg-surface d-flex justify-content-center align-items-center"><i className="icon icon-way2"></i></span>
-                                    Receive
-                                </a>
-                            </li>
-                            <li>
-                                <a href="/Earn" className="tf-list-item d-flex flex-column gap-8 align-items-center">
-                                    <span className="box-round bg-surface d-flex justify-content-center align-items-center"><i className="icon icon-exchange"></i></span>
-                                    Earn
-                                </a>
-                            </li>
-                            <li data-bs-toggle="modal" data-bs-target="#walletHistory">
-                                <a href="javascript:void(0);" className="tf-list-item d-flex flex-column gap-8 align-items-center">
-                                    <span className="box-round bg-surface d-flex justify-content-center align-items-center"><i className="icon icon-history"></i></span>
-                                    History
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+                    <HomeActionMenu />
                 </div>
                 <div className="bg-menuDark tf-container">
-                    <Swiper
-                        slidesPerView={2.4}
-                        spaceBetween={7}
-                        freeMode={true}
-                        pagination={{
-                            clickable: true,
-                        }}
-                        modules={[FreeMode]}
-                        className="mySwiper"
-                    >
-                        <div className="pt-12 pb-12 mt-4">
-                            <h5>Market</h5>
-                            <div className="swiper" >
-                                <SwiperSlide>
-                                    <a href="/Exchange" className="coin-box d-block">
-                                        <div className="coin-logo">
-                                            <img src={market1} alt="img" className="logo" />
-                                            <div className="title">
-                                                <p>{listMain.btc_name}</p>
-                                                <span>{listMain.btc_symbol.toLocaleUpperCase()}</span>
-                                            </div>
-                                        </div>
-                                        <div className="mt-8 mb-8 coin-chart">
-                                            <div id="line-chart-1"></div>
-                                        </div>
-                                        <div className="coin-price d-flex justify-content-between">
-                                            {/* <span>${listMain.btc_price}</span> */}
-                                            <span>
-                                                {prices.BTCUSDT?.markPrice
-                                                    ? `$${Number(prices.BTCUSDT.markPrice).toFixed(2)}`
-                                                    : `$${priceBackup?.BTC?.current_price.toFixed(2) || '0.00'}`}
-                                            </span>
-                                            {priceBackup?.BTC?.price_change_percentage_24h > 0 ? (
-                                                <span className="text-primary d-flex align-items-center gap-2">
-                                                    <i className="icon-select-up"></i>
-                                                    {Number(priceBackup.BTC.price_change_percentage_24h).toFixed(4)}%
-                                                </span>
-                                            ) : (
-                                                <span className="text-danger d-flex align-items-center gap-2">
-                                                    <i className="icon-select-down"></i>
-                                                    {Number(priceBackup?.BTC?.price_change_percentage_24h || 0).toFixed(4)}%
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div className="blur bg1">
-                                        </div>
-
-                                    </a>
-                                </SwiperSlide>
-                                <SwiperSlide>
-                                    <a href="/Exchange" className="coin-box d-block">
-                                        <div className="coin-logo">
-                                            <img src={market3} alt="img" className="logo" />
-                                            <div className="title">
-                                                <p>Binance</p>
-                                                <span>BNB</span>
-                                            </div>
-                                        </div>
-                                        <div className="mt-8 mb-8 coin-chart">
-                                            <div id="line-chart-2"></div>
-                                        </div>
-                                        <div className="coin-price d-flex justify-content-between">
-                                            <span>
-                                                {prices?.BNBUSDT?.price
-                                                    ? `$${Number(prices.BNBUSDT.price).toFixed(2)}`
-                                                    : `$${priceBackup?.BNB?.current_price.toFixed(2) || '0.00'}`}
-
-                                            </span>
-                                            {priceBackup?.BNB?.price_change_percentage_24h > 0 ? (
-                                                <span className="text-primary d-flex align-items-center gap-2">
-                                                    <i className="icon-select-up"></i>
-                                                    {Number(priceBackup.BNB.price_change_percentage_24h).toFixed(4)}%
-                                                </span>
-                                            ) : (
-                                                <span className="text-danger d-flex align-items-center gap-2">
-                                                    <i className="icon-select-down"></i>
-                                                    {Number(priceBackup?.BNB?.price_change_percentage_24h || 0).toFixed(4)}%
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div className="blur bg2">
-                                        </div>
-                                    </a>
-                                </SwiperSlide>
-                                <SwiperSlide>
-                                    <a href="/Exchange" className="coin-box d-block">
-                                        <div className="coin-logo">
-                                            <img src={coin3} alt="img" className="logo" />
-                                            <div className="title">
-                                                <p>{listMain.eth_name}</p>
-                                                <span>{listMain.eth_symbol.toUpperCase()}</span>
-                                            </div>
-                                        </div>
-                                        <div className="mt-8 mb-8 coin-chart">
-                                            <div id="line-chart-3"></div>
-                                        </div>
-                                        <div className="coin-price d-flex justify-content-between">
-                                            <span>
-                                                {prices.ETHUSDT?.price
-                                                    ? `$${Number(prices.ETHUSDT.price).toFixed(2)}`
-                                                    : `$${listMain?.eth_price}`}
-                                            </span>
-                                            {prices?.ETHUSDT?.quantity > 0 ? (
-                                                <span className="text-primary d-flex align-items-center gap-2">
-                                                    <i className="icon-select-up"></i>
-                                                    {Number(priceBackup.ETH.price_change_percentage_24h).toFixed(4)}%
-                                                </span>
-                                            ) : (
-                                                <span className="text-danger d-flex align-items-center gap-2">
-                                                    <i className="icon-select-down"></i>
-                                                    {Number(prices?.ETHUSDT?.quantity || 0).toFixed(4)}%
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div className="blur bg3">
-                                        </div>
-                                    </a>
-                                </SwiperSlide>
-                            </div>
-
-                        </div>
-                    </Swiper>
+                    <HomeMenuSwiper />
                 </div>
-
                 <div className="bg-menuDark tf-container">
                     <div className="pt-12 pb-12 mt-4">
-                        <div className="wrap-filter-swiper">
-                            <h5><a href="/assetsRatings" className="cryptex-rating"><i className="icon-star"></i>Bitclub Rating</a></h5>
-                            {/* <!-- <div className="swiper swiper-wrapper-r market-swiper" data-space-between="20" data-preview="auto"> --> */}
-                            <div className="swiper-wrapper1 menu-tab-v3 mt-12" role="tablist">
-                                <div className="swiper-slide1 nav-link active" data-bs-toggle="tab" data-bs-target="#favorites" role="tab" aria-controls="favorites" aria-selected="true">
-                                    Favorites
-                                </div>
-                                <div className="swiper-slide1 nav-link" data-bs-toggle="tab" data-bs-target="#top" role="tab" aria-controls="top" aria-selected="false">
-                                    Top
-                                </div>
-                                <div className="swiper-slide1 nav-link" data-bs-toggle="tab" data-bs-target="#popular" role="tab" aria-controls="popular" aria-selected="false">
-                                    Popular
-                                </div>
-                                <div className="swiper-slide1 nav-link" data-bs-toggle="tab" data-bs-target="#price" role="tab" aria-controls="price" aria-selected="false">
-                                    Token price
-                                </div>
-                                <div className="swiper-slide1 nav-link" data-bs-toggle="tab" data-bs-target="#new" role="tab" aria-controls="new" aria-selected="false">
-                                    New token
-                                </div>
-                            </div>
-                            {/* <!-- </div> --> */}
-                        </div>
+                        <HomeMenuSwiperList />
                         <div className="tab-content mt-8">
                             <div className="tab-pane fade show active" id="favorites" role="tabpanel">
                                 <div className="d-flex justify-content-between">
                                     Index/Name
                                     <p className="d-flex gap-8">
-                                        <span>Current Price(USD)/</span>
+                                        <span>Last Price(USD)/</span>
                                         <span>Change(%)</span>
                                     </p>
                                 </div>
                                 <ul className="mt-16">
-                                    <FadeLoader
-                                        color="#36d7b7"
-                                        loading={loading}
-                                        speedMultiplier={3}
-                                        style={{ textAlign: 'center', position: 'relative', marginLeft: '50%' }}
-                                    />
-                                    {/* {list5} */}
-
-                                    <li style={{ marginTop: '18px' }}>
-                                        <a data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
-                                            <div className="d-flex align-items-center gap-12 flex-1">
-                                                <h4 className="text-primary">01</h4>
-                                                <p>
-                                                    <span className="mb-4 text-button fw-6">BTC</span>
-                                                    <span className="text-secondary">/ USDT</span>
-                                                </p>
-                                            </div>
-                                            <div className="d-flex justify-content-between align-items-center flex-st2">
-                                                <span className="text-small">$
-                                                    {prices.BTCUSDT?.markPrice
-                                                        ? `$${Number(prices.BTCUSDT.markPrice).toFixed(2)}`
-                                                        : `$${listMain?.btc_price}`}
-                                                </span>
-                                                <div className="text-end">
-                                                    {Number(priceBackup?.BTC?.price_change_percentage_24h || 0) > 0 ? (
-                                                        <p className="text-button text-primary">
-                                                            {Number(priceBackup.BTC.price_change_percentage_24h).toFixed(4)}%
-                                                        </p>
-                                                    ) : (
-                                                        <p className="text-button text-red">
-                                                            {Number(priceBackup?.BTC?.price_change_percentage_24h || 0).toFixed(4)}%
-                                                        </p>
-                                                    )}
-
-                                                    <p className="mt-4 text-secondary">
-                                                        ${Number(prices?.BTCUSDT?.quantity || 0).toFixed(2)}
-                                                    </p>
-                                                </div>
-
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li style={{ marginTop: '18px' }}>
-                                        <a data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
-                                            <div className="d-flex align-items-center gap-12 flex-1">
-                                                <h4 className="text-primary">02</h4>
-                                                <p>
-                                                    <span className="mb-4 text-button fw-6">ETH</span>
-                                                    <span className="text-secondary">/ USDT</span>
-                                                </p>
-                                            </div>
-                                            <div className="d-flex justify-content-between align-items-center flex-st2">
-                                                <span className="text-small">$
-                                                    {prices.ETHUSDT?.price
-                                                        ? `$${Number(prices.ETHUSDT.price).toFixed(2)}`
-                                                        : `$${listMain?.eth_price}`}
-                                                </span>
-                                                <div className="text-end">
-                                                    {Number(prices?.ETHUSDT?.quantity || 0) > 1 ? (
-                                                        <p className="text-button text-primary">
-                                                            {Number(priceBackup.ETH.price_change_percentage_24h).toFixed(4)}%
-                                                        </p>
-                                                    ) : (
-                                                        <p className="text-button text-red">
-                                                            {Number(prices?.ETHUSDT?.quantity || 0).toFixed(4)}%
-                                                        </p>
-                                                    )}
-
-                                                    <p className="mt-4 text-secondary">
-                                                        ${Number(prices?.ETHUSDT?.quantity || 0).toFixed(2)}
-                                                    </p>
-                                                </div>
-
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li style={{ marginTop: '18px' }}>
-                                        <a data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
-                                            <div className="d-flex align-items-center gap-12 flex-1">
-                                                <h4 className="text-primary">03</h4>
-                                                <p>
-                                                    <span className="mb-4 text-button fw-6">BNB</span>
-                                                    <span className="text-secondary">/ USDT</span>
-                                                </p>
-                                            </div>
-                                            <div className="d-flex justify-content-between align-items-center flex-st2">
-                                                <span className="text-small">$
-                                                    {prices?.BNBUSDT?.price
-                                                        ? `$${Number(prices.BNBUSDT.price).toFixed(2)}`
-                                                        : `$${priceBackup?.BNB?.current_price.toFixed(2) || '0.00'}`}
-                                                </span>
-                                                <div className="text-end">
-                                                    {Number(prices?.BNBUSDT?.quantity  || 0) > 1 ? (
-                                                        <p className="text-button text-primary">
-                                                            {Number(prices?.BNBUSDT?.quantity ).toFixed(4)}%
-                                                        </p>
-                                                    ) : (
-                                                        <p className="text-button text-red">
-                                                            {Number(prices?.BNBUSDT?.quantity || 0).toFixed(4)}%
-                                                        </p>
-                                                    )}
-
-                                                    <p className="mt-4 text-secondary">
-                                                        ${Number(prices?.BNBUSDT?.quantity || 0).toFixed(2)}
-                                                    </p>
-                                                </div>
-
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li style={{ marginTop: '18px' }}>
-                                        <a data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
-                                            <div className="d-flex align-items-center gap-12 flex-1">
-                                                <h4 className="text-primary">04</h4>
-                                                <p>
-                                                    <span className="mb-4 text-button fw-6">LTC</span>
-                                                    <span className="text-secondary">/ USDT</span>
-                                                </p>
-                                            </div>
-                                            <div className="d-flex justify-content-between align-items-center flex-st2">
-                                                <span className="text-small">$
-                                                    {prices?.LTCUSDT?.price
-                                                        ? `$${Number(prices.LTCUSDT.price).toFixed(3)}`
-                                                        : prices?.LTCUSDT?.markPrice
-                                                            ? `$${Number(prices.LTCUSDT.markPrice).toFixed(3)}`
-                                                            : `$${Number(priceBackup?.LTC?.current_price || 0).toFixed(2)}`}
-                                                </span>
-                                                <div className="text-end">
-                                                    {Number(prices?.LTCUSDT?.quantity || 0) > 1 ? (
-                                                        <p className="text-button text-primary">
-                                                            {Number(prices?.LTCUSDT?.quantity).toFixed(4)}%
-                                                        </p>
-                                                    ) : (
-                                                        <p className="text-button text-red">
-                                                            {Number(prices?.LTCUSDT?.quantity  || 0).toFixed(4)}%
-                                                        </p>
-                                                    )}
-
-                                                    <p className="mt-4 text-secondary">
-                                                        ${Number(prices?.LTCUSDT?.quantity || 0).toFixed(2)}
-                                                    </p>
-                                                </div>
-
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li style={{ marginTop: '18px' }}>
-                                        <a data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
-                                            <div className="d-flex align-items-center gap-12 flex-1">
-                                                <h4 className="text-primary">05</h4>
-                                                <p>
-                                                    <span className="mb-4 text-button fw-6">SOL</span>
-                                                    <span className="text-secondary">/ USDT</span>
-                                                </p>
-                                            </div>
-                                            <div className="d-flex justify-content-between align-items-center flex-st2">
-                                                <span className="text-small">$
-                                                    {prices?.SOLUSDT?.price
-                                                        ? `$${Number(prices.SOLUSDT.price).toFixed(2)}`
-                                                        : prices?.SOLUSDT?.markPrice
-                                                            ? `$${Number(prices.SOLUSDT.markPrice).toFixed(2)}`
-                                                            : `$${Number(priceBackup?.SOL?.current_price || 0).toFixed(2)}`}
-                                                </span>
-                                                <div className="text-end">
-                                                    {Number(priceBackup?.SOL?.price_change_percentage_24h || 0) > 0 ? (
-                                                        <p className="text-button text-primary">
-                                                            {Number(priceBackup.SOL.price_change_percentage_24h).toFixed(4)}%
-                                                        </p>
-                                                    ) : (
-                                                        <p className="text-button text-red">
-                                                            {Number(priceBackup?.SOL?.price_change_percentage_24h || 0).toFixed(4)}%
-                                                        </p>
-                                                    )}
-
-                                                    <p className="mt-4 text-secondary">
-                                                        ${Number(prices?.SOLUSDT?.quantity || 0).toFixed(2)}
-                                                    </p>
-                                                </div>
-
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li style={{ marginTop: '18px' }}>
-                                        <a data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
-                                            <div className="d-flex align-items-center gap-12 flex-1">
-                                                <h4 className="text-primary">06</h4>
-                                                <p>
-                                                    <span className="mb-4 text-button fw-6">XRP</span>
-                                                    <span className="text-secondary">/ USDT</span>
-                                                </p>
-                                            </div>
-                                            <div className="d-flex justify-content-between align-items-center flex-st2">
-                                                <span className="text-small">$
-                                                    {prices?.XRPUSDT?.price
-                                                        ? `$${Number(prices.XRPUSDT.price).toFixed(4)}`
-                                                        : prices?.XRPUSDT?.markPrice
-                                                            ? `$${Number(prices.XRPUSDT.markPrice).toFixed(4)}`
-                                                            : `$${Number(priceBackup?.TRX?.current_price || 0).toFixed(2)}`}
-                                                </span>
-                                                <div className="text-end">
-                                                    {Number(prices?.XRPUSDT?.quantity || 0) > 1 ? (
-                                                        <p className="text-button text-primary">
-                                                            {Number(prices?.XRPUSDT?.quantity).toFixed(2)}%
-                                                        </p>
-                                                    ) : (
-                                                        <p className="text-button text-red">
-                                                            {Number(prices?.XRPUSDT?.quantity || 0).toFixed(2)}%
-                                                        </p>
-                                                    )}
-
-                                                    <p className="mt-4 text-secondary">
-                                                        ${Number(prices?.XRPUSDT?.quantity || 0).toFixed(2)}
-                                                    </p>
-                                                </div>
-
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li style={{ marginTop: '18px' }}>
-                                        <a data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
-                                            <div className="d-flex align-items-center gap-12 flex-1">
-                                                <h4 className="text-primary">06</h4>
-                                                <p>
-                                                    <span className="mb-4 text-button fw-6">DOT</span>
-                                                    <span className="text-secondary">/ USDT</span>
-                                                </p>
-                                            </div>
-                                            <div className="d-flex justify-content-between align-items-center flex-st2">
-                                                <span className="text-small">$
-                                                    {prices?.DOTUSDT?.price
-                                                        ? `$${Number(prices.DOTUSDT.price).toFixed(4)}`
-                                                        : prices?.DOTUSDT?.markPrice
-                                                            ? `$${Number(prices.DOTUSDT.markPrice).toFixed(4)}`
-                                                            : `$${Number(priceBackup?.AVAX?.current_price || 0).toFixed(2)}`}
-                                                </span>
-                                                <div className="text-end">
-                                                    {Number(prices?.DOTUSDT?.quantity || 0) > 1 ? (
-                                                        <p className="text-button text-primary">
-                                                            {Number(prices?.DOTUSDT?.quantity).toFixed(2)}%
-                                                        </p>
-                                                    ) : (
-                                                        <p className="text-button text-red">
-                                                            {Number(prices?.DOTUSDT?.quantity || 0).toFixed(2)}%
-                                                        </p>
-                                                    )}
-
-                                                    <p className="mt-4 text-secondary">
-                                                        ${Number(prices?.DOTUSDT?.quantity || 0).toFixed(2)}
-                                                    </p>
-                                                </div>
-
-                                            </div>
-                                        </a>
-                                    </li>
-
+                                    <FadeLoader color="#36d7b7" loading={loading} speedMultiplier={3} style={{ textAlign: 'center', position: 'relative', marginLeft: '50%' }} />
+                                    <Top />
                                 </ul>
                             </div>
                             <div className="tab-pane fade" id="top" role="tabpanel">
                                 <div className="d-flex justify-content-between">
-                                    Name
+                                    Name/Volume*
                                     <p className="d-flex gap-8">
                                         <span>Current Price(USD)/</span>
                                         <span>Change(%)</span>
                                     </p>
                                 </div>
                                 <ul className="mt-16">
-                                    {list2};
+                                    <Favourite />
                                 </ul>
                             </div>
                             <div className="tab-pane fade" id="popular" role="tabpanel">
                                 <div className="d-flex justify-content-between">
-                                    Name
+                                    Name/Volume*
                                     <p className="d-flex gap-8">
                                         <span>Current Price(USD)/</span>
                                         <span>Change(%)</span>
                                     </p>
                                 </div>
                                 <ul className="mt-16">
-                                    {list3}
+                                    <Popular />
                                 </ul>
                             </div>
-                            <div className="tab-pane fade" id="price" role="tabpanel">
+                            <div className="tab-pane fade" id="gainers" role="tabpanel">
                                 <div className="d-flex justify-content-between">
                                     Name
                                     <p className="d-flex gap-8">
@@ -958,10 +236,10 @@ const Home = () => {
                                     </p>
                                 </div>
                                 <ul className="mt-16">
-                                    {list4}
+                                    <Gainers />
                                 </ul>
                             </div>
-                            <div className="tab-pane fade" id="new" role="tabpanel">
+                            <div className="tab-pane fade" id="losers" role="tabpanel">
                                 <div className="d-flex justify-content-between">
                                     Name
                                     <p className="d-flex gap-8">
@@ -970,14 +248,25 @@ const Home = () => {
                                     </p>
                                 </div>
                                 <ul className="mt-16">
-                                    {list1}
+                                    <Losers />
+                                </ul>
+                            </div>
+                            <div className="tab-pane fade" id="cap" role="tabpanel">
+                                <div className="d-flex justify-content-between">
+                                    Name
+                                    <p className="d-flex gap-8">
+                                        <span>Current Price(USD)/</span>
+                                        <span>Market Cap</span>
+                                    </p>
+                                </div>
+                                <ul className="mt-16">
+                                   <MarketCap />
                                 </ul>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
             <div className="menubar-footer footer-fixed">
                 <ul className="inner-bar">
                     <li className="active">
@@ -1006,7 +295,6 @@ const Home = () => {
                     </li>
                 </ul>
             </div>
-
             {/* <!-- history --> */}
             <div className="modal fade modalRight" id="walletHistory">
                 <div className="modal-dialog" role="document">
@@ -1062,7 +350,6 @@ const Home = () => {
 
                 </div>
             </div>
-
             {/* <!-- account --> */}
             <div className="modal fade action-sheet" id="accountWallet">
                 <div className="modal-dialog" role="document">
@@ -1078,7 +365,6 @@ const Home = () => {
 
                 </div>
             </div>
-
             {/* <!--chart detail  --> */}
             <div className="modal fade action-sheet" id="detailChart">
                 <div className="modal-dialog" role="document">
@@ -1161,7 +447,6 @@ const Home = () => {
 
                 </div>
             </div>
-
             {/* <!-- notification --> */}
             <div className="modal fade modalRight" id="notification">
                 <div className="modal-dialog" role="document">
@@ -1181,7 +466,6 @@ const Home = () => {
                     </div>
                 </div>
             </div>
-
             {/* <!-- noti popup --> */}
             <div className="modal fade modalCenter" id="modalNoti">
                 <div className="modal-dialog modal-dialog-centered" role="document">
@@ -1197,7 +481,6 @@ const Home = () => {
                     </div>
                 </div>
             </div>
-
             {/* // // <!-- noti popup 2--> */}
             <div className="modal fade modalCenter" id="notiPrivacy">
                 <div className="modal-dialog modal-dialog-centered">
