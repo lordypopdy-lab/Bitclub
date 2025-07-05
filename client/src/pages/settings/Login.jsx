@@ -41,7 +41,7 @@ const Login = () => {
 
     gapi.load('client:auth2', () => {
         window.gapi.client.init({
-            clientId: '170268353832-0fn4qbgklemeb9s0o5elvi99ronia9ov.apps.googleusercontent.com',
+            clientId: import.meta.env.VITE_CLIENT_ID,
             plugin_name: "chat",
             scope: 'email'
         })
