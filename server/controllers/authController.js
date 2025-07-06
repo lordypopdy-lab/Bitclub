@@ -17,7 +17,6 @@ const nodemailer = require("nodemailer");
 const crypto = require("crypto");
 const OtpModel = require("../models/OtpModel");
 
-
 const { ethers } = require("ethers");
 const CoinKey = require('coinkey');
 
@@ -949,7 +948,7 @@ const tokenViews = async (req, res) => {
     const response = await fetch(
       "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd"
     );
-    // const response = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/btc.min.json');
+
     if (!response.ok) {
       return res.json({
         error: "Network response was not ok",
@@ -959,17 +958,7 @@ const tokenViews = async (req, res) => {
     res.json({
       tokens: data,
     });
-    // const tokenId = 'bitcoin'
-    // const url = https://api.coingecko.com/api/v3/coins/${tokenId};
-    // const response = await axios.get(url);
-    // const data = response.data;
 
-    // console.log(`Name: ${data.name}`);
-    // console.log(`Symbol: ${data.symbol}`);
-    // console.log(`Current Price (USD): $${data.market_data.current_price.usd}`);
-    // console.log(`Market Cap (USD): $${data.market_data.market_cap.usd}`);
-    // console.log(`24h Trading Volume (USD): $${data.market_data.total_volume.usd}`);
-    // console.log(`Price Change 24h (%): ${data.market_data.price_change_percentage_24h}%`);
   } catch (error) {
     return res.json({
       error: error.message,
