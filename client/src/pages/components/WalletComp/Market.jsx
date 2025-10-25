@@ -1,38 +1,47 @@
 import React, { useEffect, useState } from "react";
 
 const Market = () => {
-  const [priceBackup, setPriceBack] = useState({});
+  const [priceBackup, setPriceBackup] = useState({});
   const [pricesTicker, setPricesTicker] = useState({});
 
   useEffect(() => {
-    // Load token data from localStorage
+    // ✅ Normalize symbols for consistency (important for merging)
+    const normalize = (s) => s?.toUpperCase().replace("/", "") || "";
+
+    // ✅ Load token data from localStorage
     const rawData = JSON.parse(localStorage.getItem("tokens")) || [];
     const transformed = {};
 
     rawData.forEach((coin) => {
-      if (coin.symbol) {
-        transformed[coin.symbol.toUpperCase()] = coin;
-      }
+      const sym = normalize(coin.symbol);
+      if (sym) transformed[sym] = coin;
     });
 
-    setPriceBack(transformed);
+    setPriceBackup(transformed);
 
-    // Connect WebSocket for live prices
-    const socketTcker = new WebSocket(import.meta.env.VITE_API_MARKET_TICKER);
+    // ✅ Connect WebSocket for live prices
+    const socketTicker = new WebSocket(import.meta.env.VITE_API_MARKET_TICKER);
 
-    socketTcker.onopen = () => console.log("✅ Ticker WebSocket connected");
+    socketTicker.onopen = () => console.log("✅ Ticker WebSocket connected");
 
-    socketTcker.onmessage = (event) => {
+    socketTicker.onmessage = (event) => {
       try {
         const msg = JSON.parse(event.data);
-        const symbol = msg.symbol?.toUpperCase();
+        const symbol = normalize(msg.symbol || msg.s);
         if (!symbol) return;
+
+        // Map Binance-like structure safely
+        const newData = {
+          lastPrice: Number(msg.c ?? msg.lastPrice ?? 0),
+          priceChangePercent: Number(msg.P ?? msg.priceChangePercent ?? 0),
+          volume: Number(msg.v ?? msg.volume ?? 0),
+        };
 
         setPricesTicker((prev) => ({
           ...prev,
           [symbol]: {
             ...prev[symbol],
-            ...msg,
+            ...newData,
           },
         }));
       } catch (e) {
@@ -40,21 +49,18 @@ const Market = () => {
       }
     };
 
-    socketTcker.onerror = (err) =>
+    socketTicker.onerror = (err) =>
       console.error("❌ Ticker WebSocket error:", err);
-    socketTcker.onclose = () => console.warn("🔌 WebSocket disconnected");
+    socketTicker.onclose = () => console.warn("🔌 WebSocket disconnected");
 
-    return () => socketTcker.close();
+    return () => socketTicker.close();
   }, []);
 
-  // Merge WebSocket and backup data
-  const allSymbols = [
-    ...new Set([
-      ...Object.keys(priceBackup || {}),
-      ...Object.keys(pricesTicker || {}),
-    ]),
-  ];
-
+  // ✅ Merge live + backup data (WebSocket overrides)
+  const allSymbols = Object.keys({
+    ...priceBackup,
+    ...pricesTicker,
+  });
 
   const formatVolume = (value) => {
     const num = Number(value || 0);
@@ -79,13 +85,17 @@ const Market = () => {
         const tokenName = backup.name || symbol.replace("USDT", "");
         const image = backup.image || "/placeholder.png";
 
-        // Ensure we prefer valid WS data over backup
+        // ✅ Always prefer valid live data
         const lastPrice =
-          getValidNumber(ticker.lastPrice) ?? getValidNumber(backup.current_price) ?? 0;
+          getValidNumber(ticker.lastPrice) ??
+          getValidNumber(backup.current_price) ??
+          0;
+
         const changePercent =
           getValidNumber(ticker.priceChangePercent) ??
           getValidNumber(backup.price_change_percentage_24h) ??
           0;
+
         const volume =
           getValidNumber(ticker.volume) ??
           getValidNumber(backup.total_volume) ??
