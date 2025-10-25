@@ -5,7 +5,7 @@ const Market = () => {
   const [pricesTicker, setPricesTicker] = useState({});
 
   useEffect(() => {
-    // Load token data from localStorage and normalize keys
+    // Load backup data from localStorage and normalize keys to UPPERCASE
     const rawData = JSON.parse(localStorage.getItem("tokens")) || [];
     const transformed = {};
     rawData.forEach((coin) => {
@@ -15,7 +15,7 @@ const Market = () => {
     });
     setPriceBackup(transformed);
 
-    // Connect to WebSocket
+    // Connect WebSocket for live ticker updates
     const socketTicker = new WebSocket(import.meta.env.VITE_API_MARKET_TICKER);
 
     socketTicker.onopen = () => console.log("✅ Connected to Ticker WebSocket");
@@ -24,56 +24,61 @@ const Market = () => {
       try {
         const data = JSON.parse(event.data);
 
-        // Handle single or multiple messages
+        // support both array payloads and single object payloads
         const items = Array.isArray(data) ? data : [data];
 
         setPricesTicker((prev) => {
           const next = { ...prev };
 
           items.forEach((msg) => {
-            // Binance sends 's' (symbol), lowercase like btcusdt
-            const rawSymbol =
-              msg.s || msg.symbol || msg.S || msg.sym || msg.pair;
+            // symbol might be in different fields or lower/upper case
+            const rawSymbol = msg.s || msg.symbol || msg.S || msg.sym;
             if (!rawSymbol) return;
 
             const symbolKey = String(rawSymbol).toUpperCase();
 
-            // Debug once to confirm fields
-            if (!next.__debugPrinted) {
-              console.log("📦 WS sample message:", msg);
-              next.__debugPrinted = true; // prevent spamming
-            }
+            // parse common fields from various ticker formats (Binance uses c, P, v)
+            // prefer common names: lastPrice, priceChangePercent, volume
+            const lastPriceRaw = msg.c ?? msg.lastPrice ?? msg.price ?? msg.priceClose ?? null;
+            const changePercentRaw = msg.P ?? msg.priceChangePercent ?? msg.priceChange ?? null;
+            const volumeRaw = msg.v ?? msg.volume ?? msg.q ?? null;
 
-            // Extract known Binance ticker fields
-            const lastPrice =
-              Number(msg.c ?? msg.lastPrice ?? msg.price ?? msg.p ?? 0) || null;
-            const priceChangePercent =
-              Number(msg.P ?? msg.priceChangePercent ?? msg.percent ?? 0) || null;
-            const volume =
-              Number(msg.v ?? msg.V ?? msg.volume ?? msg.q ?? 0) || null;
+            const lastPrice = lastPriceRaw !== undefined && lastPriceRaw !== null && lastPriceRaw !== ""
+              ? Number(lastPriceRaw)
+              : undefined;
 
+            const priceChangePercent = changePercentRaw !== undefined && changePercentRaw !== null && changePercentRaw !== ""
+              ? Number(changePercentRaw)
+              : undefined;
+
+            const volume = volumeRaw !== undefined && volumeRaw !== null && volumeRaw !== ""
+              ? Number(volumeRaw)
+              : undefined;
+
+            // merge keeping previous fields if WS didn't send them
             next[symbolKey] = {
               ...next[symbolKey],
-              ...(lastPrice ? { lastPrice } : {}),
-              ...(priceChangePercent ? { priceChangePercent } : {}),
-              ...(volume ? { volume } : {}),
+              ...(lastPrice !== undefined ? { lastPrice } : {}),
+              ...(priceChangePercent !== undefined ? { priceChangePercent } : {}),
+              ...(volume !== undefined ? { volume } : {}),
             };
           });
 
           return next;
         });
       } catch (err) {
-        console.error("❌ WebSocket Parse Error:", err);
+        console.error("❌ Error parsing WS message:", err);
       }
     };
 
-    socketTicker.onerror = (err) => console.error("❌ WebSocket error:", err);
-    socketTicker.onclose = () => console.warn("🔌 WebSocket closed");
+    socketTicker.onerror = (err) =>
+      console.error("❌ WebSocket error:", err?.message || err);
+    socketTicker.onclose = () => console.warn("🔌 Ticker WebSocket disconnected");
 
     return () => socketTicker.close();
   }, []);
 
-  // Re-render every 30s for fallback refresh
+  // small auto-refresh to keep UI reactive if needed
   useEffect(() => {
     const id = setInterval(() => {
       setPricesTicker((p) => ({ ...p }));
@@ -86,14 +91,14 @@ const Market = () => {
       ...Object.keys(priceBackup || {}),
       ...Object.keys(pricesTicker || {}),
     ]),
-  ].filter((s) => s !== "__debugPrinted");
+  ];
 
   const formatVolume = (val) => {
     const num = Number(val || 0);
-    if (num >= 1e12) return (num / 1e12).toFixed(5) + "T";
-    if (num >= 1e9) return (num / 1e9).toFixed(5) + "B";
-    if (num >= 1e6) return (num / 1e6).toFixed(5) + "M";
-    if (num >= 1e3) return (num / 1e3).toFixed(5) + "K";
+    if (num >= 1e12) return (num / 1e12).toFixed(2) + "T";
+    if (num >= 1e9) return (num / 1e9).toFixed(2) + "B";
+    if (num >= 1e6) return (num / 1e6).toFixed(2) + "M";
+    if (num >= 1e3) return (num / 1e3).toFixed(2) + "K";
     return num.toFixed(2);
   };
 
@@ -111,7 +116,7 @@ const Market = () => {
         const tokenName = backup.name || symbol.replace("USDT", "");
         const image = backup.image || "/placeholder.png";
 
-        // Prefer live WebSocket data
+        // prefer valid WS values, else fallback to backup
         const lastPrice =
           getValidNumber(ticker.lastPrice) ??
           getValidNumber(backup.current_price) ??
@@ -137,22 +142,28 @@ const Market = () => {
 
         return (
           <li key={symbol} style={{ marginTop: "9px" }}>
-            <a data-bs-toggle="modal" data-bs-target="#detailChart">
-              <img src={image} alt={tokenName} width="32" height="32" />
-              <div>
-                <div>
-                  <p>{tokenName}</p>
-                  <span>${formatVolume(volume)}</span>
+            <a
+              data-bs-toggle="modal"
+              data-bs-target="#detailChart"
+              className="coin-item style-1 gap-12 bg-surface"
+            >
+              <img src={image} alt={tokenName} className="img" />
+              <div className="content">
+                <div className="title">
+                  <p className="mb-4 text-large">{tokenName}</p>
+                  <span className="text-secondary">${formatVolume(volume)}</span>
                 </div>
-                <div>
-                  <p>
-                    $
-                    {lastPrice.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
+                <div className="box-price">
+                  <p className="text-small mb-4">
+                    <span className="text-light">
+                      $
+                      {lastPrice.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
                   </p>
-                  <p className={changeColor}>{formattedChange}</p>
+                  <p className={`text-end ${changeColor}`}>{formattedChange}</p>
                 </div>
               </div>
             </a>
