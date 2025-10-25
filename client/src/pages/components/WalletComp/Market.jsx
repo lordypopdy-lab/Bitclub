@@ -23,17 +23,21 @@ const Market = () => {
     socketTcker.onopen = () => console.log("✅ Ticker WebSocket connected");
 
     socketTcker.onmessage = (event) => {
-      const msg = JSON.parse(event.data);
-      const symbol = msg.symbol?.toUpperCase();
-      if (!symbol) return;
+      try {
+        const msg = JSON.parse(event.data);
+        const symbol = msg.symbol?.toUpperCase();
+        if (!symbol) return;
 
-      setPricesTicker((prev) => ({
-        ...prev,
-        [symbol]: {
-          ...prev[symbol],
-          ...msg,
-        },
-      }));
+        setPricesTicker((prev) => ({
+          ...prev,
+          [symbol]: {
+            ...prev[symbol],
+            ...msg,
+          },
+        }));
+      } catch (e) {
+        console.error("❌ Invalid WS message:", e);
+      }
     };
 
     socketTcker.onerror = (err) =>
@@ -67,13 +71,14 @@ const Market = () => {
         const ticker = pricesTicker[symbol] || {};
 
         const tokenName = backup.name || symbol.replace("USDT", "");
-        const tokenSymbol = symbol.replace("USDT", "");
         const image = backup.image || "/placeholder.png";
 
-        // Choose live or fallback price
+        // Live or fallback values
         const lastPrice = ticker.lastPrice || backup.current_price || 0;
         const changePercent =
           ticker.priceChangePercent || backup.price_change_percentage_24h || 0;
+        const volume =
+          ticker.volume || backup.total_volume || backup.volume || 0;
 
         // Add + or – before change
         const formattedChange =
@@ -81,7 +86,7 @@ const Market = () => {
             ? `+${Number(changePercent).toFixed(2)}%`
             : `${Number(changePercent).toFixed(2)}%`;
 
-        // Red for negative, green for positive
+        // Red for negative, blue for positive
         const changeColor = changePercent > 0 ? "text-primary" : "text-red";
 
         return (
@@ -96,12 +101,7 @@ const Market = () => {
                 <div className="title">
                   <p className="mb-4 text-large">{tokenName}</p>
                   <span className="text-secondary">
-                    $
-                    {formatVolume(
-                      pricesTicker?.SOLUSDT?.volume ||
-                        priceBackup?.SOL?.volume ||
-                        0
-                    )}
+                     ${formatVolume(volume)}
                   </span>
                 </div>
                 <div className="box-price">
