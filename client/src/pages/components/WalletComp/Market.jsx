@@ -57,12 +57,17 @@ const Market = () => {
 
   const formatVolume = (value) => {
     const num = Number(value || 0);
-    if (num >= 1e12) return (num / 1e12).toFixed(5) + "T";
-    if (num >= 1e9) return (num / 1e9).toFixed(5) + "B";
-    if (num >= 1e6) return (num / 1e6).toFixed(5) + "M";
-    if (num >= 1e3) return (num / 1e3).toFixed(5) + "K";
+    if (num >= 1e12) return (num / 1e12).toFixed(2) + "T";
+    if (num >= 1e9) return (num / 1e9).toFixed(2) + "B";
+    if (num >= 1e6) return (num / 1e6).toFixed(2) + "M";
+    if (num >= 1e3) return (num / 1e3).toFixed(2) + "K";
     return num.toFixed(2);
   };
+
+  const getValidNumber = (val) =>
+    val !== undefined && val !== null && val !== "" && !isNaN(val)
+      ? Number(val)
+      : null;
 
   return (
     <>
@@ -73,20 +78,24 @@ const Market = () => {
         const tokenName = backup.name || symbol.replace("USDT", "");
         const image = backup.image || "/placeholder.png";
 
-        // Live or fallback values
-        const lastPrice = ticker.lastPrice || backup.current_price || 0;
+        // Ensure we prefer valid WS data over backup
+        const lastPrice =
+          getValidNumber(ticker.lastPrice) ?? getValidNumber(backup.current_price) ?? 0;
         const changePercent =
-          ticker.priceChangePercent || backup.price_change_percentage_24h || 0;
+          getValidNumber(ticker.priceChangePercent) ??
+          getValidNumber(backup.price_change_percentage_24h) ??
+          0;
         const volume =
-          ticker.volume || backup.total_volume || backup.volume || 0;
+          getValidNumber(ticker.volume) ??
+          getValidNumber(backup.total_volume) ??
+          getValidNumber(backup.volume) ??
+          0;
 
-        // Add + or – before change
         const formattedChange =
           changePercent > 0
-            ? `+${Number(changePercent).toFixed(2)}%`
-            : `${Number(changePercent).toFixed(2)}%`;
+            ? `+${changePercent.toFixed(2)}%`
+            : `${changePercent.toFixed(2)}%`;
 
-        // Red for negative, blue for positive
         const changeColor = changePercent > 0 ? "text-primary" : "text-red";
 
         return (
@@ -101,14 +110,14 @@ const Market = () => {
                 <div className="title">
                   <p className="mb-4 text-large">{tokenName}</p>
                   <span className="text-secondary">
-                     ${formatVolume(volume)}
+                    ${formatVolume(volume)}
                   </span>
                 </div>
                 <div className="box-price">
                   <p className="text-small mb-4">
                     <span className="text-light">
                       $
-                      {Number(lastPrice).toLocaleString(undefined, {
+                      {lastPrice.toLocaleString(undefined, {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
