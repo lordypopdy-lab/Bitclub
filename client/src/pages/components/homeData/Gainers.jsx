@@ -4,30 +4,28 @@ import React, { useState, useEffect } from 'react';
 const Gainers = () => {
     const [priceBackup, setPriceBack] = useState({});
     const [pricesTicker, setPricesTicker] = useState({});
+    const [refreshTrigger, setRefreshTrigger] = useState(0); // for auto-refresh
 
     useEffect(() => {
+        // Load tokens from localStorage
         const tokenLoader = async () => {
             const rawData = JSON.parse(localStorage.getItem("tokens")) || [];
-
             const transformed = {};
+
             rawData.forEach((coin) => {
                 if (coin.symbol) {
                     transformed[coin.symbol.toUpperCase()] = coin;
                 }
             });
 
-            setPriceBack((prev) => ({
-                ...prev,
-                ...transformed,
-            }));
+            setPriceBack(transformed);
         };
 
+        // Connect WebSocket for real-time data
         const FavTokens = async () => {
             const socketTcker = new WebSocket(import.meta.env.VITE_API_MARKET_TICKER);
 
-            socketTcker.onopen = () => {
-                console.log('✅ Ticker WebSocket connected');
-            };
+            socketTcker.onopen = () => console.log('✅ Ticker WebSocket connected');
 
             socketTcker.onmessage = (event) => {
                 const msg = JSON.parse(event.data);
@@ -43,38 +41,51 @@ const Gainers = () => {
                 }));
             };
 
-            socketTcker.onerror = (err) => {
-                console.error('❌ Ticker WebSocket error:', err);
-            };
-
-            socketTcker.onclose = () => {
-                console.warn('🔌 Ticker WebSocket disconnected');
-            };
+            socketTcker.onerror = (err) => console.error('❌ Ticker WebSocket error:', err);
+            socketTcker.onclose = () => console.warn('🔌 Ticker WebSocket disconnected');
 
             return () => socketTcker.close();
         };
 
         FavTokens();
         tokenLoader();
+
+        // 🔁 Auto refresh every 30 seconds
+        const interval = setInterval(() => {
+            setRefreshTrigger((prev) => prev + 1);
+            console.log('🔁 Auto-refresh triggered at', new Date().toLocaleTimeString());
+        }, 30000);
+
+        return () => clearInterval(interval);
     }, []);
 
-    // Filter gainers: symbols with priceChangePercent > 0
+    // Filter gainers from WebSocket
     const gainersList = Object.keys(pricesTicker)
-        .filter((symbol) => {
-            const data = pricesTicker[symbol];
-            return data?.priceChangePercent > 0;
-        })
-        .slice(0, 10); // limit list to top 10 gainers if needed
+        .filter((symbol) => pricesTicker[symbol]?.priceChangePercent > 0)
+        .sort((a, b) => pricesTicker[b].priceChangePercent - pricesTicker[a].priceChangePercent)
+        .slice(0, 10);
+
+    // Fallback gainers from backup
+    const fallbackList = Object.keys(priceBackup)
+        .filter((symbol) => priceBackup[symbol]?.price_change_percentage_24h > 0)
+        .sort((a, b) => priceBackup[b].price_change_percentage_24h - priceBackup[a].price_change_percentage_24h)
+        .slice(0, 10);
+
+    // Choose live gainers or fallback
+    const finalList = gainersList.length > 0 ? gainersList : fallbackList;
 
     return (
         <div>
-            {gainersList.map((symbol) => {
+            {finalList.map((symbol) => {
                 const tokenSymbol = symbol.replace("USDT", "");
-                const backup = priceBackup[tokenSymbol] || {};
+                const backup = priceBackup[symbol] || {};
                 const ticker = pricesTicker[symbol] || {};
 
+                const lastPrice = ticker.lastPrice || backup.current_price || 0;
+                const changePercent = ticker.priceChangePercent || backup.price_change_percentage_24h || 0;
+
                 return (
-                    <li key={symbol} style={{ marginTop: '18px' }}>
+                    <li key={symbol + refreshTrigger} style={{ marginTop: '18px' }}>
                         <a className="coin-item style-2 gap-12">
                             <div className="content">
                                 <div className="title">
@@ -82,22 +93,22 @@ const Gainers = () => {
                                 </div>
                                 <div className="d-flex align-items-center gap-12">
                                     <span className="text-small">
-                                        {ticker.lastPrice
-                                            ? `$${Number(ticker.lastPrice).toLocaleString(undefined, {
-                                                minimumFractionDigits: 2,
-                                                maximumFractionDigits: 2,
-                                            })}`
-                                            : `$${Number(backup?.current_price || 0).toLocaleString(undefined, {
-                                                minimumFractionDigits: 2,
-                                                maximumFractionDigits: 2,
-                                            })}`}
+                                        ${Number(lastPrice).toLocaleString(undefined, {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
+                                        })}
                                     </span>
 
-                                    <span className="coin-btn increase">
-                                        {(ticker?.priceChangePercent || backup?.price_change_percentage_24h || 0).toLocaleString(undefined, {
-                                            minimumFractionDigits: 4,
-                                            maximumFractionDigits: 4,
-                                        })}%
+                                    <span
+                                        className={`coin-btn ${
+                                            changePercent >= 0 ? 'increase' : 'decrease'
+                                        }`}
+                                    >
+                                        {Number(changePercent).toLocaleString(undefined, {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
+                                        })}
+                                        %
                                     </span>
                                 </div>
                             </div>
@@ -105,7 +116,8 @@ const Gainers = () => {
                     </li>
                 );
             })}
-             <div className="d-block m-2 coin-item p-2 text-center">
+
+            <div className="d-block m-2 coin-item p-2 text-center">
                 <NavLink to="/wallet">
                     <div className="align-items-center">
                         <span className="text-small text-primary">

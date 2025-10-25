@@ -300,16 +300,28 @@ if (!localStorage.getItem('email')) { location.href = '/login'; }
                             <ul className="nav nav-tabs wallet-tabs" role="tablist" >
                                 <li className="item-slide-effect"></li>
                                 <li className="nav-item active" role="presentation">
-                                    <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#history">Contracts</button>
+                                    <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#history">Market</button>
                                 </li>
                                 <li className="nav-item" role="presentation">
-                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#market">Market</button>
+                                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#market">Contracts</button>
                                 </li>
                             </ul>
                         </div>
                         <div className="tab-content pt-16 pb-16">
                             <div className="tab-pane fade active show" id="history" role="tabpanel">
-                                <ul>
+                            <ul>
+                                    <FadeLoader
+                                        color="#36d7b7"
+                                        loading={loading}
+                                        speedMultiplier={3}
+                                        style={{ textAlign: 'center', position: 'relative', marginLeft: '50%' }}
+                                    />
+                                    {list1}
+                                </ul>
+
+                            </div>
+                            <div className="tab-pane fade" id="market" role="tabpanel">
+                            <ul>
                                     <li>
                                         <div className="accent-box-v5 p-0 bg-menuDark active" style={{ width: '100%' }}>
                                             <a onClick={toContractOne} className="coin-item style-1 gap-12 bg-surface">
@@ -358,17 +370,6 @@ if (!localStorage.getItem('email')) { location.href = '/login'; }
                                             </a>
                                         </div>
                                     </li>
-                                </ul>
-                            </div>
-                            <div className="tab-pane fade" id="market" role="tabpanel">
-                                <ul>
-                                    <FadeLoader
-                                        color="#36d7b7"
-                                        loading={loading}
-                                        speedMultiplier={3}
-                                        style={{ textAlign: 'center', position: 'relative', marginLeft: '50%' }}
-                                    />
-                                    {list1}
                                 </ul>
                             </div>
                         </div>
