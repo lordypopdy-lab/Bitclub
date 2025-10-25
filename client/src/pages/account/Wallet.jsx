@@ -60,22 +60,6 @@ const Wallet = () => {
     };
     getNotification();
 
-    //////////////''''''''//////////TOKEN FETCHER////////////''''''''//////////////
-    const fetcher = async () => {
-      try {
-        const response = await fetch(
-          "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd"
-        );
-        const datas = await response.json();
-        if (datas.length > 0) {
-          localStorage.setItem("tokens", JSON.stringify(datas));
-        }
-      } catch (error) {
-        console.log(`Error fetching tokens:`, error);
-      }
-    };
-    fetcher();
-
     try {
 
       const getHistory = async () => {
