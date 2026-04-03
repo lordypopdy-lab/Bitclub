@@ -150,8 +150,6 @@ const Home = () => {
     }
     if (!localStorage.getItem('email')) { location.href = '/login'; }
 
-    //console.log(pricesAggTrade)
-    //console.log(priceBackup)
     return (
         <>
             {/* <!-- preloade --> */}

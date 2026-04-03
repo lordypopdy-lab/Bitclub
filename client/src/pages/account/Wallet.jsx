@@ -10,6 +10,8 @@ import Market from "../components/WalletComp/Market";
 import { UserContext } from "../../../context/UserContext";
 import Contract from "../components/WalletComp/Contract";
 
+import WalletView from "../components/homeData/WalletView";
+
 const Wallet = () => {
   const [loading, setLoading] = useState(false);
   const [balance, setBalance] = useState(null);
@@ -59,22 +61,6 @@ const Wallet = () => {
       }
     };
     getNotification();
-
-    //////////////''''''''//////////TOKEN FETCHER////////////''''''''//////////////
-    const fetcher = async () => {
-      try {
-        const response = await fetch(
-          "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd"
-        );
-        const datas = await response.json();
-        if (datas.length > 0) {
-          localStorage.setItem("tokens", JSON.stringify(datas));
-        }
-      } catch (error) {
-        console.log(`Error fetching tokens:`, error);
-      }
-    };
-    fetcher();
 
     try {
 
@@ -356,7 +342,7 @@ const Wallet = () => {
             </div>
             <div className="tab-content pt-16 pb-16">
               <div
-                className="tab-pane fade active show"
+                className="tab-pane p-3 rounded fade active show"
                 id="history"
                 role="tabpanel"
               >
@@ -371,7 +357,7 @@ const Wallet = () => {
                       marginLeft: "50%",
                     }}
                   />
-                  <Market />
+                  <WalletView />
                 </ul>
               </div>
               <div className="tab-pane fade" id="market" role="tabpanel">
