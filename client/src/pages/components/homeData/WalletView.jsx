@@ -100,14 +100,19 @@ const WalletView = () => {
             <div
               style={{
                 width: "90px",
-                height: "9px",
+                height: "40px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 margin: "0 6px",
               }}
             >
-              <Sparkline symbol="btcusdt" width={100} height={40} />
+              <Sparkline
+                symbol="btcusdt"
+                width={90}
+                height={40}
+                priceChangePercent={pricesTicker?.BTCUSDT?.priceChangePercent}
+              />
             </div>
 
             <div className="text-end">
@@ -116,19 +121,20 @@ const WalletView = () => {
                 const live = pricesTicker?.BTCUSDT?.priceChangePercent;
                 const backup = priceBackup?.BTC?.price_change_percentage_24h;
 
-                const value =
-                  live !== undefined ? Number(live) : Number(backup);
+                const value = !isNaN(Number(live))
+                  ? Number(live)
+                  : !isNaN(Number(backup))
+                    ? Number(backup)
+                    : NaN;
 
-                if (isNaN(value)) {
+                if (isNaN(value))
                   return <span className="text-button">--</span>;
-                }
 
-                return value > 0 ? (
-                  <span className="text-button text-primary">
-                    {value.toFixed(3)}%
-                  </span>
-                ) : (
-                  <span className="text-button text-red">
+                const isUp = value >= 0;
+                const textColor = isUp ? "text-primary" : "text-red";
+
+                return (
+                  <span className={`text-button ${textColor}`}>
                     {value.toFixed(3)}%
                   </span>
                 );
@@ -181,7 +187,7 @@ const WalletView = () => {
                   )}
             </span>
 
-            {/* 🔥 PREMIUM MINI CHART */}
+            {/* MINI CHART */}
             <div
               style={{
                 width: "110px",
@@ -192,7 +198,12 @@ const WalletView = () => {
                 margin: "0 6px",
               }}
             >
-              <Sparkline symbol="ethusdt" width={100} height={40} />
+              <Sparkline
+                symbol="ethusdt"
+                width={110}
+                height={30}
+                priceChangePercent={pricesTicker?.ETHUSDT?.priceChangePercent}
+              />
             </div>
 
             <div className="text-end">
@@ -266,7 +277,7 @@ const WalletView = () => {
                   )}
             </span>
 
-            {/* 🔥 PREMIUM MINI CHART (FLAT-OPTIMIZED) */}
+            {/* MINI CHART */}
             <div
               style={{
                 width: "110px",
@@ -278,7 +289,12 @@ const WalletView = () => {
                 opacity: 0.7,
               }}
             >
-              <Sparkline symbol="usdcusdt" width={100} height={40} />
+              <Sparkline
+                symbol="usdcusdt"
+                width={110}
+                height={40}
+                priceChangePercent={pricesTicker?.USDCUSDT?.priceChangePercent}
+              />
             </div>
 
             <div className="text-end">
@@ -364,7 +380,12 @@ const WalletView = () => {
                 opacity: 0.7,
               }}
             >
-              <Sparkline symbol="xrpusdt" width={100} height={40} />
+              <Sparkline
+                symbol="xrpusdt"
+                width={110}
+                height={40}
+                priceChangePercent={pricesTicker?.XRPUSDT?.priceChangePercent}
+              />
             </div>
 
             <div className="text-end">
@@ -438,7 +459,7 @@ const WalletView = () => {
                   )}
             </span>
 
-            {/* 🔥 PREMIUM MINI CHART (FLAT-OPTIMIZED) */}
+            {/* MINI CHART (FLAT-OPTIMIZED) */}
             <div
               style={{
                 width: "110px",
@@ -450,7 +471,12 @@ const WalletView = () => {
                 opacity: 0.7,
               }}
             >
-              <Sparkline symbol="trxusdt" width={100} height={40} />
+              <Sparkline
+                symbol="trxusdt"
+                width={110}
+                height={40}
+                priceChangePercent={pricesTicker?.TRXUSDT?.priceChangePercent}
+              />
             </div>
 
             <div className="text-end">
@@ -524,7 +550,7 @@ const WalletView = () => {
                   )}
             </span>
 
-            {/* 🔥 PREMIUM MINI CHART (FLAT-OPTIMIZED) */}
+            {/* MINI CHART (FLAT-OPTIMIZED) */}
             <div
               style={{
                 width: "110px",
@@ -536,7 +562,12 @@ const WalletView = () => {
                 opacity: 0.7,
               }}
             >
-              <Sparkline symbol="filusdt" width={100} height={40} />
+              <Sparkline
+                symbol="filusdt"
+                width={110}
+                height={40}
+                priceChangePercent={pricesTicker?.FILUSDT?.priceChangePercent}
+              />
             </div>
 
             <div className="text-end">

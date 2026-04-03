@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 
-export const Sparkline = ({ symbol, width, height }) => {
+export const Sparkline = ({ symbol, width, height, priceChangePercent }) => {
   if (!symbol || !width || !height) {
     throw new Error("Sparkline requires 'symbol', 'width', and 'height' props");
   }
@@ -9,18 +9,43 @@ export const Sparkline = ({ symbol, width, height }) => {
   const wsRef = useRef(null);
 
   useEffect(() => {
-    // Binance WebSocket stream for miniTicker
+    let isBinanceAvailable = true;
+
+    // Binance WebSocket stream
     const streamPath = `${symbol.toLowerCase()}@miniTicker`;
     const ws = new WebSocket(`wss://fstream.binance.com/stream?streams=${streamPath}`);
     wsRef.current = ws;
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      const price = parseFloat(data.data.c); // closing price
-      setPrices((prev) => {
-        const newData = [...prev, price];
-        return newData.slice(-50); // keep last 50 points
-      });
+      if (!data?.data?.c) return;
+
+      const price = parseFloat(data.data.c);
+      if (!isNaN(price)) {
+        setPrices((prev) => {
+          const newData = [...prev, price];
+          return newData.slice(-50); // keep last 50 points
+        });
+      }
+    };
+
+    ws.onerror = async () => {
+      isBinanceAvailable = false;
+      ws.close();
+
+      // Fallback to CoinGecko
+      try {
+        const id = symbol.toLowerCase(); // assuming symbol matches CoinGecko ID
+        const res = await fetch(
+          `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${id}&sparkline=true`
+        );
+        const data = await res.json();
+        if (data?.[0]?.sparkline_in_7d?.price?.length) {
+          setPrices(data[0].sparkline_in_7d.price.slice(-50)); // last 50 points
+        }
+      } catch (err) {
+        console.error("Failed to fetch CoinGecko sparkline:", err);
+      }
     };
 
     return () => ws.close();
@@ -30,10 +55,11 @@ export const Sparkline = ({ symbol, width, height }) => {
 
   const max = Math.max(...prices);
   const min = Math.min(...prices);
+  const range = max - min || 1;
 
   const points = prices.map((price, i) => {
     const x = (i / (prices.length - 1)) * width;
-    const y = height - ((price - min) / (max - min)) * height;
+    const y = height - ((price - min) / range) * height;
     return [x, y];
   });
 
@@ -48,7 +74,11 @@ export const Sparkline = ({ symbol, width, height }) => {
   const lastPoint = points[points.length - 1];
   const areaPath = `${path} L ${lastPoint[0]} ${height} L 0 ${height} Z`;
 
-  const isUp = prices[prices.length - 1] >= prices[0];
+  const isUp =
+    priceChangePercent !== undefined
+      ? priceChangePercent >= 0
+      : prices[prices.length - 1] >= prices[0];
+
   const color = isUp ? "lime" : "red";
   const opacity = 0.3;
   const glowId = `glow-${color}`;
