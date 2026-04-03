@@ -63,7 +63,6 @@ const Wallet = () => {
     getNotification();
 
     try {
-
       const getHistory = async () => {
         const email = localStorage.getItem("email");
         try {
@@ -187,7 +186,7 @@ const Wallet = () => {
           setBalance(BALANCE_IN_USDC_CONVERTED);
         } else {
           console.log(
-            "Non-Ethereum browser detected. Consider trying MetaMask!"
+            "Non-Ethereum browser detected. Consider trying MetaMask!",
           );
         }
       };
@@ -341,6 +340,13 @@ const Wallet = () => {
               </ul>
             </div>
             <div className="tab-content pt-16 pb-16">
+              <h5
+                style={{marginBottom: "-27px"}}
+              >
+                <a href="/assetsRatings" className="cryptex-rating text-primary">
+                  <i className="icon-star text-warning m-2"></i>Bitclub Rating
+                </a>
+              </h5>
               <div
                 className="tab-pane p-3 rounded fade active show"
                 id="history"
