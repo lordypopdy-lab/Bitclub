@@ -99,7 +99,7 @@ const WalletView = () => {
             {/* 🔥 MINI CHART */}
             <div
               style={{
-                width: "110px",
+                width: "90px",
                 height: "9px",
                 display: "flex",
                 alignItems: "center",
@@ -107,7 +107,7 @@ const WalletView = () => {
                 margin: "0 6px",
               }}
             >
-                <Sparkline symbol="btcusdt" width={100} height={40} />
+              <Sparkline symbol="btcusdt" width={100} height={40} />
             </div>
 
             <div className="text-end">
@@ -192,7 +192,7 @@ const WalletView = () => {
                 margin: "0 6px",
               }}
             >
-             <Sparkline symbol="ethusdt" width={100} height={40} />
+              <Sparkline symbol="ethusdt" width={100} height={40} />
             </div>
 
             <div className="text-end">
@@ -364,7 +364,7 @@ const WalletView = () => {
                 opacity: 0.7,
               }}
             >
-             <Sparkline symbol="xrpusdt" width={100} height={40} />
+              <Sparkline symbol="xrpusdt" width={100} height={40} />
             </div>
 
             <div className="text-end">
@@ -490,7 +490,7 @@ const WalletView = () => {
           </div>
         </a>
       </li>
-       <li style={{ marginTop: "18px" }}>
+      <li style={{ marginTop: "18px" }}>
         <a
           data-bs-toggle="modal"
           data-bs-target="#detailChart"
@@ -536,7 +536,7 @@ const WalletView = () => {
                 opacity: 0.7,
               }}
             >
-             <Sparkline symbol="filusdt" width={100} height={40} />
+              <Sparkline symbol="filusdt" width={100} height={40} />
             </div>
 
             <div className="text-end">
