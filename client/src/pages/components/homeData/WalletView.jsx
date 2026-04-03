@@ -68,8 +68,7 @@ const WalletView = () => {
           data-bs-target="#detailChart"
           className="coin-item justify-content-between"
         >
-          <div className="d-flex align-items-center gap-12 flex-1">
-            <h4 className="text-primary">02</h4>
+          <div className="d-flex align-items-center flex-1">
             <p>
               <span className="mb-4 text-button fw-6">BTC</span>
               <span className="text-secondary">/ USDT</span>
@@ -104,7 +103,7 @@ const WalletView = () => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                margin: "0 6px",
+                margin: "0 12px",
               }}
             >
               <Sparkline
@@ -160,7 +159,6 @@ const WalletView = () => {
           className="coin-item justify-content-between"
         >
           <div className="d-flex align-items-center gap-12 flex-1">
-            <h4 className="text-primary">01</h4>
             <p>
               <span className="mb-4 text-button fw-6">ETC</span>
               <span className="text-secondary">/ USDT</span>
@@ -250,7 +248,6 @@ const WalletView = () => {
           className="coin-item justify-content-between"
         >
           <div className="d-flex align-items-center gap-12 flex-1">
-            <h4 className="text-primary">02</h4>
             <p>
               <span className="mb-4 text-button fw-6">USDC</span>
               <span className="text-secondary">/ USDT</span>
@@ -341,7 +338,6 @@ const WalletView = () => {
           className="coin-item justify-content-between"
         >
           <div className="d-flex align-items-center gap-12 flex-1">
-            <h4 className="text-primary">02</h4>
             <p>
               <span className="mb-4 text-button fw-6">XRP</span>
               <span className="text-secondary">/ USDT</span>
@@ -432,7 +428,6 @@ const WalletView = () => {
           className="coin-item justify-content-between"
         >
           <div className="d-flex align-items-center gap-12 flex-1">
-            <h4 className="text-primary">02</h4>
             <p>
               <span className="mb-4 text-button fw-6">TRX</span>
               <span className="text-secondary">/ USDT</span>
@@ -522,8 +517,7 @@ const WalletView = () => {
           data-bs-target="#detailChart"
           className="coin-item justify-content-between"
         >
-          <div className="d-flex align-items-center gap-12 flex-1">
-            <h4 className="text-primary">02</h4>
+          <div className="d-flex align-items-center flex-1">
             <p>
               <span className="mb-4 text-button fw-6">FIL</span>
               <span className="text-secondary">/ USDT</span>
