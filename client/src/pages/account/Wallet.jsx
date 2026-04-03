@@ -344,7 +344,7 @@ const Wallet = () => {
                 style={{marginBottom: "-27px"}}
               >
                 <a href="/assetsRatings" className="cryptex-rating text-primary">
-                  <i className="icon-star text-warning m-2"></i>Bitclub Rating
+                  <i className="icon-star text-warning m-1"></i>Bitclub Rating
                 </a>
               </h5>
               <div
