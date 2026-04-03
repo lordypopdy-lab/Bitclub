@@ -68,88 +68,96 @@ const WalletView = () => {
           data-bs-target="#detailChart"
           className="coin-item justify-content-between"
         >
-          <div className="d-flex align-items-center flex-1">
-            <p>
-              <span className="mb-4 text-button fw-6">BTC</span>
-              <span className="text-secondary">/ USDT</span>
-            </p>
-          </div>
+          {/* SINGLE SOURCE OF TRUTH */}
+          {(() => {
+            const live = pricesTicker?.BTCUSDT?.priceChangePercent;
+            const backup = priceBackup?.BTC?.price_change_percentage_24h;
 
-          <div className="d-flex align-items-center gap-2 flex-st2">
-            {/* PRICE */}
-            <span className="text-small">
-              {pricesTicker?.BTCUSDT?.lastPrice
-                ? Number(pricesTicker.BTCUSDT.lastPrice).toLocaleString(
-                    undefined,
-                    {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    },
-                  )
-                : Number(priceBackup?.BTC?.current_price || 0).toLocaleString(
-                    undefined,
-                    {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    },
-                  )}
-            </span>
+            const priceChangeValue = !isNaN(Number(live))
+              ? Number(live)
+              : !isNaN(Number(backup))
+                ? Number(backup)
+                : NaN;
 
-            {/* 🔥 MINI CHART */}
-            <div
-              style={{
-                width: "90px",
-                height: "40px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                margin: "0 12px",
-              }}
-            >
-              <Sparkline
-                symbol="btcusdt"
-                width={90}
-                height={40}
-                priceChangePercent={pricesTicker?.BTCUSDT?.priceChangePercent}
-              />
-            </div>
+            const isUp = priceChangeValue >= 0;
 
-            <div className="text-end">
-              {/* % CHANGE */}
-              {(() => {
-                const live = pricesTicker?.BTCUSDT?.priceChangePercent;
-                const backup = priceBackup?.BTC?.price_change_percentage_24h;
+            return (
+              <>
+                <div className="d-flex align-items-center flex-1">
+                  <p>
+                    <span className="mb-4 text-button fw-6">BTC</span>
+                    <span className="text-secondary">/ USDT</span>
+                  </p>
+                </div>
 
-                const value = !isNaN(Number(live))
-                  ? Number(live)
-                  : !isNaN(Number(backup))
-                    ? Number(backup)
-                    : NaN;
-
-                if (isNaN(value))
-                  return <span className="text-button">--</span>;
-
-                const isUp = value >= 0;
-                const textColor = isUp ? "text-primary" : "text-red";
-
-                return (
-                  <span className={`text-button ${textColor}`}>
-                    {value.toFixed(3)}%
+                <div className="d-flex align-items-center gap-2 flex-st2">
+                  {/* PRICE */}
+                  <span className="text-small">
+                    {pricesTicker?.BTCUSDT?.lastPrice
+                      ? Number(pricesTicker.BTCUSDT.lastPrice).toLocaleString(
+                          undefined,
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          },
+                        )
+                      : Number(
+                          priceBackup?.BTC?.current_price || 0,
+                        ).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
                   </span>
-                );
-              })()}
 
-              {/* USD */}
-              <p className="mt-4 text-secondary">
-                $
-                {pricesTicker?.BTCUSDT?.lastPrice
-                  ? Number(pricesTicker.BTCUSDT.lastPrice).toLocaleString()
-                  : Number(
-                      priceBackup?.BTC?.current_price || 0,
-                    ).toLocaleString()}
-              </p>
-            </div>
-          </div>
+                  {/* 🔥 MINI CHART */}
+                  <div
+                    style={{
+                      width: "90px",
+                      height: "40px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      margin: "0 12px",
+                    }}
+                  >
+                    <Sparkline
+                      symbol="btcusdt"
+                      width={90}
+                      height={40}
+                      priceChangePercent={priceChangeValue} // ✅ PERFECT SYNC
+                    />
+                  </div>
+
+                  <div className="text-end">
+                    {/* % CHANGE */}
+                    {isNaN(priceChangeValue) ? (
+                      <span className="text-button">--</span>
+                    ) : (
+                      <span
+                        className={`text-button ${
+                          isUp ? "text-primary" : "text-red"
+                        }`}
+                      >
+                        {priceChangeValue.toFixed(3)}%
+                      </span>
+                    )}
+
+                    {/* USD */}
+                    <p className="mt-4 text-secondary">
+                      $
+                      {pricesTicker?.BTCUSDT?.lastPrice
+                        ? Number(
+                            pricesTicker.BTCUSDT.lastPrice,
+                          ).toLocaleString()
+                        : Number(
+                            priceBackup?.BTC?.current_price || 0,
+                          ).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
         </a>
       </li>
       <li style={{ marginTop: "18px" }}>
@@ -158,87 +166,96 @@ const WalletView = () => {
           data-bs-target="#detailChart"
           className="coin-item justify-content-between"
         >
-          <div className="d-flex align-items-center gap-12 flex-1">
-            <p>
-              <span className="mb-4 text-button fw-6">ETC</span>
-              <span className="text-secondary">/ USDT</span>
-            </p>
-          </div>
+          {/* SINGLE SOURCE OF TRUTH */}
+          {(() => {
+            const live = pricesTicker?.ETCUSDT?.priceChangePercent;
+            const backup = priceBackup?.ETC?.price_change_percentage_24h;
 
-          <div className="d-flex align-items-center gap-2 flex-st2">
-            {/* PRICE */}
-            <span className="text-small">
-              {pricesTicker?.ETCUSDT?.lastPrice
-                ? Number(pricesTicker.ETCUSDT.lastPrice).toLocaleString(
-                    undefined,
-                    {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    },
-                  )
-                : Number(priceBackup?.ETC?.current_price || 0).toLocaleString(
-                    undefined,
-                    {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    },
-                  )}
-            </span>
+            const priceChangeValue = !isNaN(Number(live))
+              ? Number(live)
+              : !isNaN(Number(backup))
+                ? Number(backup)
+                : NaN;
 
-            {/* MINI CHART */}
-            <div
-              style={{
-                width: "110px",
-                height: "30px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                margin: "0 6px",
-              }}
-            >
-              <Sparkline
-                symbol="ethusdt"
-                width={110}
-                height={30}
-                priceChangePercent={pricesTicker?.ETHUSDT?.priceChangePercent}
-              />
-            </div>
+            const isUp = priceChangeValue >= 0;
 
-            <div className="text-end">
-              {/* % CHANGE */}
-              {(() => {
-                const live = pricesTicker?.ETCUSDT?.priceChangePercent;
-                const backup = priceBackup?.ETC?.price_change_percentage_24h;
+            return (
+              <>
+                <div className="d-flex align-items-center gap-12 flex-1">
+                  <p>
+                    <span className="mb-4 text-button fw-6">ETC</span>
+                    <span className="text-secondary">/ USDT</span>
+                  </p>
+                </div>
 
-                const value =
-                  live !== undefined ? Number(live) : Number(backup);
-
-                if (isNaN(value)) {
-                  return <span className="text-button">--</span>;
-                }
-
-                return value > 0 ? (
-                  <span className="text-button text-primary">
-                    {value.toFixed(3)}%
+                <div className="d-flex align-items-center gap-2 flex-st2">
+                  {/* PRICE */}
+                  <span className="text-small">
+                    {pricesTicker?.ETCUSDT?.lastPrice
+                      ? Number(pricesTicker.ETCUSDT.lastPrice).toLocaleString(
+                          undefined,
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          },
+                        )
+                      : Number(
+                          priceBackup?.ETC?.current_price || 0,
+                        ).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
                   </span>
-                ) : (
-                  <span className="text-button text-red">
-                    {value.toFixed(3)}%
-                  </span>
-                );
-              })()}
 
-              {/* USD */}
-              <p className="mt-4 text-secondary">
-                $
-                {pricesTicker?.ETCUSDT?.lastPrice
-                  ? Number(pricesTicker.ETCUSDT.lastPrice).toLocaleString()
-                  : Number(
-                      priceBackup?.ETC?.current_price || 0,
-                    ).toLocaleString()}
-              </p>
-            </div>
-          </div>
+                  {/* MINI CHART */}
+                  <div
+                    style={{
+                      width: "110px",
+                      height: "30px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      margin: "0 6px",
+                    }}
+                  >
+                    <Sparkline
+                      symbol="etcusdt"
+                      width={110}
+                      height={30}
+                      priceChangePercent={priceChangeValue}
+                    />
+                  </div>
+
+                  <div className="text-end">
+                    {/* % CHANGE */}
+                    {isNaN(priceChangeValue) ? (
+                      <span className="text-button">--</span>
+                    ) : (
+                      <span
+                        className={`text-button ${
+                          isUp ? "text-primary" : "text-red"
+                        }`}
+                      >
+                        {priceChangeValue.toFixed(3)}%
+                      </span>
+                    )}
+
+                    {/* USD */}
+                    <p className="mt-4 text-secondary">
+                      $
+                      {pricesTicker?.ETCUSDT?.lastPrice
+                        ? Number(
+                            pricesTicker.ETCUSDT.lastPrice,
+                          ).toLocaleString()
+                        : Number(
+                            priceBackup?.ETC?.current_price || 0,
+                          ).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
         </a>
       </li>
       <li style={{ marginTop: "18px" }}>
@@ -337,88 +354,97 @@ const WalletView = () => {
           data-bs-target="#detailChart"
           className="coin-item justify-content-between"
         >
-          <div className="d-flex align-items-center gap-12 flex-1">
-            <p>
-              <span className="mb-4 text-button fw-6">XRP</span>
-              <span className="text-secondary">/ USDT</span>
-            </p>
-          </div>
+          {/* SINGLE SOURCE OF TRUTH */}
+          {(() => {
+            const live = pricesTicker?.XRPUSDT?.priceChangePercent;
+            const backup = priceBackup?.XRP?.price_change_percentage_24h;
 
-          <div className="d-flex align-items-center gap-2 flex-st2">
-            {/* PRICE */}
-            <span className="text-small">
-              {pricesTicker?.XRPUSDT?.lastPrice
-                ? Number(pricesTicker.XRPUSDT.lastPrice).toLocaleString(
-                    undefined,
-                    {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    },
-                  )
-                : Number(priceBackup?.XRP?.current_price || 0).toLocaleString(
-                    undefined,
-                    {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    },
-                  )}
-            </span>
+            const priceChangeValue = !isNaN(Number(live))
+              ? Number(live)
+              : !isNaN(Number(backup))
+                ? Number(backup)
+                : NaN;
 
-            {/* 🔥 PREMIUM MINI CHART (FLAT-OPTIMIZED) */}
-            <div
-              style={{
-                width: "110px",
-                height: "30px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                margin: "0 6px",
-                opacity: 0.7,
-              }}
-            >
-              <Sparkline
-                symbol="xrpusdt"
-                width={110}
-                height={40}
-                priceChangePercent={pricesTicker?.XRPUSDT?.priceChangePercent}
-              />
-            </div>
+            const isUp = priceChangeValue >= 0;
 
-            <div className="text-end">
-              {/* % CHANGE */}
-              {(() => {
-                const live = pricesTicker?.XRPUSDT?.priceChangePercent;
-                const backup = priceBackup?.XRP?.price_change_percentage_24h;
+            return (
+              <>
+                <div className="d-flex align-items-center gap-12 flex-1">
+                  <p>
+                    <span className="mb-4 text-button fw-6">XRP</span>
+                    <span className="text-secondary">/ USDT</span>
+                  </p>
+                </div>
 
-                const value =
-                  live !== undefined ? Number(live) : Number(backup);
-
-                if (isNaN(value)) {
-                  return <span className="text-button">--</span>;
-                }
-
-                return value > 0 ? (
-                  <span className="text-button text-primary">
-                    {value.toFixed(3)}%
+                <div className="d-flex align-items-center gap-2 flex-st2">
+                  {/* PRICE */}
+                  <span className="text-small">
+                    {pricesTicker?.XRPUSDT?.lastPrice
+                      ? Number(pricesTicker.XRPUSDT.lastPrice).toLocaleString(
+                          undefined,
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          },
+                        )
+                      : Number(
+                          priceBackup?.XRP?.current_price || 0,
+                        ).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
                   </span>
-                ) : (
-                  <span className="text-button text-red">
-                    {value.toFixed(3)}%
-                  </span>
-                );
-              })()}
 
-              {/* USD */}
-              <p className="mt-4 text-secondary">
-                $
-                {pricesTicker?.XRPUSDT?.lastPrice
-                  ? Number(pricesTicker.XRPUSDT.lastPrice).toLocaleString()
-                  : Number(
-                      priceBackup?.XRP?.current_price || 0,
-                    ).toLocaleString()}
-              </p>
-            </div>
-          </div>
+                  {/* PREMIUM MINI CHART */}
+                  <div
+                    style={{
+                      width: "110px",
+                      height: "40px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      margin: "0 6px",
+                      opacity: 0.7,
+                    }}
+                  >
+                    <Sparkline
+                      symbol="xrpusdt"
+                      width={110}
+                      height={40}
+                      priceChangePercent={priceChangeValue}
+                    />
+                  </div>
+
+                  <div className="text-end">
+                    {/* % CHANGE */}
+                    {isNaN(priceChangeValue) ? (
+                      <span className="text-button">--</span>
+                    ) : (
+                      <span
+                        className={`text-button ${
+                          isUp ? "text-primary" : "text-red"
+                        }`}
+                      >
+                        {priceChangeValue.toFixed(3)}%
+                      </span>
+                    )}
+
+                    {/* USD */}
+                    <p className="mt-4 text-secondary">
+                      $
+                      {pricesTicker?.XRPUSDT?.lastPrice
+                        ? Number(
+                            pricesTicker.XRPUSDT.lastPrice,
+                          ).toLocaleString()
+                        : Number(
+                            priceBackup?.XRP?.current_price || 0,
+                          ).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
         </a>
       </li>
       <li style={{ marginTop: "18px" }}>
@@ -427,88 +453,97 @@ const WalletView = () => {
           data-bs-target="#detailChart"
           className="coin-item justify-content-between"
         >
-          <div className="d-flex align-items-center gap-12 flex-1">
-            <p>
-              <span className="mb-4 text-button fw-6">TRX</span>
-              <span className="text-secondary">/ USDT</span>
-            </p>
-          </div>
+          {/* 🔥 SINGLE SOURCE OF TRUTH */}
+          {(() => {
+            const live = pricesTicker?.TRXUSDT?.priceChangePercent;
+            const backup = priceBackup?.TRX?.price_change_percentage_24h;
 
-          <div className="d-flex align-items-center gap-2 flex-st2">
-            {/* PRICE */}
-            <span className="text-small">
-              {pricesTicker?.TRXUSDT?.lastPrice
-                ? Number(pricesTicker.TRXUSDT.lastPrice).toLocaleString(
-                    undefined,
-                    {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    },
-                  )
-                : Number(priceBackup?.TRX?.current_price || 0).toLocaleString(
-                    undefined,
-                    {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    },
-                  )}
-            </span>
+            const priceChangeValue = !isNaN(Number(live))
+              ? Number(live)
+              : !isNaN(Number(backup))
+                ? Number(backup)
+                : NaN;
 
-            {/* MINI CHART (FLAT-OPTIMIZED) */}
-            <div
-              style={{
-                width: "110px",
-                height: "30px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                margin: "0 6px",
-                opacity: 0.7,
-              }}
-            >
-              <Sparkline
-                symbol="trxusdt"
-                width={110}
-                height={40}
-                priceChangePercent={pricesTicker?.TRXUSDT?.priceChangePercent}
-              />
-            </div>
+            const isUp = priceChangeValue >= 0;
 
-            <div className="text-end">
-              {/* % CHANGE */}
-              {(() => {
-                const live = pricesTicker?.TRXUSDT?.priceChangePercent;
-                const backup = priceBackup?.TRX?.price_change_percentage_24h;
+            return (
+              <>
+                <div className="d-flex align-items-center gap-12 flex-1">
+                  <p>
+                    <span className="mb-4 text-button fw-6">TRX</span>
+                    <span className="text-secondary">/ USDT</span>
+                  </p>
+                </div>
 
-                const value =
-                  live !== undefined ? Number(live) : Number(backup);
-
-                if (isNaN(value)) {
-                  return <span className="text-button">--</span>;
-                }
-
-                return value > 0 ? (
-                  <span className="text-button text-primary">
-                    {value.toFixed(3)}%
+                <div className="d-flex align-items-center gap-2 flex-st2">
+                  {/* PRICE */}
+                  <span className="text-small">
+                    {pricesTicker?.TRXUSDT?.lastPrice
+                      ? Number(pricesTicker.TRXUSDT.lastPrice).toLocaleString(
+                          undefined,
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          },
+                        )
+                      : Number(
+                          priceBackup?.TRX?.current_price || 0,
+                        ).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
                   </span>
-                ) : (
-                  <span className="text-button text-red">
-                    {value.toFixed(3)}%
-                  </span>
-                );
-              })()}
 
-              {/* USD */}
-              <p className="mt-4 text-secondary">
-                $
-                {pricesTicker?.TRXUSDT?.lastPrice
-                  ? Number(pricesTicker.TRXUSDT.lastPrice).toLocaleString()
-                  : Number(
-                      priceBackup?.TRX?.current_price || 0,
-                    ).toLocaleString()}
-              </p>
-            </div>
-          </div>
+                  {/* MINI CHART */}
+                  <div
+                    style={{
+                      width: "110px",
+                      height: "40px", // ✅ fixed to match Sparkline
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      margin: "0 6px",
+                      opacity: 0.7,
+                    }}
+                  >
+                    <Sparkline
+                      symbol="trxusdt"
+                      width={110}
+                      height={40}
+                      priceChangePercent={priceChangeValue} // ✅ PERFECT SYNC
+                    />
+                  </div>
+
+                  <div className="text-end">
+                    {/* % CHANGE */}
+                    {isNaN(priceChangeValue) ? (
+                      <span className="text-button">--</span>
+                    ) : (
+                      <span
+                        className={`text-button ${
+                          isUp ? "text-primary" : "text-red"
+                        }`}
+                      >
+                        {priceChangeValue.toFixed(3)}%
+                      </span>
+                    )}
+
+                    {/* USD */}
+                    <p className="mt-4 text-secondary">
+                      $
+                      {pricesTicker?.TRXUSDT?.lastPrice
+                        ? Number(
+                            pricesTicker.TRXUSDT.lastPrice,
+                          ).toLocaleString()
+                        : Number(
+                            priceBackup?.TRX?.current_price || 0,
+                          ).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
         </a>
       </li>
       <li style={{ marginTop: "18px" }}>
@@ -517,88 +552,97 @@ const WalletView = () => {
           data-bs-target="#detailChart"
           className="coin-item justify-content-between"
         >
-          <div className="d-flex align-items-center flex-1">
-            <p>
-              <span className="mb-4 text-button fw-6">FIL</span>
-              <span className="text-secondary">/ USDT</span>
-            </p>
-          </div>
+          {/* 🔥 SINGLE SOURCE OF TRUTH */}
+          {(() => {
+            const live = pricesTicker?.FILUSDT?.priceChangePercent;
+            const backup = priceBackup?.FIL?.price_change_percentage_24h;
 
-          <div className="d-flex align-items-center gap-2 flex-st2">
-            {/* PRICE */}
-            <span className="text-small">
-              {pricesTicker?.FILUSDT?.lastPrice
-                ? Number(pricesTicker.FILUSDT.lastPrice).toLocaleString(
-                    undefined,
-                    {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    },
-                  )
-                : Number(priceBackup?.FIL?.current_price || 0).toLocaleString(
-                    undefined,
-                    {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    },
-                  )}
-            </span>
+            const priceChangeValue = !isNaN(Number(live))
+              ? Number(live)
+              : !isNaN(Number(backup))
+                ? Number(backup)
+                : NaN;
 
-            {/* MINI CHART (FLAT-OPTIMIZED) */}
-            <div
-              style={{
-                width: "110px",
-                height: "30px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                margin: "0 6px",
-                opacity: 0.7,
-              }}
-            >
-              <Sparkline
-                symbol="filusdt"
-                width={110}
-                height={40}
-                priceChangePercent={pricesTicker?.FILUSDT?.priceChangePercent}
-              />
-            </div>
+            const isUp = priceChangeValue >= 0;
 
-            <div className="text-end">
-              {/* % CHANGE */}
-              {(() => {
-                const live = pricesTicker?.FILUSDT?.priceChangePercent;
-                const backup = priceBackup?.FIL?.price_change_percentage_24h;
+            return (
+              <>
+                <div className="d-flex align-items-center flex-1">
+                  <p>
+                    <span className="mb-4 text-button fw-6">FIL</span>
+                    <span className="text-secondary">/ USDT</span>
+                  </p>
+                </div>
 
-                const value =
-                  live !== undefined ? Number(live) : Number(backup);
-
-                if (isNaN(value)) {
-                  return <span className="text-button">--</span>;
-                }
-
-                return value > 0 ? (
-                  <span className="text-button text-primary">
-                    {value.toFixed(3)}%
+                <div className="d-flex align-items-center gap-2 flex-st2">
+                  {/* PRICE */}
+                  <span className="text-small">
+                    {pricesTicker?.FILUSDT?.lastPrice
+                      ? Number(pricesTicker.FILUSDT.lastPrice).toLocaleString(
+                          undefined,
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          },
+                        )
+                      : Number(
+                          priceBackup?.FIL?.current_price || 0,
+                        ).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
                   </span>
-                ) : (
-                  <span className="text-button text-red">
-                    {value.toFixed(3)}%
-                  </span>
-                );
-              })()}
 
-              {/* USD */}
-              <p className="mt-4 text-secondary">
-                $
-                {pricesTicker?.FILUSDT?.lastPrice
-                  ? Number(pricesTicker.FILUSDT.lastPrice).toLocaleString()
-                  : Number(
-                      priceBackup?.FIL?.current_price || 0,
-                    ).toLocaleString()}
-              </p>
-            </div>
-          </div>
+                  {/* MINI CHART */}
+                  <div
+                    style={{
+                      width: "110px",
+                      height: "40px", // ✅ fixed to match Sparkline
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      margin: "0 6px",
+                      opacity: 0.7,
+                    }}
+                  >
+                    <Sparkline
+                      symbol="filusdt"
+                      width={110}
+                      height={40}
+                      priceChangePercent={priceChangeValue} // ✅ PERFECT SYNC
+                    />
+                  </div>
+
+                  <div className="text-end">
+                    {/* % CHANGE */}
+                    {isNaN(priceChangeValue) ? (
+                      <span className="text-button">--</span>
+                    ) : (
+                      <span
+                        className={`text-button ${
+                          isUp ? "text-primary" : "text-red"
+                        }`}
+                      >
+                        {priceChangeValue.toFixed(3)}%
+                      </span>
+                    )}
+
+                    {/* USD */}
+                    <p className="mt-4 text-secondary">
+                      $
+                      {pricesTicker?.FILUSDT?.lastPrice
+                        ? Number(
+                            pricesTicker.FILUSDT.lastPrice,
+                          ).toLocaleString()
+                        : Number(
+                            priceBackup?.FIL?.current_price || 0,
+                          ).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
         </a>
       </li>
       <div className="d-block m-2 coin-item p-2 text-center">

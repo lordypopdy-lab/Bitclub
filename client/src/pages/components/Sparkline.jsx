@@ -9,49 +9,24 @@ export const Sparkline = ({ symbol, width, height, priceChangePercent }) => {
   const wsRef = useRef(null);
 
   useEffect(() => {
-    let isBinanceAvailable = true;
-
-    // Binance WebSocket stream
     const streamPath = `${symbol.toLowerCase()}@miniTicker`;
     const ws = new WebSocket(`wss://fstream.binance.com/stream?streams=${streamPath}`);
     wsRef.current = ws;
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      if (!data?.data?.c) return;
-
-      const price = parseFloat(data.data.c);
+      const price = parseFloat(data?.data?.c);
       if (!isNaN(price)) {
-        setPrices((prev) => {
-          const newData = [...prev, price];
-          return newData.slice(-50); // keep last 50 points
-        });
+        setPrices((prev) => [...prev, price].slice(-50));
       }
     };
 
-    ws.onerror = async () => {
-      isBinanceAvailable = false;
-      ws.close();
-
-      // Fallback to CoinGecko
-      try {
-        const id = symbol.toLowerCase(); // assuming symbol matches CoinGecko ID
-        const res = await fetch(
-          `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${id}&sparkline=true`
-        );
-        const data = await res.json();
-        if (data?.[0]?.sparkline_in_7d?.price?.length) {
-          setPrices(data[0].sparkline_in_7d.price.slice(-50)); // last 50 points
-        }
-      } catch (err) {
-        console.error("Failed to fetch CoinGecko sparkline:", err);
-      }
-    };
+    ws.onerror = () => ws.close();
 
     return () => ws.close();
   }, [symbol]);
 
-  if (!prices.length) return null;
+  if (prices.length < 2) return null;
 
   const max = Math.max(...prices);
   const min = Math.min(...prices);
@@ -74,6 +49,7 @@ export const Sparkline = ({ symbol, width, height, priceChangePercent }) => {
   const lastPoint = points[points.length - 1];
   const areaPath = `${path} L ${lastPoint[0]} ${height} L 0 ${height} Z`;
 
+  // ✅ SINGLE SOURCE OF TRUTH
   const isUp =
     priceChangePercent !== undefined
       ? priceChangePercent >= 0
@@ -81,21 +57,27 @@ export const Sparkline = ({ symbol, width, height, priceChangePercent }) => {
 
   const color = isUp ? "lime" : "red";
   const opacity = 0.3;
-  const glowId = `glow-${color}`;
+
+  // 🔥 CRITICAL FIX: unique IDs per render
+  const uniqueId = `${symbol}-${isUp}-${prices.length}`;
+  const gradientId = `gradient-${uniqueId}`;
+  const glowId = `glow-${uniqueId}`;
 
   return (
     <svg width={width} height={height} style={{ overflow: "visible" }}>
       <defs>
-        <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity={opacity} />
-          <stop offset="100%" stopColor={color} stopOpacity={0} />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
+
         <filter id={glowId}>
           <feDropShadow dx="0" dy="0" stdDeviation="2" floodColor={color} />
         </filter>
       </defs>
 
-      <path d={areaPath} fill={`url(#gradient)`} />
+      <path d={areaPath} fill={`url(#${gradientId})`} />
+
       <path
         d={path}
         fill="none"
