@@ -27,7 +27,7 @@ const WalletView = () => {
       //=======WebSocket Ticker Section========//
 
       socketTcker.onopen = () => {
-        console.log("✅ Ticker WebSocket connected");
+        console.log(" Ticker WebSocket connected");
       };
 
       socketTcker.onmessage = (event) => {
@@ -109,7 +109,7 @@ const WalletView = () => {
                         })}
                   </span>
 
-                  {/* 🔥 MINI CHART */}
+                  {/*  MINI CHART */}
                   <div
                     style={{
                       width: "90px",
@@ -124,7 +124,12 @@ const WalletView = () => {
                       symbol="btcusdt"
                       width={90}
                       height={40}
-                      priceChangePercent={priceChangeValue} // ✅ PERFECT SYNC
+                      priceChangePercent={priceChangeValue}
+                      initialData={
+                        JSON.parse(localStorage.getItem("tokens") || "[]")
+                          .find((c) => c.symbol === "btc")
+                          ?.sparkline_in_7d?.price?.slice(-50) || []
+                      }
                     />
                   </div>
 
@@ -138,7 +143,7 @@ const WalletView = () => {
                           isUp ? "text-primary" : "text-red"
                         }`}
                       >
-                        {priceChangeValue.toFixed(3)}%
+                        {priceChangeValue.toFixed(2)}%
                       </span>
                     )}
 
@@ -218,11 +223,16 @@ const WalletView = () => {
                       margin: "0 6px",
                     }}
                   >
-                    <Sparkline
+                   <Sparkline
                       symbol="etcusdt"
                       width={110}
-                      height={30}
+                      height={40}
                       priceChangePercent={priceChangeValue}
+                      initialData={
+                        JSON.parse(localStorage.getItem("tokens") || "[]")
+                          .find((c) => c.symbol === "etc")
+                          ?.sparkline_in_7d?.price?.slice(-50) || []
+                      }
                     />
                   </div>
 
@@ -256,96 +266,6 @@ const WalletView = () => {
               </>
             );
           })()}
-        </a>
-      </li>
-      <li style={{ marginTop: "18px" }}>
-        <a
-          data-bs-toggle="modal"
-          data-bs-target="#detailChart"
-          className="coin-item justify-content-between"
-        >
-          <div className="d-flex align-items-center gap-12 flex-1">
-            <p>
-              <span className="mb-4 text-button fw-6">USDC</span>
-              <span className="text-secondary">/ USDT</span>
-            </p>
-          </div>
-
-          <div className="d-flex align-items-center gap-2 flex-st2">
-            {/* PRICE */}
-            <span className="text-small">
-              {pricesTicker?.USDCUSDT?.lastPrice
-                ? Number(pricesTicker.USDCUSDT.lastPrice).toLocaleString(
-                    undefined,
-                    {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    },
-                  )
-                : Number(priceBackup?.USDC?.current_price || 0).toLocaleString(
-                    undefined,
-                    {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    },
-                  )}
-            </span>
-
-            {/* MINI CHART */}
-            <div
-              style={{
-                width: "110px",
-                height: "30px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                margin: "0 6px",
-                opacity: 0.7,
-              }}
-            >
-              <Sparkline
-                symbol="usdcusdt"
-                width={110}
-                height={40}
-                priceChangePercent={pricesTicker?.USDCUSDT?.priceChangePercent}
-              />
-            </div>
-
-            <div className="text-end">
-              {/* % CHANGE */}
-              {(() => {
-                const live = pricesTicker?.USDCUSDT?.priceChangePercent;
-                const backup = priceBackup?.USDC?.price_change_percentage_24h;
-
-                const value =
-                  live !== undefined ? Number(live) : Number(backup);
-
-                if (isNaN(value)) {
-                  return <span className="text-button">--</span>;
-                }
-
-                return value > 0 ? (
-                  <span className="text-button text-primary">
-                    {value.toFixed(3)}%
-                  </span>
-                ) : (
-                  <span className="text-button text-red">
-                    {value.toFixed(3)}%
-                  </span>
-                );
-              })()}
-
-              {/* USD */}
-              <p className="mt-4 text-secondary">
-                $
-                {pricesTicker?.USDCUSDT?.lastPrice
-                  ? Number(pricesTicker.USDCUSDT.lastPrice).toLocaleString()
-                  : Number(
-                      priceBackup?.USDC?.current_price || 0,
-                    ).toLocaleString()}
-              </p>
-            </div>
-          </div>
         </a>
       </li>
       <li style={{ marginTop: "18px" }}>
@@ -412,6 +332,11 @@ const WalletView = () => {
                       width={110}
                       height={40}
                       priceChangePercent={priceChangeValue}
+                      initialData={
+                        JSON.parse(localStorage.getItem("tokens") || "[]")
+                          .find((c) => c.symbol === "xrp")
+                          ?.sparkline_in_7d?.price?.slice(-50) || []
+                      }
                     />
                   </div>
 
@@ -453,7 +378,7 @@ const WalletView = () => {
           data-bs-target="#detailChart"
           className="coin-item justify-content-between"
         >
-          {/* 🔥 SINGLE SOURCE OF TRUTH */}
+          {/*  SINGLE SOURCE OF TRUTH */}
           {(() => {
             const live = pricesTicker?.TRXUSDT?.priceChangePercent;
             const backup = priceBackup?.TRX?.price_change_percentage_24h;
@@ -498,7 +423,7 @@ const WalletView = () => {
                   <div
                     style={{
                       width: "110px",
-                      height: "40px", // ✅ fixed to match Sparkline
+                      height: "40px",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -510,7 +435,12 @@ const WalletView = () => {
                       symbol="trxusdt"
                       width={110}
                       height={40}
-                      priceChangePercent={priceChangeValue} // ✅ PERFECT SYNC
+                      priceChangePercent={priceChangeValue}
+                      initialData={
+                        JSON.parse(localStorage.getItem("tokens") || "[]")
+                          .find((c) => c.symbol === "trx")
+                          ?.sparkline_in_7d?.price?.slice(-50) || []
+                      }
                     />
                   </div>
 
@@ -552,7 +482,7 @@ const WalletView = () => {
           data-bs-target="#detailChart"
           className="coin-item justify-content-between"
         >
-          {/* 🔥 SINGLE SOURCE OF TRUTH */}
+          {/* SINGLE SOURCE OF TRUTH */}
           {(() => {
             const live = pricesTicker?.FILUSDT?.priceChangePercent;
             const backup = priceBackup?.FIL?.price_change_percentage_24h;
@@ -597,7 +527,7 @@ const WalletView = () => {
                   <div
                     style={{
                       width: "110px",
-                      height: "40px", // ✅ fixed to match Sparkline
+                      height: "40px", //  fixed to match Sparkline
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -609,7 +539,12 @@ const WalletView = () => {
                       symbol="filusdt"
                       width={110}
                       height={40}
-                      priceChangePercent={priceChangeValue} // ✅ PERFECT SYNC
+                      priceChangePercent={priceChangeValue}
+                      initialData={
+                        JSON.parse(localStorage.getItem("tokens") || "[]")
+                          .find((c) => c.symbol === "fil")
+                          ?.sparkline_in_7d?.price?.slice(-50) || []
+                      }
                     />
                   </div>
 
@@ -636,6 +571,110 @@ const WalletView = () => {
                           ).toLocaleString()
                         : Number(
                             priceBackup?.FIL?.current_price || 0,
+                          ).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </>
+            );
+          })()}
+        </a>
+      </li>
+      <li style={{ marginTop: "18px" }}>
+        <a
+          data-bs-toggle="modal"
+          data-bs-target="#detailChart"
+          className="coin-item justify-content-between"
+        >
+          {/*  SINGLE SOURCE OF TRUTH */}
+          {(() => {
+            const live = pricesTicker?.USDCUSDT?.priceChangePercent;
+            const backup = priceBackup?.USDC?.price_change_percentage_24h;
+
+            const priceChangeValue = !isNaN(Number(live))
+              ? Number(live)
+              : !isNaN(Number(backup))
+                ? Number(backup)
+                : NaN;
+
+            const isUp = priceChangeValue >= 0;
+
+            return (
+              <>
+                <div className="d-flex align-items-center gap-12 flex-1">
+                  <p>
+                    <span className="mb-4 text-button fw-6">USDC</span>
+                    <span className="text-secondary">/ USDT</span>
+                  </p>
+                </div>
+
+                <div className="d-flex align-items-center gap-2 flex-st2">
+                  {/* PRICE */}
+                  <span className="text-small">
+                    {pricesTicker?.USDCUSDT?.lastPrice
+                      ? Number(pricesTicker.USDCUSDT.lastPrice).toLocaleString(
+                          undefined,
+                          {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          },
+                        )
+                      : Number(
+                          priceBackup?.USDC?.current_price || 0,
+                        ).toLocaleString(undefined, {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                  </span>
+
+                  {/* MINI CHART */}
+                  <div
+                    style={{
+                      width: "110px",
+                      height: "40px", //  FIXED
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      margin: "0 6px",
+                      opacity: 0.7,
+                    }}
+                  >
+                    <Sparkline
+                      symbol="usdcusdt"
+                      width={110}
+                      height={40}
+                      priceChangePercent={priceChangeValue}
+                      initialData={
+                        JSON.parse(localStorage.getItem("tokens") || "[]")
+                          .find((c) => c.symbol === "usdc")
+                          ?.sparkline_in_7d?.price?.slice(-50) || []
+                      }
+                    />
+                  </div>
+
+                  <div className="text-end">
+                    {/* % CHANGE */}
+                    {isNaN(priceChangeValue) ? (
+                      <span className="text-button">--</span>
+                    ) : (
+                      <span
+                        className={`text-button ${
+                          isUp ? "text-primary" : "text-red"
+                        }`}
+                      >
+                        {priceChangeValue.toFixed(3)}%
+                      </span>
+                    )}
+
+                    {/* USD */}
+                    <p className="mt-4 text-secondary">
+                      $
+                      {pricesTicker?.USDCUSDT?.lastPrice
+                        ? Number(
+                            pricesTicker.USDCUSDT.lastPrice,
+                          ).toLocaleString()
+                        : Number(
+                            priceBackup?.USDC?.current_price || 0,
                           ).toLocaleString()}
                     </p>
                   </div>

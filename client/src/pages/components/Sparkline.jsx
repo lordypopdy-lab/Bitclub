@@ -1,32 +1,51 @@
 import { useEffect, useState, useRef } from "react";
 
-export const Sparkline = ({ symbol, width, height, priceChangePercent }) => {
+export const Sparkline = ({
+  symbol,
+  width,
+  height,
+  priceChangePercent,
+  initialData, // 👈 external fallback (CoinGecko / cache)
+}) => {
   if (!symbol || !width || !height) {
-    throw new Error("Sparkline requires 'symbol', 'width', and 'height' props");
+    throw new Error("Sparkline requires 'symbol', 'width', and 'height'");
   }
 
-  const [prices, setPrices] = useState([]);
+  const [prices, setPrices] = useState(initialData || []);
   const wsRef = useRef(null);
 
+  // ✅ Sync external data (CoinGecko / cache)
+  useEffect(() => {
+    if (Array.isArray(initialData) && initialData.length) {
+      setPrices(initialData.slice(-50));
+    }
+  }, [initialData]);
+
+  // ✅ Binance WebSocket (takes over)
   useEffect(() => {
     const streamPath = `${symbol.toLowerCase()}@miniTicker`;
-    const ws = new WebSocket(`wss://fstream.binance.com/stream?streams=${streamPath}`);
+    const ws = new WebSocket(
+      `wss://fstream.binance.com/stream?streams=${streamPath}`
+    );
     wsRef.current = ws;
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       const price = parseFloat(data?.data?.c);
+
       if (!isNaN(price)) {
         setPrices((prev) => [...prev, price].slice(-50));
       }
     };
 
-    ws.onerror = () => ws.close();
+    ws.onerror = () => {
+      ws.close(); // ❌ no fallback here (external handles it)
+    };
 
     return () => ws.close();
   }, [symbol]);
 
-  if (prices.length < 2) return null;
+  if (!prices || prices.length < 2) return null;
 
   const max = Math.max(...prices);
   const min = Math.min(...prices);
@@ -49,16 +68,15 @@ export const Sparkline = ({ symbol, width, height, priceChangePercent }) => {
   const lastPoint = points[points.length - 1];
   const areaPath = `${path} L ${lastPoint[0]} ${height} L 0 ${height} Z`;
 
-  // ✅ SINGLE SOURCE OF TRUTH
+  // ✅ SAME SOURCE AS % CHANGE (NO DESYNC)
   const isUp =
-    priceChangePercent !== undefined
+    typeof priceChangePercent === "number"
       ? priceChangePercent >= 0
       : prices[prices.length - 1] >= prices[0];
 
   const color = isUp ? "lime" : "red";
-  const opacity = 0.3;
 
-  // 🔥 CRITICAL FIX: unique IDs per render
+  // ✅ FIX glow + gradient sync issue
   const uniqueId = `${symbol}-${isUp}-${prices.length}`;
   const gradientId = `gradient-${uniqueId}`;
   const glowId = `glow-${uniqueId}`;
@@ -67,7 +85,7 @@ export const Sparkline = ({ symbol, width, height, priceChangePercent }) => {
     <svg width={width} height={height} style={{ overflow: "visible" }}>
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity={opacity} />
+          <stop offset="0%" stopColor={color} stopOpacity="0.3" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
 

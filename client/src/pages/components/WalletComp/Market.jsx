@@ -5,10 +5,8 @@ const Market = () => {
   const [pricesTicker, setPricesTicker] = useState({});
 
   useEffect(() => {
-    // ✅ Normalize symbols for consistency (important for merging)
     const normalize = (s) => s?.toUpperCase().replace("/", "") || "";
 
-    // ✅ Load token data from localStorage
     const rawData = JSON.parse(localStorage.getItem("tokens")) || [];
     const transformed = {};
 
@@ -19,7 +17,6 @@ const Market = () => {
 
     setPriceBackup(transformed);
 
-    // ✅ Connect WebSocket for live prices
     const socketTicker = new WebSocket(import.meta.env.VITE_API_MARKET_TICKER);
 
     socketTicker.onopen = () => console.log("✅ Ticker WebSocket connected");
@@ -30,7 +27,6 @@ const Market = () => {
         const symbol = normalize(msg.symbol || msg.s);
         if (!symbol) return;
 
-        // Map Binance-like structure safely
         const newData = {
           lastPrice: Number(msg.c ?? msg.lastPrice ?? 0),
           priceChangePercent: Number(msg.P ?? msg.priceChangePercent ?? 0),
@@ -56,7 +52,6 @@ const Market = () => {
     return () => socketTicker.close();
   }, []);
 
-  // ✅ Merge live + backup data (WebSocket overrides)
   const allSymbols = Object.keys({
     ...priceBackup,
     ...pricesTicker,
@@ -85,7 +80,6 @@ const Market = () => {
         const tokenName = backup.name || symbol.replace("USDT", "");
         const image = backup.image || "/placeholder.png";
 
-        // ✅ Always prefer valid live data
         const lastPrice =
           getValidNumber(ticker.lastPrice) ??
           getValidNumber(backup.current_price) ??
