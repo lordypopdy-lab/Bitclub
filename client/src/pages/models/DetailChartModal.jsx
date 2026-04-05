@@ -52,7 +52,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
               }}
             >
               <Sparkline
-                width={300}
+                width={349}
                 height={80}
                 priceChangePercent={change}
                 data={details.sparkline_in_7d || []} // live array from WalletView
