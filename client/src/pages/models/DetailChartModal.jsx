@@ -96,7 +96,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
                       </p>
 
                       <span
-                        className={`d-inline-block mt-8 coin-btn ${
+                        className={`d-inline-block text-light mt-8 coin-btn ${
                           isUp ? "increase" : "decrease"
                         }`}
                       >
@@ -112,7 +112,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
                       <p className="text-small">{details.name}</p>
 
                       <span
-                        className={`d-inline-block mt-8 coin-btn ${
+                        className={`d-inline-block text-light mt-8 coin-btn ${
                           Number(details.ath_change_percentage) >= 0
                             ? "increase"
                             : "decrease"

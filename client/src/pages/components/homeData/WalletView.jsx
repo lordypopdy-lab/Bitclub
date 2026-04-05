@@ -61,14 +61,14 @@ const WalletView = () => {
     { symbol: "USDC", name: "USD Coin" },
   ];
 
-const handleOpenModal = (coin) => {
-  // Only store static coin info in selectedCoin
-  setSelectedCoin({
-    symbol: coin.symbol.toUpperCase(),
-    name: coin.name,
-  });
-  setIsModalOpen(true);
-};
+  const handleOpenModal = (coin) => {
+    // Only store static coin info in selectedCoin
+    setSelectedCoin({
+      symbol: coin.symbol.toUpperCase(),
+      name: coin.name,
+    });
+    setIsModalOpen(true);
+  };
 
   return (
     <div>
