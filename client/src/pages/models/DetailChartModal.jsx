@@ -127,7 +127,29 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
 
               <button
                 onClick={() => (location.href = "/Deposite")}
-                className="mt-20"
+                style={{
+                  marginTop: "20px",
+                  padding: "12px 28px",
+                  fontSize: "16px",
+                  fontWeight: "600",
+                  color: "#fff",
+                  background: "linear-gradient(135deg, #25c866, #f5c738)",
+                  border: "2px solid #D9D9D9",
+                  borderRadius: "12px",
+                  boxShadow: "0 6px 15px rgba(0,0,0,0.2)",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow =
+                    "0 8px 20px rgba(0,0,0,0.35)";
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow =
+                    "0 6px 15px rgba(0,0,0,0.2)";
+                  e.currentTarget.style.transform = "translateY(0)";
+                }}
               >
                 Buy Assets
               </button>
