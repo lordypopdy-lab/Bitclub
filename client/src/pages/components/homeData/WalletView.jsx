@@ -1,689 +1,156 @@
 import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Sparkline from "../Sparkline";
+import { DetailChartModal } from "../../models/DetailChartModal";
 
 const WalletView = () => {
   const [priceBackup, setPriceBack] = useState({});
   const [pricesTicker, setPricesTicker] = useState({});
+  const [sparklineData, setSparklineData] = useState({});
+  const [selectedCoin, setSelectedCoin] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    const tokenLoader = async () => {
-      const rawData = JSON.parse(localStorage.getItem("tokens")) || [];
+    // Load cached coins from localStorage
+    const rawData = JSON.parse(localStorage.getItem("tokens")) || [];
+    const transformed = {};
+    rawData.forEach((coin) => {
+      if (coin.symbol) transformed[coin.symbol.toUpperCase()] = coin;
+    });
+    setPriceBack(transformed);
 
-      const transformed = {};
-      rawData.forEach((coin) => {
-        if (coin.symbol) {
-          transformed[coin.symbol.toUpperCase()] = coin;
-        }
-      });
+    // Connect WebSocket for live prices
+    const ws = new WebSocket(import.meta.env.VITE_API_MARKET_TICKER);
 
-      setPriceBack((prev) => ({
-        ...prev,
-        ...transformed,
-      }));
-    };
-    const FavTokens = async () => {
-      const socketTcker = new WebSocket(import.meta.env.VITE_API_MARKET_TICKER);
-      //=======WebSocket Ticker Section========//
+    ws.onopen = () => console.log("Ticker WebSocket connected");
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      const symbol = msg.symbol?.toUpperCase();
+      if (!symbol) return;
 
-      socketTcker.onopen = () => {
-        console.log(" Ticker WebSocket connected");
-      };
-
-      socketTcker.onmessage = (event) => {
-        const msg = JSON.parse(event.data);
-        const symbol = msg.symbol?.toUpperCase();
-
-        if (!symbol) return;
-
-        //console.log(msg)
-
-        setPricesTicker((prev) => ({
+      setPricesTicker((prev) => {
+        const updatedTicker = {
           ...prev,
-          [symbol]: {
-            ...prev[symbol],
-            ...msg,
-          },
-        }));
-      };
+          [symbol]: { ...prev[symbol], ...msg },
+        };
 
-      socketTcker.onerror = (err) => {
-        console.error("❌ Ticker WebSocket error:", err);
-      };
+        // Update sparkline data (last 50 points)
+        setSparklineData((prevData) => {
+          const prevSpark = prevData[symbol] || [];
+          const newPrice = Number(msg.lastPrice) || 0;
+          const newSpark = [...prevSpark, newPrice].slice(-50);
+          return { ...prevData, [symbol]: newSpark };
+        });
 
-      socketTcker.onclose = () => {
-        console.warn("🔌 Ticker WebSocket disconnected");
-      };
-      return () => socketTcker.close();
+        return updatedTicker;
+      });
     };
-    FavTokens();
-    tokenLoader();
+
+    ws.onerror = (err) => console.error("Ticker WebSocket error:", err);
+    ws.onclose = () => console.warn("Ticker WebSocket disconnected");
+
+    return () => ws.close();
   }, []);
+
+  const coins = [
+    { symbol: "BTC", name: "Bitcoin" },
+    { symbol: "ETC", name: "Ethereum Classic" },
+    { symbol: "XRP", name: "Ripple" },
+    { symbol: "TRX", name: "TRON" },
+    { symbol: "FIL", name: "Filecoin" },
+    { symbol: "USDC", name: "USD Coin" },
+  ];
+
+const handleOpenModal = (coin) => {
+  // Only store static coin info in selectedCoin
+  setSelectedCoin({
+    symbol: coin.symbol.toUpperCase(),
+    name: coin.name,
+  });
+  setIsModalOpen(true);
+};
 
   return (
     <div>
-      <li style={{ marginTop: "18px" }}>
-        <a
-          data-bs-toggle="modal"
-          data-bs-target="#detailChart"
-          className="coin-item justify-content-between"
-        >
-          {/* SINGLE SOURCE OF TRUTH */}
-          {(() => {
-            const live = pricesTicker?.BTCUSDT?.priceChangePercent;
-            const backup = priceBackup?.BTC?.price_change_percentage_24h;
+      {coins.map((coin) => {
+        const symbol = coin.symbol.toUpperCase();
+        const liveData = pricesTicker?.[symbol + "USDT"];
+        const backupData = priceBackup?.[symbol];
 
-            const priceChangeValue = !isNaN(Number(live))
-              ? Number(live)
-              : !isNaN(Number(backup))
-                ? Number(backup)
-                : NaN;
+        const currentPrice =
+          liveData?.lastPrice ?? backupData?.current_price ?? 0;
 
-            const isUp = priceChangeValue >= 0;
+        const priceChangeValue = !isNaN(Number(liveData?.priceChangePercent))
+          ? Number(liveData.priceChangePercent)
+          : !isNaN(Number(backupData?.price_change_percentage_24h))
+            ? Number(backupData.price_change_percentage_24h)
+            : NaN;
 
-            return (
-              <>
-                <div className="d-flex align-items-center flex-1">
-                  <p>
-                    <span className="mb-4 text-button fw-6">BTC</span>
-                    <span className="text-secondary">/ USDT</span>
+        const isUp = priceChangeValue >= 0;
+
+        const sparkData =
+          sparklineData[symbol + "USDT"] ||
+          backupData?.sparkline_in_7d?.price?.slice(-50) ||
+          [];
+
+        return (
+          <li key={coin.symbol} style={{ marginTop: "18px" }}>
+            <a
+              className="coin-item justify-content-between"
+              onClick={() => handleOpenModal(coin)}
+            >
+              <div className="d-flex align-items-center flex-1">
+                <p>
+                  <span className="mb-4 text-button fw-6">{coin.symbol}</span>
+                  <span className="text-secondary">/ USDT</span>
+                </p>
+              </div>
+
+              <div className="d-flex align-items-center gap-2 flex-st2">
+                <span className="text-small">
+                  {Number(currentPrice).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
+
+                <div
+                  style={{
+                    width: "110px",
+                    height: "40px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    margin: "0 6px",
+                  }}
+                >
+                  <Sparkline
+                    width={110}
+                    height={40}
+                    priceChangePercent={priceChangeValue}
+                    data={sparkData}
+                  />
+                </div>
+
+                <div className="text-end">
+                  <span
+                    className={`text-button ${isUp ? "text-primary" : "text-red"}`}
+                  >
+                    {isNaN(priceChangeValue)
+                      ? "--"
+                      : priceChangeValue.toFixed(3)}
+                    %
+                  </span>
+                  <p className="mt-4 text-secondary">
+                    ${Number(currentPrice).toLocaleString()}
                   </p>
                 </div>
+              </div>
+            </a>
+          </li>
+        );
+      })}
 
-                <div className="d-flex align-items-center gap-2 flex-st2">
-                  {/* PRICE */}
-                  <span className="text-small">
-                    {pricesTicker?.BTCUSDT?.lastPrice
-                      ? Number(pricesTicker.BTCUSDT.lastPrice).toLocaleString(
-                          undefined,
-                          {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          },
-                        )
-                      : Number(
-                          priceBackup?.BTC?.current_price || 0,
-                        ).toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                  </span>
-
-                  {/*  MINI CHART */}
-                  <div
-                    style={{
-                      width: "90px",
-                      height: "40px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      margin: "0 12px",
-                    }}
-                  >
-                    <Sparkline
-                      symbol="btcusdt"
-                      width={90}
-                      height={40}
-                      priceChangePercent={priceChangeValue}
-                      initialData={
-                        JSON.parse(localStorage.getItem("tokens") || "[]")
-                          .find((c) => c.symbol === "btc")
-                          ?.sparkline_in_7d?.price?.slice(-50) || []
-                      }
-                    />
-                  </div>
-
-                  <div className="text-end">
-                    {/* % CHANGE */}
-                    {isNaN(priceChangeValue) ? (
-                      <span className="text-button">--</span>
-                    ) : (
-                      <span
-                        className={`text-button ${
-                          isUp ? "text-primary" : "text-red"
-                        }`}
-                      >
-                        {priceChangeValue.toFixed(2)}%
-                      </span>
-                    )}
-
-                    {/* USD */}
-                    <p className="mt-4 text-secondary">
-                      $
-                      {pricesTicker?.BTCUSDT?.lastPrice
-                        ? Number(
-                            pricesTicker.BTCUSDT.lastPrice,
-                          ).toLocaleString()
-                        : Number(
-                            priceBackup?.BTC?.current_price || 0,
-                          ).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </>
-            );
-          })()}
-        </a>
-      </li>
-      <li style={{ marginTop: "18px" }}>
-        <a
-          data-bs-toggle="modal"
-          data-bs-target="#detailChart"
-          className="coin-item justify-content-between"
-        >
-          {/* SINGLE SOURCE OF TRUTH */}
-          {(() => {
-            const live = pricesTicker?.ETCUSDT?.priceChangePercent;
-            const backup = priceBackup?.ETC?.price_change_percentage_24h;
-
-            const priceChangeValue = !isNaN(Number(live))
-              ? Number(live)
-              : !isNaN(Number(backup))
-                ? Number(backup)
-                : NaN;
-
-            const isUp = priceChangeValue >= 0;
-
-            return (
-              <>
-                <div className="d-flex align-items-center gap-12 flex-1">
-                  <p>
-                    <span className="mb-4 text-button fw-6">ETC</span>
-                    <span className="text-secondary">/ USDT</span>
-                  </p>
-                </div>
-
-                <div className="d-flex align-items-center gap-2 flex-st2">
-                  {/* PRICE */}
-                  <span className="text-small">
-                    {pricesTicker?.ETCUSDT?.lastPrice
-                      ? Number(pricesTicker.ETCUSDT.lastPrice).toLocaleString(
-                          undefined,
-                          {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          },
-                        )
-                      : Number(
-                          priceBackup?.ETC?.current_price || 0,
-                        ).toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                  </span>
-
-                  {/* MINI CHART */}
-                  <div
-                    style={{
-                      width: "110px",
-                      height: "30px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      margin: "0 6px",
-                    }}
-                  >
-                   <Sparkline
-                      symbol="etcusdt"
-                      width={110}
-                      height={40}
-                      priceChangePercent={priceChangeValue}
-                      initialData={
-                        JSON.parse(localStorage.getItem("tokens") || "[]")
-                          .find((c) => c.symbol === "etc")
-                          ?.sparkline_in_7d?.price?.slice(-50) || []
-                      }
-                    />
-                  </div>
-
-                  <div className="text-end">
-                    {/* % CHANGE */}
-                    {isNaN(priceChangeValue) ? (
-                      <span className="text-button">--</span>
-                    ) : (
-                      <span
-                        className={`text-button ${
-                          isUp ? "text-primary" : "text-red"
-                        }`}
-                      >
-                        {priceChangeValue.toFixed(3)}%
-                      </span>
-                    )}
-
-                    {/* USD */}
-                    <p className="mt-4 text-secondary">
-                      $
-                      {pricesTicker?.ETCUSDT?.lastPrice
-                        ? Number(
-                            pricesTicker.ETCUSDT.lastPrice,
-                          ).toLocaleString()
-                        : Number(
-                            priceBackup?.ETC?.current_price || 0,
-                          ).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </>
-            );
-          })()}
-        </a>
-      </li>
-      <li style={{ marginTop: "18px" }}>
-        <a
-          data-bs-toggle="modal"
-          data-bs-target="#detailChart"
-          className="coin-item justify-content-between"
-        >
-          {/* SINGLE SOURCE OF TRUTH */}
-          {(() => {
-            const live = pricesTicker?.XRPUSDT?.priceChangePercent;
-            const backup = priceBackup?.XRP?.price_change_percentage_24h;
-
-            const priceChangeValue = !isNaN(Number(live))
-              ? Number(live)
-              : !isNaN(Number(backup))
-                ? Number(backup)
-                : NaN;
-
-            const isUp = priceChangeValue >= 0;
-
-            return (
-              <>
-                <div className="d-flex align-items-center gap-12 flex-1">
-                  <p>
-                    <span className="mb-4 text-button fw-6">XRP</span>
-                    <span className="text-secondary">/ USDT</span>
-                  </p>
-                </div>
-
-                <div className="d-flex align-items-center gap-2 flex-st2">
-                  {/* PRICE */}
-                  <span className="text-small">
-                    {pricesTicker?.XRPUSDT?.lastPrice
-                      ? Number(pricesTicker.XRPUSDT.lastPrice).toLocaleString(
-                          undefined,
-                          {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          },
-                        )
-                      : Number(
-                          priceBackup?.XRP?.current_price || 0,
-                        ).toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                  </span>
-
-                  {/* PREMIUM MINI CHART */}
-                  <div
-                    style={{
-                      width: "110px",
-                      height: "40px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      margin: "0 6px",
-                      opacity: 0.7,
-                    }}
-                  >
-                    <Sparkline
-                      symbol="xrpusdt"
-                      width={110}
-                      height={40}
-                      priceChangePercent={priceChangeValue}
-                      initialData={
-                        JSON.parse(localStorage.getItem("tokens") || "[]")
-                          .find((c) => c.symbol === "xrp")
-                          ?.sparkline_in_7d?.price?.slice(-50) || []
-                      }
-                    />
-                  </div>
-
-                  <div className="text-end">
-                    {/* % CHANGE */}
-                    {isNaN(priceChangeValue) ? (
-                      <span className="text-button">--</span>
-                    ) : (
-                      <span
-                        className={`text-button ${
-                          isUp ? "text-primary" : "text-red"
-                        }`}
-                      >
-                        {priceChangeValue.toFixed(3)}%
-                      </span>
-                    )}
-
-                    {/* USD */}
-                    <p className="mt-4 text-secondary">
-                      $
-                      {pricesTicker?.XRPUSDT?.lastPrice
-                        ? Number(
-                            pricesTicker.XRPUSDT.lastPrice,
-                          ).toLocaleString()
-                        : Number(
-                            priceBackup?.XRP?.current_price || 0,
-                          ).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </>
-            );
-          })()}
-        </a>
-      </li>
-      <li style={{ marginTop: "18px" }}>
-        <a
-          data-bs-toggle="modal"
-          data-bs-target="#detailChart"
-          className="coin-item justify-content-between"
-        >
-          {/*  SINGLE SOURCE OF TRUTH */}
-          {(() => {
-            const live = pricesTicker?.TRXUSDT?.priceChangePercent;
-            const backup = priceBackup?.TRX?.price_change_percentage_24h;
-
-            const priceChangeValue = !isNaN(Number(live))
-              ? Number(live)
-              : !isNaN(Number(backup))
-                ? Number(backup)
-                : NaN;
-
-            const isUp = priceChangeValue >= 0;
-
-            return (
-              <>
-                <div className="d-flex align-items-center gap-12 flex-1">
-                  <p>
-                    <span className="mb-4 text-button fw-6">TRX</span>
-                    <span className="text-secondary">/ USDT</span>
-                  </p>
-                </div>
-
-                <div className="d-flex align-items-center gap-2 flex-st2">
-                  {/* PRICE */}
-                  <span className="text-small">
-                    {pricesTicker?.TRXUSDT?.lastPrice
-                      ? Number(pricesTicker.TRXUSDT.lastPrice).toLocaleString(
-                          undefined,
-                          {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          },
-                        )
-                      : Number(
-                          priceBackup?.TRX?.current_price || 0,
-                        ).toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                  </span>
-
-                  {/* MINI CHART */}
-                  <div
-                    style={{
-                      width: "110px",
-                      height: "40px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      margin: "0 6px",
-                      opacity: 0.7,
-                    }}
-                  >
-                    <Sparkline
-                      symbol="trxusdt"
-                      width={110}
-                      height={40}
-                      priceChangePercent={priceChangeValue}
-                      initialData={
-                        JSON.parse(localStorage.getItem("tokens") || "[]")
-                          .find((c) => c.symbol === "trx")
-                          ?.sparkline_in_7d?.price?.slice(-50) || []
-                      }
-                    />
-                  </div>
-
-                  <div className="text-end">
-                    {/* % CHANGE */}
-                    {isNaN(priceChangeValue) ? (
-                      <span className="text-button">--</span>
-                    ) : (
-                      <span
-                        className={`text-button ${
-                          isUp ? "text-primary" : "text-red"
-                        }`}
-                      >
-                        {priceChangeValue.toFixed(3)}%
-                      </span>
-                    )}
-
-                    {/* USD */}
-                    <p className="mt-4 text-secondary">
-                      $
-                      {pricesTicker?.TRXUSDT?.lastPrice
-                        ? Number(
-                            pricesTicker.TRXUSDT.lastPrice,
-                          ).toLocaleString()
-                        : Number(
-                            priceBackup?.TRX?.current_price || 0,
-                          ).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </>
-            );
-          })()}
-        </a>
-      </li>
-      <li style={{ marginTop: "18px" }}>
-        <a
-          data-bs-toggle="modal"
-          data-bs-target="#detailChart"
-          className="coin-item justify-content-between"
-        >
-          {/* SINGLE SOURCE OF TRUTH */}
-          {(() => {
-            const live = pricesTicker?.FILUSDT?.priceChangePercent;
-            const backup = priceBackup?.FIL?.price_change_percentage_24h;
-
-            const priceChangeValue = !isNaN(Number(live))
-              ? Number(live)
-              : !isNaN(Number(backup))
-                ? Number(backup)
-                : NaN;
-
-            const isUp = priceChangeValue >= 0;
-
-            return (
-              <>
-                <div className="d-flex align-items-center flex-1">
-                  <p>
-                    <span className="mb-4 text-button fw-6">FIL</span>
-                    <span className="text-secondary">/ USDT</span>
-                  </p>
-                </div>
-
-                <div className="d-flex align-items-center gap-2 flex-st2">
-                  {/* PRICE */}
-                  <span className="text-small">
-                    {pricesTicker?.FILUSDT?.lastPrice
-                      ? Number(pricesTicker.FILUSDT.lastPrice).toLocaleString(
-                          undefined,
-                          {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          },
-                        )
-                      : Number(
-                          priceBackup?.FIL?.current_price || 0,
-                        ).toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                  </span>
-
-                  {/* MINI CHART */}
-                  <div
-                    style={{
-                      width: "110px",
-                      height: "40px", //  fixed to match Sparkline
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      margin: "0 6px",
-                      opacity: 0.7,
-                    }}
-                  >
-                    <Sparkline
-                      symbol="filusdt"
-                      width={110}
-                      height={40}
-                      priceChangePercent={priceChangeValue}
-                      initialData={
-                        JSON.parse(localStorage.getItem("tokens") || "[]")
-                          .find((c) => c.symbol === "fil")
-                          ?.sparkline_in_7d?.price?.slice(-50) || []
-                      }
-                    />
-                  </div>
-
-                  <div className="text-end">
-                    {/* % CHANGE */}
-                    {isNaN(priceChangeValue) ? (
-                      <span className="text-button">--</span>
-                    ) : (
-                      <span
-                        className={`text-button ${
-                          isUp ? "text-primary" : "text-red"
-                        }`}
-                      >
-                        {priceChangeValue.toFixed(3)}%
-                      </span>
-                    )}
-
-                    {/* USD */}
-                    <p className="mt-4 text-secondary">
-                      $
-                      {pricesTicker?.FILUSDT?.lastPrice
-                        ? Number(
-                            pricesTicker.FILUSDT.lastPrice,
-                          ).toLocaleString()
-                        : Number(
-                            priceBackup?.FIL?.current_price || 0,
-                          ).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </>
-            );
-          })()}
-        </a>
-      </li>
-      <li style={{ marginTop: "18px" }}>
-        <a
-          data-bs-toggle="modal"
-          data-bs-target="#detailChart"
-          className="coin-item justify-content-between"
-        >
-          {/*  SINGLE SOURCE OF TRUTH */}
-          {(() => {
-            const live = pricesTicker?.USDCUSDT?.priceChangePercent;
-            const backup = priceBackup?.USDC?.price_change_percentage_24h;
-
-            const priceChangeValue = !isNaN(Number(live))
-              ? Number(live)
-              : !isNaN(Number(backup))
-                ? Number(backup)
-                : NaN;
-
-            const isUp = priceChangeValue >= 0;
-
-            return (
-              <>
-                <div className="d-flex align-items-center gap-12 flex-1">
-                  <p>
-                    <span className="mb-4 text-button fw-6">USDC</span>
-                    <span className="text-secondary">/ USDT</span>
-                  </p>
-                </div>
-
-                <div className="d-flex align-items-center gap-2 flex-st2">
-                  {/* PRICE */}
-                  <span className="text-small">
-                    {pricesTicker?.USDCUSDT?.lastPrice
-                      ? Number(pricesTicker.USDCUSDT.lastPrice).toLocaleString(
-                          undefined,
-                          {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          },
-                        )
-                      : Number(
-                          priceBackup?.USDC?.current_price || 0,
-                        ).toLocaleString(undefined, {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                  </span>
-
-                  {/* MINI CHART */}
-                  <div
-                    style={{
-                      width: "110px",
-                      height: "40px", //  FIXED
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      margin: "0 6px",
-                      opacity: 0.7,
-                    }}
-                  >
-                    <Sparkline
-                      symbol="usdcusdt"
-                      width={110}
-                      height={40}
-                      priceChangePercent={priceChangeValue}
-                      initialData={
-                        JSON.parse(localStorage.getItem("tokens") || "[]")
-                          .find((c) => c.symbol === "usdc")
-                          ?.sparkline_in_7d?.price?.slice(-50) || []
-                      }
-                    />
-                  </div>
-
-                  <div className="text-end">
-                    {/* % CHANGE */}
-                    {isNaN(priceChangeValue) ? (
-                      <span className="text-button">--</span>
-                    ) : (
-                      <span
-                        className={`text-button ${
-                          isUp ? "text-primary" : "text-red"
-                        }`}
-                      >
-                        {priceChangeValue.toFixed(3)}%
-                      </span>
-                    )}
-
-                    {/* USD */}
-                    <p className="mt-4 text-secondary">
-                      $
-                      {pricesTicker?.USDCUSDT?.lastPrice
-                        ? Number(
-                            pricesTicker.USDCUSDT.lastPrice,
-                          ).toLocaleString()
-                        : Number(
-                            priceBackup?.USDC?.current_price || 0,
-                          ).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </>
-            );
-          })()}
-        </a>
-      </li>
       <div className="d-block m-2 coin-item p-2 text-center">
         <NavLink to="/wallet">
           <div className="align-items-center">
@@ -691,6 +158,42 @@ const WalletView = () => {
           </div>
         </NavLink>
       </div>
+
+      {selectedCoin && (
+        <DetailChartModal
+          details={{
+            ...selectedCoin,
+            // Live updates from WebSocket state
+            current_price:
+              pricesTicker?.[selectedCoin.symbol + "USDT"]?.lastPrice ??
+              priceBackup?.[selectedCoin.symbol]?.current_price ??
+              0,
+            pricePercentage: !isNaN(
+              Number(
+                pricesTicker?.[selectedCoin.symbol + "USDT"]
+                  ?.priceChangePercent,
+              ),
+            )
+              ? Number(
+                  pricesTicker[selectedCoin.symbol + "USDT"].priceChangePercent,
+                )
+              : (Number(
+                  priceBackup?.[selectedCoin.symbol]
+                    ?.price_change_percentage_24h,
+                ) ?? 0),
+            ath_change_percentage:
+              priceBackup?.[selectedCoin.symbol]?.ath_change_percentage ?? 0,
+            sparkline_in_7d:
+              sparklineData[selectedCoin.symbol + "USDT"] ||
+              priceBackup?.[selectedCoin.symbol]?.sparkline_in_7d?.price?.slice(
+                -50,
+              ) ||
+              [],
+          }}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </div>
   );
 };
