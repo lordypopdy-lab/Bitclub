@@ -88,9 +88,9 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
                 <li className="flex-1">
                   <div className="accent-box-v6 bg-surface d-flex justify-content-between align-items-center">
                     <div className="content">
-                      <p className="text-small">
+                      <p className="text-small text-light">
                         {details.symbol?.toUpperCase()}{" "}
-                        <span className="text-extra-small text-secondary">
+                        <span className="text-extra-small text-light">
                           / USD
                         </span>
                       </p>
@@ -109,7 +109,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
                 <li className="flex-1">
                   <div className="accent-box-v6 bg-surface d-flex justify-content-between align-items-center">
                     <div className="content">
-                      <p className="text-small">{details.name}</p>
+                      <p className="text-small text-light">{details.name}</p>
 
                       <span
                         className={`d-inline-block text-light mt-8 coin-btn ${
