@@ -52,7 +52,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
               }}
             >
               <Sparkline
-                width={349}
+                width={345}
                 height={80}
                 priceChangePercent={change}
                 data={details.sparkline_in_7d || []} // live array from WalletView
@@ -60,7 +60,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
             </div>
 
             {/* CONTENT */}
-            <div className="content mt-3">
+            {/* <div className="content mt-3">
               <div className="tab-content mt-8 mb-16">
                 <div className="tab-pane fade show active" id="1d">
                   <div className="area-chart-2"></div>
@@ -78,7 +78,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
                   </a>
                 </li>
               </ul>
-            </div>
+            </div> */}
 
             {/* BOTTOM */}
             <div className="bottom">
