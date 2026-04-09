@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Sparkline } from "../components/Sparkline";
+import ModalSparkline from "../components/ModalSparkline";
 
 export const DetailChartModal = ({ details, isOpen, onClose }) => {
   const wsRef = useRef(null);
@@ -13,70 +13,82 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
     change: null,
   });
 
-  // ✅ INTERVAL MAPPING (VERY IMPORTANT)
   const getInterval = (tab) => {
     switch (tab) {
-      case "1H": return "1m";
-      case "1D": return "5m";
-      case "1W": return "30m";
-      case "1M": return "2h";
-      case "1Y": return "1d";
-      default: return "5m";
+      case "1H":
+        return "1m";
+      case "1D":
+        return "5m";
+      case "1W":
+        return "30m";
+      case "1M":
+        return "2h";
+      case "1Y":
+        return "1d";
+      default:
+        return "5m";
     }
   };
 
-  // ✅ LOAD HISTORICAL DATA (WHEN TAB CHANGES OR MODAL OPENS)
+  const getLimit = (tab) => {
+    switch (tab) {
+      case "1H":
+        return 60;
+      case "1D":
+        return 288;
+      case "1W":
+        return 336;
+      case "1M":
+        return 720;
+      case "1Y":
+        return 365;
+      default:
+        return 100;
+    }
+  };
+
+  // ✅ LOAD FULL HISTORY
   useEffect(() => {
     if (!details?.symbol || !isOpen) return;
 
     const fetchHistory = async () => {
-      try {
-        const interval = getInterval(activeTab);
-        const symbol = `${details.symbol.toUpperCase()}USDT`;
+      const symbol = `${details.symbol.toUpperCase()}USDT`;
+      const interval = getInterval(activeTab);
+      const limit = getLimit(activeTab);
 
-        const res = await fetch(
-          `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=100`
-        );
+      const res = await fetch(
+        `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`,
+      );
 
-        const data = await res.json();
+      const data = await res.json();
+      if (!Array.isArray(data)) return;
 
-        if (!Array.isArray(data)) return;
-
-        const prices = data.map((candle) => parseFloat(candle[4])); // close price
-
-        setChartData(prices);
-      } catch (err) {
-        console.error("History fetch error:", err);
-      }
+      const prices = data.map((c) => parseFloat(c[4]));
+      setChartData(prices);
     };
 
     fetchHistory();
   }, [activeTab, details?.symbol, isOpen]);
 
-  // ✅ LIVE STREAM (APPEND TO CURRENT CHART)
+  // ✅ LIVE STREAM
   useEffect(() => {
     if (!details?.symbol || !isOpen) return;
 
-    const symbol = `${details.symbol.toLowerCase()}usdt`;
-
     const ws = new WebSocket(
-      `wss://fstream.binance.com/stream?streams=${symbol}@miniTicker`
+      `wss://fstream.binance.com/stream?streams=${details.symbol.toLowerCase()}usdt@miniTicker`,
     );
 
     wsRef.current = ws;
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data)?.data;
+    ws.onmessage = (e) => {
+      const data = JSON.parse(e.data)?.data;
       if (!data) return;
 
       const price = parseFloat(data.c);
       const change = parseFloat(data.P);
 
       if (!isNaN(price)) {
-        setChartData((prev) => {
-          if (!prev || prev.length === 0) return [price];
-          return [...prev, price].slice(-100);
-        });
+        setChartData((prev) => [...prev, price]);
       }
 
       if (!isNaN(price) && !isNaN(change)) {
@@ -84,168 +96,183 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
       }
     };
 
-    ws.onerror = () => ws.close();
-
     return () => ws.close();
   }, [details?.symbol, isOpen]);
 
-  if (!details) return null;
+  if (!isOpen || !details) return null;
 
-  const price =
-    liveData.price ??
-    Number(details.current_price) ??
-    0;
-
-  const change =
-    liveData.change ??
-    Number(details.pricePercentage) ??
-    0;
-
+  const price = liveData.price ?? Number(details.current_price) ?? 0;
+  const change = liveData.change ?? Number(details.pricePercentage) ?? 0;
   const isUp = change >= 0;
 
   return (
     <div
-      className={`modal fade action-sheet ${isOpen ? "show" : ""}`}
-      style={{ display: isOpen ? "block" : "none" }}
+      className="modal show"
+      style={{
+        display: "block",
+        background: "linear-gradient(180deg,#0a0a0a,#111)",
+        minHeight: "80vh",
+      }}
       onClick={onClose}
     >
       <div
         className="modal-dialog"
+        style={{ maxWidth: "100%", margin: 0 }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="modal-content">
-          <div className="box-detail-chart">
+        <div
+          className="modal-content"
+          style={{
+            background: "transparent",
+            border: "none",
+            padding: "20px",
+            marginTop: "30vh",
+          }}
+        >
+          {/* 🔥 HEADER */}
+          <h3 style={{ color: "#25c866", fontWeight: "600" }}>
+            {details.symbol}/USD
+          </h3>
 
-            {/* TOP */}
-            <div className="top">
-              <h3 className="d-flex align-items-center gap-8">
-                {details.symbol?.toUpperCase()}/USD
-              </h3>
+          <h1 style={{ color: "#fff", fontSize: "38px", marginTop: "6px" }}>
+            ${Number(price).toLocaleString()}
+          </h1>
 
-              <h2 className="mt-4">
-                ${Number(price).toLocaleString()}
-              </h2>
+          <p style={{ marginTop: "4px" }}>
+            <span style={{ color: isUp ? "#25c866" : "#ff4d4f" }}>
+              {change.toFixed(3)}%
+            </span>
+            <span style={{ color: "#aaa", marginLeft: "8px" }}>
+              Last 24 hours
+            </span>
+          </p>
 
-              <p className="mt-4">
-                <span className={isUp ? "text-primary" : "text-red"}>
-                  {change.toFixed(3)}%
-                </span>
-                &emsp;Last 24 hours
-              </p>
-            </div>
+          {/* 🔥 CHART */}
+          <div style={{ marginTop: "20px" }}>
+            <ModalSparkline
+              width={360}
+              height={120}
+              priceChangePercent={change}
+              data={chartData}
+            />
+          </div>
 
-            {/* 🔥 CHART */}
-            <div
+          {/* 🔥 TABS */}
+          <div style={{ marginTop: "20px" }}>
+            <ul
               style={{
-                width: "100%",
-                height: "100px",
-                padding: "0 10px",
+                display: "flex",
+                justifyContent: "space-between",
+                padding: 0,
+                listStyle: "none",
               }}
             >
-              <Sparkline
-                width={350}
-                height={100}
-                priceChangePercent={change}
-                data={Array.isArray(chartData) ? chartData : []}
-              />
-            </div>
-
-            {/* 🔥 TIME TABS */}
-            <div className="content mt-3">
-              <ul className="tab-time d-flex justify-content-between">
-                {tabs.map((tab) => (
-                  <li key={tab}>
-                    <button
-                      onClick={() => setActiveTab(tab)}
-                      style={{
-                        padding: "6px 12px",
-                        borderRadius: "8px",
-                        border: "none",
-                        background:
-                          activeTab === tab
-                            ? "#25c866"
-                            : "transparent",
-                        color:
-                          activeTab === tab
-                            ? "#fff"
-                            : "#aaa",
-                        cursor: "pointer",
-                        fontWeight: "500",
-                      }}
-                    >
-                      {tab}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* BOTTOM */}
-            <div className="bottom">
-              <h6 className="text-button">Token information</h6>
-
-              <ul className="mt-16 d-flex gap-16">
-                <li className="flex-1">
-                  <div className="accent-box-v6 bg-surface d-flex justify-content-between align-items-center">
-                    <div className="content">
-                      <p className="text-small text-light">
-                        {details.symbol?.toUpperCase()} / USD
-                      </p>
-
-                      <span
-                        className={`d-inline-block text-light mt-8 coin-btn ${
-                          isUp ? "increase" : "decrease"
-                        }`}
-                      >
-                        {change.toFixed(3)}%
-                      </span>
-                    </div>
-                  </div>
+              {tabs.map((tab) => (
+                <li key={tab}>
+                  <button
+                    onClick={() => setActiveTab(tab)}
+                    style={{
+                      padding: "6px 14px",
+                      borderRadius: "20px",
+                      border: "none",
+                      background: activeTab === tab ? "#25c866" : "transparent",
+                      color: activeTab === tab ? "#000" : "#D9D9D9",
+                      fontWeight: "600",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {tab}
+                  </button>
                 </li>
-
-                <li className="flex-1">
-                  <div className="accent-box-v6 bg-surface d-flex justify-content-between align-items-center">
-                    <div className="content">
-                      <p className="text-small text-light">
-                        {details.name}
-                      </p>
-
-                      <span
-                        className={`d-inline-block text-light mt-8 coin-btn ${
-                          Number(details.ath_change_percentage) >= 0
-                            ? "increase"
-                            : "decrease"
-                        }`}
-                      >
-                        {Number(
-                          details.ath_change_percentage
-                        ).toFixed(2)}%
-                      </span>
-                    </div>
-                  </div>
-                </li>
-              </ul>
-
-              <button
-                onClick={() => (location.href = "/Deposite")}
-                style={{
-                  marginTop: "20px",
-                  padding: "12px",
-                  width: "100%",
-                  borderRadius: "12px",
-                  border: "none",
-                  background:
-                    "linear-gradient(135deg,#25c866,#f5c738)",
-                  color: "#fff",
-                  fontWeight: "600",
-                  cursor: "pointer",
-                }}
-              >
-                Buy Asset
-              </button>
-            </div>
-
+              ))}
+            </ul>
           </div>
+
+          {/* 🔥 TOKEN INFO */}
+<div style={{ marginTop: "30px" }}>
+  <h4 style={{ color: "#fff", marginBottom: "14px" }}>
+    Token information
+  </h4>
+
+  <div style={{ display: "flex", gap: "12px" }}>
+    {/* Symbol Card */}
+    <div
+      style={{
+        flex: 6,
+        background: "#02140a",
+        padding: "16px",
+        borderRadius: "14px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
+    >
+      <p style={{ color: "#ccc", marginBottom: "8px" }}>{details.symbol}/USD</p>
+      <span
+        style={{
+          background: "#25c866",
+          color: "#fff",
+          padding: "4px 10px",
+          borderRadius: "8px",
+          fontSize: "13px",
+          alignSelf: "flex-start", // ensures badge stays on left
+        }}
+      >
+        {change.toFixed(3)}%
+      </span>
+    </div>
+
+    {/* Name Card */}
+    <div
+      style={{
+        flex: 1,
+        background: "#02140a",
+        padding: "16px",
+        borderRadius: "14px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
+    >
+      <p style={{ color: "#ccc", marginBottom: "8px" }}>{details.name}</p>
+      <span
+        style={{
+          background:
+            Number(details.ath_change_percentage) >= 0
+              ? "#25c866"
+              : "#ff4d4f",
+          color: "#fff",
+          padding: "4px 10px",
+          borderRadius: "8px",
+          fontSize: "13px",
+          alignSelf: "flex-start",
+        }}
+      >
+        {Number(details.ath_change_percentage).toFixed(2)}%
+      </span>
+    </div>
+  </div>
+</div>
+
+          {/* 🔥 BUTTON */}
+          <button
+            onClick={() => (location.href = "/Deposite")}
+            style={{
+              marginTop: "30px",
+              width: "100%",
+              padding: "16px",
+              borderRadius: "30px",
+              border: "none",
+              background: "#25c866",
+              color: "#fff",
+              fontWeight: "700",
+              fontSize: "18px",
+              boxShadow: "0 6px 30px rgba(37,200,102,0.4)",
+              cursor: "pointer",
+            }}
+          >
+            Buy Assets
+          </button>
         </div>
       </div>
     </div>
