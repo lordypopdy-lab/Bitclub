@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import { DetailChartModal } from "../../models/DetailChartModal"; // import your shared modal
+import { DetailChartModal } from "../../models/DetailChartModal";
 
 const Favourite = () => {
   const [priceBackup, setPriceBack] = useState({});
@@ -9,40 +9,62 @@ const Favourite = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    const loadTokens = () => {
+    const tokenLoader = async () => {
       const rawData = JSON.parse(localStorage.getItem("tokens")) || [];
       const transformed = {};
       rawData.forEach((coin) => {
         if (coin.symbol) transformed[coin.symbol.toUpperCase()] = coin;
       });
-      setPriceBack(transformed);
+      setPriceBack((prev) => ({ ...prev, ...transformed }));
     };
 
-    const connectTicker = () => {
-      const ws = new WebSocket(import.meta.env.VITE_API_MARKET_TICKER);
+    const FavTokens = async () => {
+      const socketTcker = new WebSocket(import.meta.env.VITE_API_MARKET_TICKER);
 
-      ws.onopen = () => console.log("✅ Ticker WebSocket connected");
-      ws.onmessage = (event) => {
+      socketTcker.onopen = () => console.log("✅ Ticker WebSocket connected");
+      socketTcker.onmessage = (event) => {
         const msg = JSON.parse(event.data);
         const symbol = msg.symbol?.toUpperCase();
         if (!symbol) return;
-
         setPricesTicker((prev) => ({
           ...prev,
           [symbol]: { ...prev[symbol], ...msg },
         }));
       };
-      ws.onerror = (err) => console.error("❌ Ticker WebSocket error:", err);
-      ws.onclose = () => console.warn("🔌 Ticker WebSocket disconnected");
+      socketTcker.onerror = (err) =>
+        console.error("❌ Ticker WebSocket error:", err);
+      socketTcker.onclose = () =>
+        console.warn("🔌 Ticker WebSocket disconnected");
 
-      return () => ws.close();
+      return () => socketTcker.close();
     };
 
-    loadTokens();
-    connectTicker();
+    tokenLoader();
+    FavTokens();
   }, []);
 
   const coins = ["SOL", "XRP", "LINK", "TRX", "DOGE", "AVAX", "ADA"]; // favourite coins
+
+  const handleOpenModal = (symbol) => {
+    setSelectedCoin({ symbol: symbol.toUpperCase() });
+    setIsModalOpen(true);
+  };
+
+  const renderPriceChange = (symbol) => {
+    const ticker = pricesTicker[`${symbol}USDT`];
+    const backup = priceBackup[symbol];
+
+    const change =
+      ticker?.priceChangePercent ?? backup?.price_change_percentage_24h;
+    if (change === undefined) return { text: "--", isUp: true };
+    return { text: Number(change).toFixed(3) + "%", isUp: Number(change) >= 0 };
+  };
+
+  const renderPrice = (symbol) => {
+    const ticker = pricesTicker[`${symbol}USDT`];
+    const backup = priceBackup[symbol];
+    return ticker?.lastPrice ?? backup?.current_price ?? 0;
+  };
 
   const formatVolume = (value) => {
     const num = Number(value || 0);
@@ -53,72 +75,55 @@ const Favourite = () => {
     return num.toFixed(2);
   };
 
-  const handleOpenModal = (symbol) => {
-    const coinData = priceBackup[symbol];
-    if (!coinData) return;
-    setSelectedCoin({ symbol, ...coinData });
-    setIsModalOpen(true);
-  };
-
-  const renderPrice = (symbol) => {
-    const ticker = pricesTicker[`${symbol}USDT`];
-    const backup = priceBackup[symbol];
-    const price = ticker?.lastPrice ?? backup?.current_price ?? 0;
-    return `$${Number(price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  };
-
-  const renderPriceChange = (symbol) => {
-    const ticker = pricesTicker[`${symbol}USDT`];
-    const backup = priceBackup[symbol];
-    const change =
-      ticker?.priceChangePercent ?? backup?.price_change_percentage_24h;
-
-    if (change === undefined) return <span className="text-button">--</span>;
-    const isIncrease = Number(change) > 0;
-    return (
-      <span className={`coin-btn ${isIncrease ? "increase" : "decrease"}`}>
-        {Number(change).toLocaleString(undefined, {
-          minimumFractionDigits: 3,
-          maximumFractionDigits: 3,
-        })}
-        %
-      </span>
-    );
-  };
-
   const renderVolume = (symbol) => {
     const ticker = pricesTicker[`${symbol}USDT`];
     const backup = priceBackup[symbol];
-    const volume = ticker?.volume ?? backup?.volume ?? 0;
-    return `$${formatVolume(volume)}`;
+    return ticker?.volume ?? backup?.volume ?? 0;
   };
 
   return (
     <div>
-      {coins.map((symbol) => (
-        <li key={symbol} style={{ marginTop: "18px" }}>
-          <a
-            className="coin-item style-2 gap-12"
-            onClick={() => handleOpenModal(symbol)}
-          >
-            <img
-              src={priceBackup[symbol]?.image || "/default-icon.png"}
-              alt={`${symbol} Logo`}
-              className="img"
-            />
-            <div className="content">
-              <div className="title">
-                <p className="mb-4 text-button">{symbol}</p>
-                <span className="text-secondary">{renderVolume(symbol)}</span>
+      {coins.map((coin) => {
+        const change = renderPriceChange(coin);
+        return (
+          <li key={coin} style={{ marginTop: "18px" }}>
+            <a
+              className="coin-item style-2 gap-12"
+              onClick={() => handleOpenModal(coin)}
+            >
+              <img
+                src={priceBackup[coin]?.image || "/default-icon.png"}
+                alt={`${coin} Logo`}
+                className="img"
+              />
+              <div className="content">
+                <div className="title">
+                  <p className="mb-4 text-button">{coin}</p>
+                  <span className="text-secondary">
+                    ${formatVolume(renderVolume(coin))}
+                  </span>
+                </div>
+                <div className="d-flex align-items-center gap-12">
+                  <span className="text-small">
+                    $
+                    {Number(renderPrice(coin)).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 5,
+                    })}
+                  </span>
+                  <span
+                    className={`coin-btn ${
+                      change.isUp ? "increase" : "decrease"
+                    }`}
+                  >
+                    {change.text}
+                  </span>
+                </div>
               </div>
-              <div className="d-flex align-items-center gap-12">
-                <span className="text-small">{renderPrice(symbol)}</span>
-                {renderPriceChange(symbol)}
-              </div>
-            </div>
-          </a>
-        </li>
-      ))}
+            </a>
+          </li>
+        );
+      })}
 
       <div className="d-block m-2 coin-item p-2 text-center">
         <NavLink to="/wallet">

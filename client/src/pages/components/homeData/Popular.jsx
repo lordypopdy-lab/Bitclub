@@ -44,6 +44,7 @@ const Popular = () => {
   }, []);
 
   const coins = ["BTC", "ETH", "SOL", "BNB", "XRP", "LINK", "TRX", "DOGE"];
+  const coins1 = ["SOL", "XRP", "LINK", "TRX", "DOGE", "AVAX", "ADA"]; // favourite coins
 
   const handleOpenModal = (symbol) => {
     setSelectedCoin({ symbol: symbol.toUpperCase() });
@@ -105,7 +106,8 @@ const Popular = () => {
                 </div>
                 <div className="d-flex align-items-center gap-12">
                   <span className="text-small">
-                    ${Number(renderPrice(coin)).toLocaleString(undefined, {
+                    $
+                    {Number(renderPrice(coin)).toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 5,
                     })}
@@ -141,7 +143,8 @@ const Popular = () => {
               priceBackup?.[selectedCoin.symbol]?.current_price ??
               0,
             pricePercentage:
-              pricesTicker?.[selectedCoin.symbol + "USDT"]?.priceChangePercent ??
+              pricesTicker?.[selectedCoin.symbol + "USDT"]
+                ?.priceChangePercent ??
               priceBackup?.[selectedCoin.symbol]?.price_change_percentage_24h ??
               0,
             ath_change_percentage:
