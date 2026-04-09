@@ -60,6 +60,7 @@ const WalletView = () => {
     { symbol: "TRX", name: "TRON" },
     { symbol: "FIL", name: "Filecoin" },
     { symbol: "USDC", name: "USD Coin" },
+    { symbol: "SOL", name: "Solana" },
   ];
 
   const handleOpenModal = (coin) => {
