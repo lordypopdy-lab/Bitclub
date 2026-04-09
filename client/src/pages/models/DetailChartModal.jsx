@@ -126,7 +126,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
             background: "transparent",
             border: "none",
             padding: "20px",
-            marginTop: "30vh",
+            marginTop: "27vh",
           }}
         >
           {/* 🔥 HEADER */}
@@ -189,70 +189,74 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
           </div>
 
           {/* 🔥 TOKEN INFO */}
-<div style={{ marginTop: "30px" }}>
-  <h4 style={{ color: "#fff", marginBottom: "14px" }}>
-    Token information
-  </h4>
+          <div style={{ marginTop: "30px" }}>
+            <h4 style={{ color: "#fff", marginBottom: "14px" }}>
+              Token information
+            </h4>
 
-  <div style={{ display: "flex", gap: "12px" }}>
-    {/* Symbol Card */}
-    <div
-      style={{
-        flex: 6,
-        background: "#02140a",
-        padding: "16px",
-        borderRadius: "14px",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-      }}
-    >
-      <p style={{ color: "#ccc", marginBottom: "8px" }}>{details.symbol}/USD</p>
-      <span
-        style={{
-          background: "#25c866",
-          color: "#fff",
-          padding: "4px 10px",
-          borderRadius: "8px",
-          fontSize: "13px",
-          alignSelf: "flex-start", // ensures badge stays on left
-        }}
-      >
-        {change.toFixed(3)}%
-      </span>
-    </div>
+            <div style={{ display: "flex", gap: "12px" }}>
+              {/* Symbol Card */}
+              <div
+                style={{
+                  flex: 6,
+                  background: "#02140a",
+                  padding: "16px",
+                  borderRadius: "14px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
+                <p style={{ color: "#ccc", marginBottom: "8px" }}>
+                  {details.symbol}/USD
+                </p>
+                <span
+                  style={{
+                    background: "#25c866",
+                    color: "#fff",
+                    padding: "4px 10px",
+                    borderRadius: "8px",
+                    fontSize: "13px",
+                    alignSelf: "flex-start", // ensures badge stays on left
+                  }}
+                >
+                  {change.toFixed(3)}%
+                </span>
+              </div>
 
-    {/* Name Card */}
-    <div
-      style={{
-        flex: 1,
-        background: "#02140a",
-        padding: "16px",
-        borderRadius: "14px",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-      }}
-    >
-      <p style={{ color: "#ccc", marginBottom: "8px" }}>{details.name}</p>
-      <span
-        style={{
-          background:
-            Number(details.ath_change_percentage) >= 0
-              ? "#25c866"
-              : "#ff4d4f",
-          color: "#fff",
-          padding: "4px 10px",
-          borderRadius: "8px",
-          fontSize: "13px",
-          alignSelf: "flex-start",
-        }}
-      >
-        {Number(details.ath_change_percentage).toFixed(2)}%
-      </span>
-    </div>
-  </div>
-</div>
+              {/* Name Card */}
+              <div
+                style={{
+                  flex: 1,
+                  background: "#02140a",
+                  padding: "16px",
+                  borderRadius: "14px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                }}
+              >
+                <p style={{ color: "#ccc", marginBottom: "8px" }}>
+                  {details.name}
+                </p>
+                <span
+                  style={{
+                    background:
+                      Number(details.ath_change_percentage) >= 0
+                        ? "#25c866"
+                        : "#ff4d4f",
+                    color: "#fff",
+                    padding: "4px 10px",
+                    borderRadius: "8px",
+                    fontSize: "13px",
+                    alignSelf: "flex-start",
+                  }}
+                >
+                  {Number(details.ath_change_percentage).toFixed(2)}%
+                </span>
+              </div>
+            </div>
+          </div>
 
           {/* 🔥 BUTTON */}
           <button
