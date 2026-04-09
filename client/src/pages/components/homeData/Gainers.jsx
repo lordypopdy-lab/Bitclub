@@ -1,133 +1,205 @@
-import { NavLink } from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import { NavLink } from "react-router-dom";
+import { DetailChartModal } from "../../models/DetailChartModal";
 
 const Gainers = () => {
-    const [priceBackup, setPriceBack] = useState({});
-    const [pricesTicker, setPricesTicker] = useState({});
-    const [refreshTrigger, setRefreshTrigger] = useState(0); // for auto-refresh
+  const [priceBackup, setPriceBack] = useState({});
+  const [pricesTicker, setPricesTicker] = useState({});
+  const [selectedCoin, setSelectedCoin] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-    useEffect(() => {
-        // Load tokens from localStorage
-        const tokenLoader = async () => {
-            const rawData = JSON.parse(localStorage.getItem("tokens")) || [];
-            const transformed = {};
+  useEffect(() => {
+    // Load cached tokens
+    const loadTokens = () => {
+      const rawData = JSON.parse(localStorage.getItem("tokens")) || [];
+      const transformed = {};
+      rawData.forEach((coin) => {
+        if (coin.symbol) transformed[coin.symbol.toUpperCase()] = coin;
+      });
+      setPriceBack(transformed);
+    };
 
-            rawData.forEach((coin) => {
-                if (coin.symbol) {
-                    transformed[coin.symbol.toUpperCase()] = coin;
-                }
-            });
+    // WebSocket
+    const connectTicker = () => {
+      const ws = new WebSocket(import.meta.env.VITE_API_MARKET_TICKER);
 
-            setPriceBack(transformed);
-        };
+      ws.onopen = () => console.log("✅ Ticker WebSocket connected");
 
-        // Connect WebSocket for real-time data
-        const FavTokens = async () => {
-            const socketTcker = new WebSocket(import.meta.env.VITE_API_MARKET_TICKER);
+      ws.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        const symbol = msg.symbol?.toUpperCase();
+        if (!symbol) return;
 
-            socketTcker.onopen = () => console.log('✅ Ticker WebSocket connected');
+        setPricesTicker((prev) => ({
+          ...prev,
+          [symbol]: { ...prev[symbol], ...msg },
+        }));
+      };
 
-            socketTcker.onmessage = (event) => {
-                const msg = JSON.parse(event.data);
-                const symbol = msg.symbol?.toUpperCase();
-                if (!symbol) return;
+      ws.onerror = (err) => console.error("❌ Ticker WebSocket error:", err);
+      ws.onclose = () => console.warn("🔌 Ticker WebSocket disconnected");
 
-                setPricesTicker((prev) => ({
-                    ...prev,
-                    [symbol]: {
-                        ...prev[symbol],
-                        ...msg,
-                    },
-                }));
-            };
+      return () => ws.close();
+    };
 
-            socketTcker.onerror = (err) => console.error('❌ Ticker WebSocket error:', err);
-            socketTcker.onclose = () => console.warn('🔌 Ticker WebSocket disconnected');
+    loadTokens();
+    connectTicker();
 
-            return () => socketTcker.close();
-        };
+    // Auto refresh
+    const interval = setInterval(() => {
+      setRefreshTrigger((prev) => prev + 1);
+    }, 30000);
 
-        FavTokens();
-        tokenLoader();
+    return () => clearInterval(interval);
+  }, []);
 
-        // 🔁 Auto refresh every 30 seconds
-        const interval = setInterval(() => {
-            setRefreshTrigger((prev) => prev + 1);
-            console.log('🔁 Auto-refresh triggered at', new Date().toLocaleTimeString());
-        }, 30000);
+  // ✅ Get gainers (LIVE first)
+  const gainersList = Object.keys(pricesTicker)
+    .filter((symbol) => pricesTicker[symbol]?.priceChangePercent > 0)
+    .sort(
+      (a, b) =>
+        pricesTicker[b].priceChangePercent -
+        pricesTicker[a].priceChangePercent
+    )
+    .slice(0, 10);
 
-        return () => clearInterval(interval);
-    }, []);
+  // ✅ Fallback
+  const fallbackList = Object.keys(priceBackup)
+    .filter((symbol) => priceBackup[symbol]?.price_change_percentage_24h > 0)
+    .sort(
+      (a, b) =>
+        priceBackup[b].price_change_percentage_24h -
+        priceBackup[a].price_change_percentage_24h
+    )
+    .slice(0, 10);
 
-    // Filter gainers from WebSocket
-    const gainersList = Object.keys(pricesTicker)
-        .filter((symbol) => pricesTicker[symbol]?.priceChangePercent > 0)
-        .sort((a, b) => pricesTicker[b].priceChangePercent - pricesTicker[a].priceChangePercent)
-        .slice(0, 10);
+  const finalList = gainersList.length > 0 ? gainersList : fallbackList;
 
-    // Fallback gainers from backup
-    const fallbackList = Object.keys(priceBackup)
-        .filter((symbol) => priceBackup[symbol]?.price_change_percentage_24h > 0)
-        .sort((a, b) => priceBackup[b].price_change_percentage_24h - priceBackup[a].price_change_percentage_24h)
-        .slice(0, 10);
+  // ✅ OPEN MODAL (FIXED)
+  const handleOpenModal = (symbol) => {
+    const cleanSymbol = symbol.replace("USDT", ""); // 🔥 VERY IMPORTANT
 
-    // Choose live gainers or fallback
-    const finalList = gainersList.length > 0 ? gainersList : fallbackList;
+    setSelectedCoin({
+      symbol: cleanSymbol,
+      name: priceBackup?.[cleanSymbol]?.name || cleanSymbol,
+    });
 
-    return (
-        <div>
-            {finalList.map((symbol) => {
-                const tokenSymbol = symbol.replace("USDT", "");
-                const backup = priceBackup[symbol] || {};
-                const ticker = pricesTicker[symbol] || {};
+    setIsModalOpen(true);
+  };
 
-                const lastPrice = ticker.lastPrice || backup.current_price || 0;
-                const changePercent = ticker.priceChangePercent || backup.price_change_percentage_24h || 0;
+  // ✅ FORMATTERS (same as Top)
+  const formatPrice = (symbol) => {
+    const live = pricesTicker?.[symbol + "USDT"]?.lastPrice;
+    const backup = priceBackup?.[symbol]?.current_price || 0;
 
-                return (
-                    <li key={symbol + refreshTrigger} style={{ marginTop: '18px' }}>
-                        <a className="coin-item style-2 gap-12">
-                            <div className="content">
-                                <div className="title">
-                                    <p className="mb-4 text-button">{tokenSymbol}</p>
-                                </div>
-                                <div className="d-flex align-items-center gap-12">
-                                    <span className="text-small">
-                                        ${Number(lastPrice).toLocaleString(undefined, {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2,
-                                        })}
-                                    </span>
+    return Number(live ?? backup).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
 
-                                    <span
-                                        className={`coin-btn ${
-                                            changePercent >= 0 ? 'increase' : 'decrease'
-                                        }`}
-                                    >
-                                        {Number(changePercent).toLocaleString(undefined, {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2,
-                                        })}
-                                        %
-                                    </span>
-                                </div>
-                            </div>
-                        </a>
-                    </li>
-                );
-            })}
+  const formatChange = (symbol) => {
+    const live = pricesTicker?.[symbol + "USDT"]?.priceChangePercent;
+    const backup = priceBackup?.[symbol]?.price_change_percentage_24h;
 
-            <div className="d-block m-2 coin-item p-2 text-center">
-                <NavLink to="/wallet">
-                    <div className="align-items-center">
-                        <span className="text-small text-primary">
-                            View More
-                        </span>
-                    </div>
-                </NavLink>
-            </div>
-        </div>
-    );
+    const value =
+      !isNaN(Number(live))
+        ? Number(live)
+        : !isNaN(Number(backup))
+        ? Number(backup)
+        : null;
+
+    if (value === null) return { text: "--", isUp: true };
+
+    return { text: value.toFixed(2) + "%", isUp: value >= 0 };
+  };
+
+  return (
+    <div>
+      {finalList.map((symbol, index) => {
+        const cleanSymbol = symbol.replace("USDT", "");
+        const change = formatChange(cleanSymbol);
+
+        return (
+          <li key={symbol + refreshTrigger} style={{ marginTop: "18px" }}>
+            <a
+              className="coin-item justify-content-between"
+              onClick={() => handleOpenModal(symbol)}
+            >
+              <div className="d-flex align-items-center gap-12 flex-1">
+                <h4 className="text-primary">
+                  {index + 1 < 10 ? `0${index + 1}` : index + 1}
+                </h4>
+
+                <p>
+                  <span className="mb-4 text-button fw-6">
+                    {cleanSymbol}
+                  </span>
+                  <span className="text-secondary"> / USDT</span>
+                </p>
+              </div>
+
+              <div className="d-flex justify-content-between align-items-center flex-st2">
+                <span className="text-small">
+                  ${formatPrice(cleanSymbol)}
+                </span>
+
+                <div className="text-end">
+                  <span
+                    className={`text-button ${
+                      change.isUp ? "text-primary" : "text-red"
+                    }`}
+                  >
+                    {change.text}
+                  </span>
+
+                  <p className="mt-4 text-secondary">
+                    ${formatPrice(cleanSymbol)}
+                  </p>
+                </div>
+              </div>
+            </a>
+          </li>
+        );
+      })}
+
+      {/* VIEW MORE */}
+      <div className="d-block m-2 coin-item p-2 text-center">
+        <NavLink to="/wallet">
+          <div className="align-items-center">
+            <span className="text-small text-primary">View More</span>
+          </div>
+        </NavLink>
+      </div>
+
+      {/* ✅ MODAL */}
+      {selectedCoin && (
+        <DetailChartModal
+          details={{
+            ...selectedCoin,
+            current_price:
+              pricesTicker?.[selectedCoin.symbol + "USDT"]?.lastPrice ??
+              priceBackup?.[selectedCoin.symbol]?.current_price ??
+              0,
+
+            pricePercentage:
+              pricesTicker?.[selectedCoin.symbol + "USDT"]
+                ?.priceChangePercent ??
+              priceBackup?.[selectedCoin.symbol]
+                ?.price_change_percentage_24h ??
+              0,
+
+            ath_change_percentage:
+              priceBackup?.[selectedCoin.symbol]
+                ?.ath_change_percentage ?? 0,
+          }}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
+    </div>
+  );
 };
 
 export default Gainers;
