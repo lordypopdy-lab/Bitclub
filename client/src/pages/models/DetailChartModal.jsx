@@ -150,7 +150,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
           {/* 🔥 CHART */}
           <div style={{ marginTop: "20px" }}>
             <ModalSparkline
-              width={360}
+              width={344}
               height={120}
               priceChangePercent={change}
               data={chartData}
