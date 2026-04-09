@@ -241,7 +241,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
                   cursor: "pointer",
                 }}
               >
-                Buy Assets Now
+                Buy Asset
               </button>
             </div>
 
