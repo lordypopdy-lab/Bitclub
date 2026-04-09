@@ -56,6 +56,7 @@ const WalletView = () => {
     { symbol: "BTC", name: "Bitcoin" },
     { symbol: "ETC", name: "Ethereum Classic" },
     { symbol: "XRP", name: "Ripple" },
+    { symbol: "ETH", name: "Ethereum" },
     { symbol: "TRX", name: "TRON" },
     { symbol: "FIL", name: "Filecoin" },
     { symbol: "USDC", name: "USD Coin" },

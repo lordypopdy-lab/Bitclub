@@ -19,7 +19,7 @@ const Market = () => {
 
     const socketTicker = new WebSocket(import.meta.env.VITE_API_MARKET_TICKER);
 
-    socketTicker.onopen = () => console.log("✅ Ticker WebSocket connected");
+    socketTicker.onopen = () => console.log("Ticker WebSocket connected");
 
     socketTicker.onmessage = (event) => {
       try {
