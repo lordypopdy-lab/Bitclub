@@ -13,6 +13,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
     change: null,
   });
 
+  // ✅ INTERVAL MAP
   const getInterval = (tab) => {
     switch (tab) {
       case "1H":
@@ -30,6 +31,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
     }
   };
 
+  // ✅ LIMIT MAP (FULL VIEW)
   const getLimit = (tab) => {
     switch (tab) {
       case "1H":
@@ -47,24 +49,28 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
     }
   };
 
-  // ✅ LOAD FULL HISTORY
+  // ✅ FETCH HISTORY
   useEffect(() => {
     if (!details?.symbol || !isOpen) return;
 
     const fetchHistory = async () => {
-      const symbol = `${details.symbol.toUpperCase()}USDT`;
-      const interval = getInterval(activeTab);
-      const limit = getLimit(activeTab);
+      try {
+        const interval = getInterval(activeTab);
+        const limit = getLimit(activeTab);
+        const symbol = `${details.symbol.toUpperCase()}USDT`;
 
-      const res = await fetch(
-        `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`,
-      );
+        const res = await fetch(
+          `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=${limit}`,
+        );
 
-      const data = await res.json();
-      if (!Array.isArray(data)) return;
+        const data = await res.json();
+        if (!Array.isArray(data)) return;
 
-      const prices = data.map((c) => parseFloat(c[4]));
-      setChartData(prices);
+        const prices = data.map((candle) => parseFloat(candle[4]));
+        setChartData(prices);
+      } catch (err) {
+        console.error("History fetch error:", err);
+      }
     };
 
     fetchHistory();
@@ -74,14 +80,16 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
   useEffect(() => {
     if (!details?.symbol || !isOpen) return;
 
+    const symbol = `${details.symbol.toLowerCase()}usdt`;
+
     const ws = new WebSocket(
-      `wss://fstream.binance.com/stream?streams=${details.symbol.toLowerCase()}usdt@miniTicker`,
+      `wss://fstream.binance.com/stream?streams=${symbol}@miniTicker`,
     );
 
     wsRef.current = ws;
 
-    ws.onmessage = (e) => {
-      const data = JSON.parse(e.data)?.data;
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data)?.data;
       if (!data) return;
 
       const price = parseFloat(data.c);
@@ -96,187 +104,224 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
       }
     };
 
-    return () => ws.close();
+    ws.onerror = () => ws.close();
+
+    return () => {
+      if (wsRef.current) wsRef.current.close();
+    };
   }, [details?.symbol, isOpen]);
 
   if (!isOpen || !details) return null;
 
+  // ✅ PRICE
   const price = liveData.price ?? Number(details.current_price) ?? 0;
-  const change = liveData.change ?? Number(details.pricePercentage) ?? 0;
-  const isUp = change >= 0;
+
+  // ✅ DYNAMIC CHANGE (MATCHES CHART)
+  const getChartChange = () => {
+    if (!Array.isArray(chartData) || chartData.length < 2) return 0;
+
+    const first = chartData[0];
+    const last = chartData[chartData.length - 1];
+
+    if (!first || !last) return 0;
+
+    return ((last - first) / first) * 100;
+  };
+
+  const dynamicChange = getChartChange();
+  const isUp = dynamicChange >= 0;
+
+  // ✅ LABEL
+  const getLabel = () => {
+    switch (activeTab) {
+      case "1H":
+        return "Last 1 hour";
+      case "1D":
+        return "Last 24 hours";
+      case "1W":
+        return "Last 7 days";
+      case "1M":
+        return "Last 30 days";
+      case "1Y":
+        return "Last 1 year";
+      default:
+        return "Last 24 hours";
+    }
+  };
 
   return (
     <div
-      className="modal show"
-      style={{
-        display: "block",
-        background: "linear-gradient(180deg,#0a0a0a,#111)",
-        minHeight: "80vh",
-      }}
+      className="modal fade action-sheet show"
+      style={{ display: "block", background: "rgba(0,0,0,0.6)" }}
       onClick={onClose}
     >
       <div
         className="modal-dialog"
-        style={{ maxWidth: "100%", margin: 0 }}
         onClick={(e) => e.stopPropagation()}
+        style={{ maxWidth: "420px", margin: "auto" }}
       >
         <div
           className="modal-content"
           style={{
-            background: "transparent",
-            border: "none",
-            padding: "20px",
-            marginTop: "27vh",
+            borderRadius: "16px",
+            background: "#0f0f0f",
+            padding: "16px",
           }}
         >
-          {/* 🔥 HEADER */}
-          <h3 style={{ color: "#25c866", fontWeight: "600" }}>
-            {details.symbol}/USD
-          </h3>
+          <div className="box-detail-chart">
+            {/* TOP */}
+            <div className="top">
+              <h3 style={{ color: "#fff" }}>
+                {details.symbol?.toUpperCase()}/USD
+              </h3>
 
-          <h1 style={{ color: "#fff", fontSize: "38px", marginTop: "6px" }}>
-            ${Number(price).toLocaleString()}
-          </h1>
+              <h2 style={{ color: "#fff", marginTop: "6px" }}>
+                ${Number(price).toLocaleString()}
+              </h2>
 
-          <p style={{ marginTop: "4px" }}>
-            <span style={{ color: isUp ? "#25c866" : "#ff4d4f" }}>
-              {change.toFixed(3)}%
-            </span>
-            <span style={{ color: "#aaa", marginLeft: "8px" }}>
-              Last 24 hours
-            </span>
-          </p>
+              <p style={{ marginTop: "4px" }}>
+                <span style={{ color: isUp ? "#25c866" : "#ff4d4f" }}>
+                  {dynamicChange.toFixed(3)}%
+                </span>
 
-          {/* 🔥 CHART */}
-          <div style={{ marginTop: "20px" }}>
-            <ModalSparkline
-              width={350}
-              height={120}
-              priceChangePercent={change}
-              data={chartData}
-            />
-          </div>
+                <span style={{ color: "#aaa", marginLeft: "8px" }}>
+                  {getLabel()}
+                </span>
+              </p>
+            </div>
 
-          {/* 🔥 TABS */}
-          <div style={{ marginTop: "20px" }}>
+            {/* 🔥 CHART */}
+            <div
+              style={{
+                width: "100%",
+                height: "110px",
+                marginTop: "10px",
+                padding: "0 10px",
+                boxSizing: "border-box",
+              }}
+            >
+              <ModalSparkline
+                width="100%"
+                height={100}
+                priceChangePercent={dynamicChange}
+                data={chartData}
+              />
+            </div>
+
+            {/* 🔥 TABS */}
+            <div className="content mt-3">
+              <ul
+                className="tab-time"
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: "10px",
+                }}
+              >
+                {tabs.map((tab) => (
+                  <li key={tab}>
+                    <button
+                      onClick={() => setActiveTab(tab)}
+                      style={{
+                        padding: "6px 12px",
+                        borderRadius: "8px",
+                        border: "none",
+                        background:
+                          activeTab === tab ? "#25c866" : "transparent",
+                        color: activeTab === tab ? "#fff" : "#D9D9D9",
+                        cursor: "pointer",
+                        fontWeight: "500",
+                      }}
+                    >
+                      {tab}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* 🔥 TOKEN INFO */}
+            <h6 style={{ marginTop: "20px", color: "#D9D9D9" }}>
+              Token information
+            </h6>
+
             <ul
               style={{
                 display: "flex",
-                justifyContent: "space-between",
-                padding: 0,
-                listStyle: "none",
+                gap: "12px",
+                marginTop: "10px",
               }}
             >
-              {tabs.map((tab) => (
-                <li key={tab}>
-                  <button
-                    onClick={() => setActiveTab(tab)}
+              {/* LIVE CHANGE */}
+              <li style={{ flex: 1 }}>
+                <div
+                  style={{
+                    background: "rgba(37,200,102,0.05)",
+                    borderRadius: "14px",
+                    padding: "14px",
+                    border: "1px solid rgba(37,200,102,0.15)",
+                  }}
+                >
+                  <p style={{ fontSize: "13px", color: "#D9D9D9" }}>
+                    24H Change
+                  </p>
+
+                  <span
                     style={{
-                      padding: "6px 14px",
-                      borderRadius: "20px",
-                      border: "none",
-                      background: activeTab === tab ? "#25c866" : "transparent",
-                      color: activeTab === tab ? "#000" : "#D9D9D9",
+                      color: isUp ? "#25c866" : "#ff4d4f",
                       fontWeight: "600",
-                      cursor: "pointer",
                     }}
                   >
-                    {tab}
-                  </button>
-                </li>
-              ))}
+                    {Number(details.pricePercentage || 0).toFixed(2)}%
+                  </span>
+                </div>
+              </li>
+
+              {/* ATH */}
+              <li style={{ flex: 1 }}>
+                <div
+                  style={{
+                    background: "rgba(245,199,56,0.05)",
+                    borderRadius: "14px",
+                    padding: "14px",
+                    border: "1px solid rgba(245,199,56,0.15)",
+                  }}
+                >
+                  <p style={{ fontSize: "13px", color: "#D9D9D9" }}>From ATH</p>
+
+                  <span
+                    style={{
+                      color:
+                        Number(details.ath_change_percentage) >= 0
+                          ? "#25c866"
+                          : "#ff4d4f",
+                      fontWeight: "600",
+                    }}
+                  >
+                    {Number(details.ath_change_percentage || 0).toFixed(2)}%
+                  </span>
+                </div>
+              </li>
             </ul>
+
+            {/* 🔥 BUTTON */}
+            <button
+              onClick={() => (location.href = "/Deposite")}
+              style={{
+                marginTop: "20px",
+                padding: "12px",
+                width: "100%",
+                borderRadius: "12px",
+                border: "none",
+                background: "linear-gradient(135deg,#25c866,#f5c738)",
+                color: "#fff",
+                fontWeight: "600",
+                cursor: "pointer",
+              }}
+            >
+              Buy Asset
+            </button>
           </div>
-
-          {/* 🔥 TOKEN INFO */}
-          <div style={{ marginTop: "30px" }}>
-            <h4 style={{ color: "#fff", marginBottom: "14px" }}>
-              Token information
-            </h4>
-
-            <div style={{ display: "flex", gap: "12px" }}>
-              {/* Symbol Card */}
-              <div
-                style={{
-                  flex: 6,
-                  background: "#02140a",
-                  padding: "16px",
-                  borderRadius: "14px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                }}
-              >
-                <p style={{ color: "#ccc", marginBottom: "8px" }}>
-                  {details.symbol}/USD
-                </p>
-                <span
-                  style={{
-                    background: "#25c866",
-                    color: "#fff",
-                    padding: "4px 10px",
-                    borderRadius: "8px",
-                    fontSize: "13px",
-                    alignSelf: "flex-start", // ensures badge stays on left
-                  }}
-                >
-                  {change.toFixed(3)}%
-                </span>
-              </div>
-
-              {/* Name Card */}
-              <div
-                style={{
-                  flex: 1,
-                  background: "#02140a",
-                  padding: "16px",
-                  borderRadius: "14px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                }}
-              >
-                <p style={{ color: "#ccc", marginBottom: "8px" }}>
-                  {details.name}
-                </p>
-                <span
-                  style={{
-                    background:
-                      Number(details.ath_change_percentage) >= 0
-                        ? "#25c866"
-                        : "#ff4d4f",
-                    color: "#fff",
-                    padding: "4px 10px",
-                    borderRadius: "8px",
-                    fontSize: "13px",
-                    alignSelf: "flex-start",
-                  }}
-                >
-                  {Number(details.ath_change_percentage).toFixed(2)}%
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* 🔥 BUTTON */}
-          <button
-            onClick={() => (location.href = "/Deposite")}
-            style={{
-              marginTop: "30px",
-              width: "100%",
-              padding: "16px",
-              borderRadius: "30px",
-              border: "none",
-              background: "#25c866",
-              color: "#fff",
-              fontWeight: "700",
-              fontSize: "18px",
-              boxShadow: "0 6px 30px rgba(37,200,102,0.4)",
-              cursor: "pointer",
-            }}
-          >
-            Buy Assets
-          </button>
         </div>
       </div>
     </div>
