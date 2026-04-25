@@ -4,15 +4,16 @@ import toast from "react-hot-toast";
 import FadeLoader from "react-spinners/FadeLoader";
 import { GoogleLogin } from "@react-oauth/google";
 import { gapi } from "gapi-script";
-import google from "../../images/logo/google.jpg";
 import logo144 from "../../images/logo/logo144.png";
 import { jwtDecode } from "jwt-decode";
 import { Icon } from "react-icons-kit";
 import { eyeOff } from "react-icons-kit/feather/eyeOff";
 import { eye } from "react-icons-kit/feather/eye";
 import { Preloader } from "../utils/Properties";
+import { useNavigate, Link } from "react-router-dom"
 
 const Login = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [type, setType] = useState("password");
   const [icon, setIcon] = useState(eyeOff);
@@ -69,7 +70,7 @@ const Login = () => {
         localStorage.setItem("email", email);
         localStorage.setItem("pin", data._id);
         setTimeout(() => {
-          location.href = "/Home";
+          navigate("/Home")
         }, 1000);
       } else {
         toast.error(data.error);
@@ -107,7 +108,7 @@ const Login = () => {
           localStorage.setItem("email", email);
           localStorage.setItem("pin", data._id);
           setTimeout(() => {
-            location.href = "/Home";
+            navigate("/Home");
           }, 1000);
         } else {
           toast.error("Login Error");
@@ -143,9 +144,9 @@ const Login = () => {
       </div>
       {/* <!-- /preload -->  */}
       <div className="header fixed-top bg-surface">
-        <a href="Boarding2" className="left back-btn">
+        <Link to="Boarding2" className="left back-btn">
           <i className="icon-left-btn"></i>
-        </a>
+        </Link>
       </div>
       <div className="pt-45 pb-20">
         <div className="tf-container">
@@ -153,7 +154,7 @@ const Login = () => {
             <h2 className="text-center">Login Bitclub.</h2>
             <ul className="mt-40 socials-login">
               <li className="mt-12">
-                <a className="tf-btn md p-2 social dark">
+                <Link className="tf-btn md p-2 social dark">
                   <GoogleLogin
                     theme="filled_black"
                     onSuccess={(credentialResponse) => {
@@ -163,7 +164,7 @@ const Login = () => {
                       console.log("Login Failed");
                     }}
                   />
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -210,12 +211,12 @@ const Login = () => {
                 </div>
               </label>
             </fieldset>
-            <a href="/RessetPassword" className="text-secondary">
+            <Link to="/RessetPassword" className="text-secondary">
               Forgot Password?
-            </a>
+            </Link>
             <button className="mt-20">Login</button>
             <p className="mt-20 text-center text-small">
-              Already have a Account? &ensp;<a href="Register">Sign up</a>
+              Already have a Account? &ensp;<Link to="/Register">Sign up</Link>
             </p>
           </form>
         </div>

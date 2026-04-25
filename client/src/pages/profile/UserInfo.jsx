@@ -1,5 +1,5 @@
-import React from 'react'
 import { useContext } from 'react';
+import { Link } from 'react-router-dom';
 import coin3 from "../../images/coin/coin3.jpg";
 import coin1 from "../../images/coin/coin1.jpg";
 import coin9 from "../../images/coin/coin9.jpg";
@@ -15,7 +15,6 @@ import { UserContext } from '../../../context/UserContext';
 
 const UserInfo = () => {
 const {user} = useContext(UserContext);
-if (!localStorage.getItem('email')) { location.href = '/login'; }
 
     return (
         <>
@@ -27,12 +26,16 @@ if (!localStorage.getItem('email')) { location.href = '/login'; }
             </div>
             {/* <!-- /preload -->  */}
             <div className="header fixed-top bg-surface d-flex justify-content-center align-items-center">
-                <a href="#" className="left back-btn"><i className="icon-left-btn"></i></a>
-                <a href="/AddressScan" className="right text-secondary"><i className="icon-barcode"></i></a>
+                <Link to="/Home" className="left back-btn">
+                    <i className="icon-left-btn"></i>
+                </Link>
+                <Link to="/AddressScan" className="right text-secondary">
+                    <i className="icon-barcode"></i>
+                </Link>
             </div>
             <div className="pt-45 pb-16">
                 <div className="bg-menuDark tf-container">
-                    <a href="/Profile" className="pt-12 pb-12 mt-4 d-flex justify-content-between align-items-center">
+                    <Link to="/Profile" className="pt-12 pb-12 mt-4 d-flex justify-content-between align-items-center">
                         <div className="box-account">
                            {!!user && user.picture !== '' ? <img src={!!user && user.picture} alt="img" className="avt" /> : <img src="/src/images/avt/avt2.jpg" alt="img" className="avt" />} 
                             <div className="info">
@@ -42,7 +45,7 @@ if (!localStorage.getItem('email')) { location.href = '/login'; }
                             </div>
                         </div>
                         <span className="arr-right"><i className="icon-arr-right"></i></span>
-                    </a>
+                    </Link>
 
                 </div>
                 <div className="bg-menuDark tf-container">
@@ -50,16 +53,16 @@ if (!localStorage.getItem('email')) { location.href = '/login'; }
                         <h5>Bitclub Ratings</h5>
                         <ul className="mt-16 grid-3 gap-12">
                             <li>
-                                <a href="#cryptocurrency" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center" data-bs-toggle="modal">
+                                <Link to="#cryptocurrency" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center" data-bs-toggle="modal">
                                     <i className="icon text-primary icon-currency"></i>
                                     Currency
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="/Earn" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
+                                <Link to="/Earn" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
                                     <i className="icon text-primary icon-swap"></i>
                                     Contracts
-                                </a>
+                                </Link>
                             </li>
 
                         </ul>
@@ -70,58 +73,58 @@ if (!localStorage.getItem('email')) { location.href = '/login'; }
                         <h5>Exchange</h5>
                         <ul className="mt-16 grid-3 gap-12">
                             <li>
-                                <a href="#" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
+                                <Link to="#" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
                                     <i className="icon icon-convert"></i>
                                     Convert
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="#" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
+                                <Link to="#" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
                                     <i className="icon icon-metalogo"></i>
                                     Consign
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="/AddressScan" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
+                                <Link to="/AddressScan" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
                                     <i className="icon text-primary icon-bank"></i>
                                     Deposit
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="#" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
+                                <Link to="#" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
                                     <i className="icon icon-fileText"></i>
                                     Futures contract
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="#" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
+                                <Link to="#" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
                                     <i className="icon icon-graph"></i>
                                     Ageless
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="#" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
+                                <Link to="#" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
                                     <i className="icon icon-grid-nine"></i>
                                     Choice
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="#" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
+                                <Link to="#" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
                                     <i className="icon icon-game-control"></i>
                                     Simulated trading
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="#" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
+                                <Link to="#" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
                                     <i className="icon icon-robot"></i>
                                     Bot
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="#" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
+                                <Link to="#" className="tf-list-item d-flex flex-column gap-8 align-items-center text-break text-center">
                                     <i className="icon icon-database"></i>
                                     Copy
-                                </a>
+                                </Link>
                             </li>
                         </ul>
                     </div>
@@ -131,26 +134,26 @@ if (!localStorage.getItem('email')) { location.href = '/login'; }
                         <h5>Help center</h5>
                         <ul className="mt-16 grid-3 gap-12">
                             <li>
-                                <a href="#" className="tf-list-item d-flex flex-column gap-8 align-items-center">
+                                <Link to="#" className="tf-list-item d-flex flex-column gap-8 align-items-center">
                                     <i className="icon icon-globe"></i>
                                     Community
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="#" className="tf-list-item d-flex flex-column gap-8 align-items-center">
+                                <Link to="#" className="tf-list-item d-flex flex-column gap-8 align-items-center">
                                     <i className="icon icon-headset"></i>
                                     Support
-                                </a>
+                                </Link>
                             </li>
 
                         </ul>
                     </div>
                 </div>
                 <div className="bg-menuDark tf-container">
-                    <a href="#" className="pt-12 pb-12 mt-4 d-flex justify-content-between align-items-center">
+                    <Link to="#" className="pt-12 pb-12 mt-4 d-flex justify-content-between align-items-center">
                         <h5>About Cointex</h5>
                         <span className="arr-right"><i className="icon-arr-right"></i></span>
-                    </a>
+                    </Link>
 
                 </div>
             </div>
@@ -173,7 +176,7 @@ if (!localStorage.getItem('email')) { location.href = '/login'; }
                                 <h5 className="mt-12">Popular search</h5>
                                 <ul className="mt-16">
                                     <li>
-                                        <a href="#" className="coin-item style-2 gap-12">
+                                        <Link to="#" className="coin-item style-2 gap-12">
                                             <img src={coin3} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
@@ -182,10 +185,10 @@ if (!localStorage.getItem('email')) { location.href = '/login'; }
                                                 </div>
                                                 <span className="text-small">$30.776,93</span>
                                             </div>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li className="mt-16">
-                                        <a href="#" className="coin-item style-2 gap-12">
+                                        <Link to="#" className="coin-item style-2 gap-12">
                                             <img src={coin1} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
@@ -194,10 +197,10 @@ if (!localStorage.getItem('email')) { location.href = '/login'; }
                                                 </div>
                                                 <span className="text-small">$1.936,79</span>
                                             </div>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li className="mt-16">
-                                        <a href="#" className="coin-item style-2 gap-12">
+                                        <Link to="#" className="coin-item style-2 gap-12">
                                             <img src={coin14} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
@@ -206,10 +209,10 @@ if (!localStorage.getItem('email')) { location.href = '/login'; }
                                                 </div>
                                                 <span className="text-small">$0,999999</span>
                                             </div>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li className="mt-16">
-                                        <a href="#" className="coin-item style-2 gap-12">
+                                        <Link to="#" className="coin-item style-2 gap-12">
                                             <img src={coin7} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
@@ -218,10 +221,10 @@ if (!localStorage.getItem('email')) { location.href = '/login'; }
                                                 </div>
                                                 <span className="text-small">$243,41</span>
                                             </div>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li className="mt-16">
-                                        <a href="#" className="coin-item style-2 gap-12">
+                                        <Link to="#" className="coin-item style-2 gap-12">
                                             <img src={coin9} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
@@ -230,10 +233,10 @@ if (!localStorage.getItem('email')) { location.href = '/login'; }
                                                 </div>
                                                 <span className="text-small">$0,487814</span>
                                             </div>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li className="mt-16">
-                                        <a href="#" className="coin-item style-2 gap-12">
+                                        <Link to="#" className="coin-item style-2 gap-12">
                                             <img src={coin4} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
@@ -242,10 +245,10 @@ if (!localStorage.getItem('email')) { location.href = '/login'; }
                                                 </div>
                                                 <span className="text-small">$0,294842</span>
                                             </div>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li className="mt-16">
-                                        <a href="#" className="coin-item style-2 gap-12">
+                                        <Link to="#" className="coin-item style-2 gap-12">
                                             <img src={coin11} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
@@ -254,10 +257,10 @@ if (!localStorage.getItem('email')) { location.href = '/login'; }
                                                 </div>
                                                 <span className="text-small">$0,999899</span>
                                             </div>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li className="mt-16">
-                                        <a href="#" className="coin-item style-2 gap-12">
+                                        <Link to="#" className="coin-item style-2 gap-12">
                                             <img src={coin8} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
@@ -266,10 +269,10 @@ if (!localStorage.getItem('email')) { location.href = '/login'; }
                                                 </div>
                                                 <span className="text-small">$0,999999</span>
                                             </div>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li className="mt-16">
-                                        <a href="#" className="coin-item style-2 gap-12">
+                                        <Link to="#" className="coin-item style-2 gap-12">
                                             <img src={coin5} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
@@ -278,10 +281,10 @@ if (!localStorage.getItem('email')) { location.href = '/login'; }
                                                 </div>
                                                 <span className="text-small">$0,169888</span>
                                             </div>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li className="mt-16">
-                                        <a href="#" className="coin-item style-2 gap-12">
+                                        <Link to="#" className="coin-item style-2 gap-12">
                                             <img src={coin6} alt="img" className="img" />
                                             <div className="content">
                                                 <div className="title">
@@ -290,7 +293,7 @@ if (!localStorage.getItem('email')) { location.href = '/login'; }
                                                 </div>
                                                 <span className="text-small">$21.89,39</span>
                                             </div>
-                                        </a>
+                                        </Link>
                                     </li>
                                 </ul>
 

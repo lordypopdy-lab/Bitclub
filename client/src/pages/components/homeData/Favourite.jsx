@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { DetailChartModal } from "../../models/DetailChartModal";
 
@@ -21,7 +21,7 @@ const Favourite = () => {
     const FavTokens = async () => {
       const socketTcker = new WebSocket(import.meta.env.VITE_API_MARKET_TICKER);
 
-      socketTcker.onopen = () => console.log("✅ Ticker WebSocket connected");
+      socketTcker.onopen = () => console.log("Ticker WebSocket connected");
       socketTcker.onmessage = (event) => {
         const msg = JSON.parse(event.data);
         const symbol = msg.symbol?.toUpperCase();
@@ -32,9 +32,9 @@ const Favourite = () => {
         }));
       };
       socketTcker.onerror = (err) =>
-        console.error("❌ Ticker WebSocket error:", err);
+        console.error("Ticker WebSocket error:", err);
       socketTcker.onclose = () =>
-        console.warn("🔌 Ticker WebSocket disconnected");
+        console.warn("Ticker WebSocket disconnected");
 
       return () => socketTcker.close();
     };
@@ -43,7 +43,7 @@ const Favourite = () => {
     FavTokens();
   }, []);
 
-  const coins = ["SOL", "XRP", "LINK", "TRX", "DOGE", "AVAX", "ADA"]; // favourite coins
+  const coins = ["SOL", "XRP", "LINK", "TRX", "DOGE", "AVAX", "ADA"]; 
 
   const handleOpenModal = (symbol) => {
     setSelectedCoin({ symbol: symbol.toUpperCase() });
@@ -87,7 +87,7 @@ const Favourite = () => {
         const change = renderPriceChange(coin);
         return (
           <li key={coin} style={{ marginTop: "18px" }}>
-            <a
+            <NavLink
               className="coin-item style-2 gap-12"
               onClick={() => handleOpenModal(coin)}
             >
@@ -120,7 +120,7 @@ const Favourite = () => {
                   </span>
                 </div>
               </div>
-            </a>
+            </NavLink>
           </li>
         );
       })}

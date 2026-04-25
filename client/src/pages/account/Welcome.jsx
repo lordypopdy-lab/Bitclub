@@ -1,6 +1,7 @@
 import React from 'react'
 import boarding1 from "../../images/banner/boarding1.jpg"
 import logo144 from "../../images/logo/logo144.png"
+import { Link } from 'react-router-dom'
 
 const Welcome = () => {
   return (
@@ -13,7 +14,7 @@ const Welcome = () => {
 </div>
 {/* <!-- /preload -->  */}
 <div className="header">
-  <a href="/Login" className="right">Skip</a>
+  <Link to="/Login" className="right">Skip</Link>
 </div>
 
 <div className="wrap-boarding">
@@ -41,8 +42,8 @@ const Welcome = () => {
       <div className="content mb-32">
         <h2 className="text-center">Welcome to Bitclub Crypto Wallet app</h2>
         <p className="mt-8 text-center text-large">Discover the world of cryptocurrencies and manage your assets securely and conveniently.</p>
-        <a href="/boarding" className="tf-btn primary md mt-40">Next </a>
-        <p className="mt-20 text-center mb-35">By creating an account, you’re agree to out <a href="#notiPrivacy" className="text-white" data-bs-toggle="modal">Privacy policy</a>  and <a href="#notiPrivacy" className="text-white" data-bs-toggle="modal">Term of use</a> </p>
+        <Link to="/boarding" className="tf-btn primary md mt-40">Next </Link>
+        <p className="mt-20 text-center mb-35">By creating an account, you’re agree to out <Link to="#notiPrivacy" className="text-white" data-bs-toggle="modal">Privacy policy</Link>  and <Link to="#notiPrivacy" className="text-white" data-bs-toggle="modal">Term of use</Link> </p>
       </div>
 
 
@@ -72,7 +73,7 @@ const Welcome = () => {
 
       </div>
       <div className="mt-20">
-        <a href="#" className="tf-btn md primary" data-bs-dismiss="modal">I Accept</a>
+        <Link to="#" className="tf-btn md primary" data-bs-dismiss="modal">I Accept</Link>
       </div>
     </div>
   </div>

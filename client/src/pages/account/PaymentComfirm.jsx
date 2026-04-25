@@ -1,11 +1,10 @@
-import React from 'react'
+import { Link } from "react-router-dom"
 
 const PaymentComfirm = () => {
-if(!localStorage.getItem('email')){ location.href = '/login'; }
   return (
     <>
     <div className="header fixed-top bg-surface d-flex justify-content-center align-items-center">
-        <a href="javascript:void(0);" className="left back-btn"><i className="icon-left-btn"></i></a>
+        <Link to="javascript:void(0);" className="left back-btn"><i className="icon-left-btn"></i></Link>
         <h3>Confirm</h3>
     </div>
     <div className="pt-45 pb-90">
@@ -57,7 +56,7 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
 
     <div className="menubar-footer footer-fixed bg-surface">
         <div className="inner-bar">
-            <a href="javascript:void(0);" className="tf-btn lg primary" data-bs-toggle="modal" data-bs-target="#otpPin">Confirm</a>
+            <Link to="javascript:void(0);" className="tf-btn lg primary" data-bs-toggle="modal" data-bs-target="#otpPin">Confirm</Link>
         </div>
     </div>
 
@@ -78,7 +77,7 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
                         <input required type="number" id="digit-5" name="digit-5" data-next="digit-6" data-previous="digit-4" />
                     </div> 
                     <p className="text-center text-small text-white mt-16">Enter  your PIN to proceed</p>
-                    <a href="#success" className="mt-40 tf-btn lg primary" data-bs-toggle="modal">Confirm</a>
+                    <Link to="#success" className="mt-40 tf-btn lg primary" data-bs-toggle="modal">Confirm</Link>
                 </div>
             </div>
             
@@ -110,7 +109,7 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
                     <p className="text-small mt-4">BTC payment</p>
                 </div>
                 
-                <a href="/Home" className="tf-btn lg primary mt-40">Done</a>
+                <Link to="/Home" className="tf-btn lg primary mt-40">Done</Link>
             </div>
         </div>
     </div>

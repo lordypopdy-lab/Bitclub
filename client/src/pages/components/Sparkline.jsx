@@ -12,7 +12,7 @@ export const Sparkline = ({
 
   const [prices, setPrices] = useState(Array.isArray(data) ? data.slice(-50) : []);
 
-  // ✅ Update prices when `data` changes
+  //Update prices when `data` changes
   useEffect(() => {
     if (Array.isArray(data) && data.length) {
       setPrices(data.slice(-50));

@@ -13,7 +13,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
     change: null,
   });
 
-  // ✅ INTERVAL MAP
+  //  INTERVAL MAP
   const getInterval = (tab) => {
     switch (tab) {
       case "1H":
@@ -31,7 +31,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
     }
   };
 
-  // ✅ LIMIT MAP (FULL VIEW)
+  //  LIMIT MAP (FULL VIEW)
   const getLimit = (tab) => {
     switch (tab) {
       case "1H":
@@ -49,7 +49,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
     }
   };
 
-  // ✅ FETCH HISTORY
+  //  FETCH HISTORY
   useEffect(() => {
     if (!details?.symbol || !isOpen) return;
 
@@ -76,7 +76,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
     fetchHistory();
   }, [activeTab, details?.symbol, isOpen]);
 
-  // ✅ LIVE STREAM
+  //  LIVE STREAM
   useEffect(() => {
     if (!details?.symbol || !isOpen) return;
 
@@ -113,10 +113,10 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
 
   if (!isOpen || !details) return null;
 
-  // ✅ PRICE
+  //  PRICE
   const price = liveData.price ?? Number(details.current_price) ?? 0;
 
-  // ✅ DYNAMIC CHANGE (MATCHES CHART)
+  //  DYNAMIC CHANGE (MATCHES CHART)
   const getChartChange = () => {
     if (!Array.isArray(chartData) || chartData.length < 2) return 0;
 
@@ -131,7 +131,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
   const dynamicChange = getChartChange();
   const isUp = dynamicChange >= 0;
 
-  // ✅ LABEL
+  //  LABEL
   const getLabel = () => {
     switch (activeTab) {
       case "1H":
@@ -190,7 +190,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
               </p>
             </div>
 
-            {/* 🔥 CHART */}
+            {/*  CHART */}
             <div
               style={{
                 width: "100%",
@@ -208,7 +208,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
               />
             </div>
 
-            {/* 🔥 TABS */}
+            {/*  TABS */}
             <div className="content mt-3">
               <ul
                 className="tab-time"
@@ -240,7 +240,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
               </ul>
             </div>
 
-            {/* 🔥 TOKEN INFO */}
+            {/*  TOKEN INFO */}
             <h6 style={{ marginTop: "20px", color: "#D9D9D9" }}>
               Token information
             </h6>
@@ -304,7 +304,7 @@ export const DetailChartModal = ({ details, isOpen, onClose }) => {
               </li>
             </ul>
 
-            {/* 🔥 BUTTON */}
+            {/*  BUTTON */}
             <button
               onClick={() => (location.href = "/Deposite")}
               style={{

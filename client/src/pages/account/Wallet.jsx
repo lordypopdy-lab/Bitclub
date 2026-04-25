@@ -2,6 +2,7 @@ import axios from "axios";
 import { ethers } from "ethers";
 import { useContext } from "react";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 import { timeAgo } from "../utils/timeAgo";
 import { useEffect, useState } from "react";
 import FadeLoader from "react-spinners/FadeLoader";
@@ -18,17 +19,6 @@ const Wallet = () => {
   const [history, setHistory] = useState("");
   const [Notification, setNotification] = useState("");
 
-  const [details, setDetails] = useState({
-    name: "",
-    images: "",
-    symbol: "",
-    current_price: "",
-    market_cap: "",
-    lastTradindVolume24: "",
-    pricePercentage: "",
-    ath_change_percentage: "",
-  });
-
   useEffect(() => {
     const getNotification = async () => {
       const email = localStorage.getItem("email");
@@ -40,7 +30,7 @@ const Wallet = () => {
             return (
               <>
                 <li key={index} className="mt-12">
-                  <a href="#" className="noti-item bg-menuDark">
+                  <Link to="#" className="noti-item bg-menuDark">
                     <div className="pb-8 line-bt d-flex">
                       <p className="text-button fw-6">
                         {data.header} {data.message}
@@ -48,7 +38,7 @@ const Wallet = () => {
                       <i className="dot-lg bg-primary"></i>
                     </div>
                     <span className="d-block mt-8">{timeAgo(time)}</span>
-                  </a>
+                  </Link>
                 </li>
               </>
             );
@@ -72,8 +62,8 @@ const Wallet = () => {
               return (
                 <>
                   <li key={index} className="mt-8">
-                    <a
-                      href="#"
+                    <Link
+                      to="#"
                       className="coin-item style-1 gap-12 bg-menuDark"
                     >
                       <span className="box-round d-flex justify-content-center align-items-center">
@@ -122,7 +112,7 @@ const Wallet = () => {
                           )}
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </li>
                 </>
               );
@@ -198,9 +188,6 @@ const Wallet = () => {
   }, []);
 
   const { user } = useContext(UserContext);
-  if (!localStorage.getItem("email")) {
-    location.href = "/login";
-  }
 
   return (
     <>
@@ -216,7 +203,7 @@ const Wallet = () => {
       {/* <!-- /preload -->  */}
       <div className="header-style2 fixed-top bg-menuDark">
         <div className="d-flex justify-content-between align-items-center">
-          <a className="box-account" href="/UserInfo">
+          <Link className="box-account" to="/UserInfo">
             {!!user && user.picture !== "" ? (
               <img src={!!user && user.picture} alt="img" className="avt" />
             ) : (
@@ -226,18 +213,18 @@ const Wallet = () => {
               <p className="text-xsmall text-secondary">Welcome back!</p>
               <h5 className="mt-4">{!!user && user.name}</h5>
             </div>
-          </a>
+          </Link>
           <div className="d-flex align-items-center gap-8">
-            <a href="/assetsRatings" className="icon-search"></a>
-            <a
-              href="#notification"
+            <Link to="/assetsRatings" className="icon-search"></Link>
+            <Link
+              to="#notification"
               className="icon-noti"
               data-bs-toggle="modal"
             >
               <span className="box-noti p-2">
                 {!!user && user.NotificationSeen}
               </span>
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -246,69 +233,69 @@ const Wallet = () => {
           <div className="pt-12 pb-12 mt-4">
             <h5>
               <span className="text-primary">My Wallet</span> -{" "}
-              <a
-                href="#"
+              <Link
+                to="#"
                 className="choose-account"
                 data-bs-toggle="modal"
                 data-bs-target="#accountWallet"
               >
                 <span className="dom-text">Account 1 </span> &nbsp;
                 <i className="icon-select-down"></i>
-              </a>{" "}
+              </Link>{" "}
             </h5>
             {balance == null ? (
               <h1 className="mt-16">
-                <a href="#">$0.00</a>
+                <Link to="#">$0.00</Link>
               </h1>
             ) : (
               <h1 className="mt-16">
-                <a href="#">${balance !== null && balance.toFixed(2)}</a>
+                <Link to="#">${balance !== null && balance.toFixed(2)}</Link>
               </h1>
             )}
             <ul className="mt-16 grid-4 m--16">
               <li>
-                <a
-                  href="/Send"
+                <Link
+                  to="/Send"
                   className="tf-list-item d-flex flex-column gap-8 align-items-center"
                 >
                   <span className="box-round bg-surface d-flex justify-content-center align-items-center">
                     <i className="icon icon-way"></i>
                   </span>
                   Send
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="/deposite"
+                <Link
+                  to="/deposite"
                   className="tf-list-item d-flex flex-column gap-8 align-items-center"
                 >
                   <span className="box-round bg-surface d-flex justify-content-center align-items-center">
                     <i className="icon icon-way2"></i>
                   </span>
                   Receive
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="/Earn"
+                <Link
+                  to="/Earn"
                   className="tf-list-item d-flex flex-column gap-8 align-items-center"
                 >
                   <span className="box-round bg-surface d-flex justify-content-center align-items-center">
                     <i className="icon icon-exchange"></i>
                   </span>
                   Earn
-                </a>
+                </Link>
               </li>
               <li data-bs-toggle="modal" data-bs-target="#walletHistory">
-                <a
-                  href="javascript:void(0);"
+                <Link
+                  to="javascript:void(0);"
                   className="tf-list-item d-flex flex-column gap-8 align-items-center"
                 >
                   <span className="box-round bg-surface d-flex justify-content-center align-items-center">
                     <i className="icon icon-history"></i>
                   </span>
                   History
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -342,9 +329,9 @@ const Wallet = () => {
               <h5
                 style={{marginBottom: "-27px"}}
               >
-                <a href="/assetsRatings" className="cryptex-rating text-primary">
+                <Link to="/assetsRatings" className="cryptex-rating text-primary">
                   <i className="icon-star text-warning m-1"></i>Bitclub Rating
-                </a>
+                </Link>
               </h5>
               <div
                 className="tab-pane p-3 rounded fade active show"
@@ -376,28 +363,28 @@ const Wallet = () => {
       <div className="menubar-footer footer-fixed">
         <ul className="inner-bar">
           <li>
-            <a href="/Home">
+            <Link to="/Home">
               <i className="icon icon-home2"></i>
               Home
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/Exchange">
+            <Link to="/Exchange">
               <i className="icon icon-exchange"></i>
               Exchange
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/Earn">
+            <Link to="/Earn">
               <i className="icon icon-earn"></i>
               Earn
-            </a>
+            </Link>
           </li>
           <li className="active">
-            <a href="/Wallet">
+            <Link to="/Wallet">
               <i className="icon icon-wallet2"></i>
               Wallet
-            </a>
+            </Link>
           </li>
         </ul>
       </div>
@@ -453,68 +440,68 @@ const Wallet = () => {
               <div className="text-button fw-6 text-white">Time</div>
               <ul className="grid-2 rcg-12-16 mt-16">
                 <li>
-                  <a
-                    href="javascript:void(0);"
+                  <Link
+                    to="javascript:void(0);"
                     className="tf-btn xs line active text-secondary item-time"
                   >
                     All
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="javascript:void(0);"
+                  <Link
+                    to="javascript:void(0);"
                     className="tf-btn xs line text-secondary item-time"
                   >
                     24 Hours
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="javascript:void(0);"
+                  <Link
+                    to="javascript:void(0);"
                     className="tf-btn xs line text-secondary item-time"
                   >
                     7 Days
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="javascript:void(0);"
+                  <Link
+                    to="javascript:void(0);"
                     className="tf-btn xs line text-secondary item-time"
                   >
                     12 Days{" "}
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="javascript:void(0);"
+                  <Link
+                    to="javascript:void(0);"
                     className="tf-btn xs line text-secondary item-time"
                   >
                     30 Days
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="javascript:void(0);"
+                  <Link
+                    to="javascript:void(0);"
                     className="tf-btn xs line text-secondary item-time"
                   >
                     3 Month
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="javascript:void(0);"
+                  <Link
+                    to="javascript:void(0);"
                     className="tf-btn xs line text-secondary item-time"
                   >
                     6 Month
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="javascript:void(0);"
+                  <Link
+                    to="javascript:void(0);"
                     className="tf-btn xs line text-secondary item-time"
                   >
                     12 Month
-                  </a>
+                  </Link>
                 </li>
               </ul>
               <div className="text-button fw-6 text-white mt-16">
@@ -522,45 +509,45 @@ const Wallet = () => {
               </div>
               <ul className="grid-2 rcg-12-16 mt-16">
                 <li>
-                  <a
-                    href="javascript:void(0);"
+                  <Link
+                    to="javascript:void(0);"
                     className="tf-btn xs line active text-secondary item-category"
                   >
                     All
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="javascript:void(0);"
+                  <Link
+                    to="javascript:void(0);"
                     className="tf-btn xs line text-secondary item-category"
                   >
                     Transfer money
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="javascript:void(0);"
+                  <Link
+                    to="javascript:void(0);"
                     className="tf-btn xs line text-secondary item-category"
                   >
                     Receive money
-                  </a>
+                  </Link>
                 </li>
               </ul>
               <div className="mt-16 pt-16 line-t grid-2 gap-16">
-                <a
-                  href="javascript:void(0);"
+                <Link
+                  to="javascript:void(0);"
                   className="tf-btn sm secondary"
                   data-bs-dismiss="modal"
                 >
                   Delete
-                </a>
-                <a
-                  href="javascript:void(0);"
+                </Link>
+                <Link
+                  to="javascript:void(0);"
                   className="tf-btn sm primary"
                   data-bs-dismiss="modal"
                 >
                   Apply
-                </a>
+                </Link>
               </div>
             </div>
           </div>

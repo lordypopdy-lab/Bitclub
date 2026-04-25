@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import QRCode from "react-qr-code";
 import toast from 'react-hot-toast';
-import Form from 'react-bootstrap/Form';
+import { Link } from "react-router-dom";
 import FadeLoader from 'react-spinners/FadeLoader';
-import InputGroup from 'react-bootstrap/InputGroup';
-import bannerqrcode from "../../images/banner/bannerqrcode.png"
 
 
 import logo144 from '../../images/logo/logo144.png';
@@ -70,7 +68,6 @@ import {
 
 
 const Deposite = () => {
-    if (!localStorage.getItem('email')) { location.href = '/login'; }
     const [loading, setLoading] = useState(false);
     const [list1, setList1] = useState(null);
     const [list2, setList2] = useState(null);
@@ -99,20 +96,6 @@ const Deposite = () => {
     useEffect(() => {
         setLoading(true);
 
-        //////////////''''''''//////////TOKEN FETCHER////////////''''''''//////////////
-        const fetcher = async () => {
-            try {
-                const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd');
-                const datas = await response.json();
-                if (datas.length > 0) {
-                    localStorage.setItem('tokens', JSON.stringify(datas));
-                }
-            } catch (error) {
-                console.log(`Error fetching tokens:`, error);
-            }
-        }
-        fetcher();
-
         try {
             const tokenGetter = localStorage.getItem('tokens');
             const datas = JSON.parse(tokenGetter);
@@ -132,7 +115,7 @@ const Deposite = () => {
 
                 return (
                     <li key={index} style={{ marginTop: '18px' }}>
-                        <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#listChain" className="coin-item style-2 gap-12">
+                        <Link onClick={updateT} data-bs-toggle="modal" data-bs-target="#listChain" className="coin-item style-2 gap-12">
                             <img src={token.image} alt="img" className="img" />
                             <div className="content">
                                 <div className="title">
@@ -144,7 +127,7 @@ const Deposite = () => {
                                     {token.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{token.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{token.price_change_percentage_24h}2%</span>}
                                 </div>
                             </div>
-                        </a>
+                        </Link>
                     </li>
                 )
             })
@@ -165,7 +148,7 @@ const Deposite = () => {
 
                 return (
                     <li key={index} style={{ marginTop: '18px' }}>
-                        <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#listChain" className="coin-item style-2 gap-12">
+                        <Link onClick={updateT} data-bs-toggle="modal" data-bs-target="#listChain" className="coin-item style-2 gap-12">
                             <img src={token.image} alt="img" className="img" />
                             <div className="content">
                                 <div className="title">
@@ -177,7 +160,7 @@ const Deposite = () => {
                                     {token.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{token.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{token.price_change_percentage_24h}2%</span>}
                                 </div>
                             </div>
-                        </a>
+                        </Link>
                     </li>
                 )
             })
@@ -198,7 +181,7 @@ const Deposite = () => {
 
                 return (
                     <li key={index} style={{ marginTop: '18px' }}>
-                        <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#listChain" className="coin-item style-2 gap-12">
+                        <Link onClick={updateT} data-bs-toggle="modal" data-bs-target="#listChain" className="coin-item style-2 gap-12">
                             <img src={token.image} alt="img" className="img" />
                             <div className="content">
                                 <div className="title">
@@ -210,7 +193,7 @@ const Deposite = () => {
                                     {token.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{token.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{token.price_change_percentage_24h}2%</span>}
                                 </div>
                             </div>
-                        </a>
+                        </Link>
                     </li>
                 )
             })
@@ -230,7 +213,7 @@ const Deposite = () => {
                 }
                 return (
                     <li key={index} style={{ marginTop: '18px' }}>
-                        <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#listChain" className="coin-item justify-content-between">
+                        <Link onClick={updateT} data-bs-toggle="modal" data-bs-target="#listChain" className="coin-item justify-content-between">
                             <div className="d-flex align-items-center gap-12 flex-1">
                                 <h4 className="text-primary">{index}</h4>
                                 <p>
@@ -245,7 +228,7 @@ const Deposite = () => {
                                     <p className="mt-4 text-secondary">${token.current_price}</p>
                                 </div>
                             </div>
-                        </a>
+                        </Link>
                     </li>
                 )
             })
@@ -265,7 +248,7 @@ const Deposite = () => {
                 }
                 return (
                     <li key={index} style={{ marginTop: '18px' }}>
-                        <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#listChain" className="coin-item justify-content-between">
+                        <Link onClick={updateT} data-bs-toggle="modal" data-bs-target="#listChain" className="coin-item justify-content-between">
                             <div className="d-flex align-items-center gap-12 flex-1">
                                 <h4 className="text-primary">{index}</h4>
                                 <p>
@@ -280,7 +263,7 @@ const Deposite = () => {
                                     <p className="mt-4 text-secondary">${token.current_price}</p>
                                 </div>
                             </div>
-                        </a>
+                        </Link>
                     </li>
                 )
             });
@@ -349,7 +332,7 @@ const Deposite = () => {
 
                 return (
                     <li key={index} style={{ marginTop: '18px' }}>
-                        <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#listChain" className="coin-item style-2 gap-12">
+                        <Link onClick={updateT} data-bs-toggle="modal" data-bs-target="#listChain" className="coin-item style-2 gap-12">
                             <img src={filteredItem.image} alt="img" className="img" />
                             <div className="content">
                                 <div className="title">
@@ -361,7 +344,7 @@ const Deposite = () => {
                                     {filteredItem.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{filteredItem.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{filteredItem.price_change_percentage_24h}2%</span>}
                                 </div>
                             </div>
-                        </a>
+                        </Link>
                     </li>
                 )
             })
@@ -482,8 +465,8 @@ const Deposite = () => {
                 <>
                     <div className="header-style2 fixed-top d-flex align-items-center justify-content-between bg-surface">
                         <h3 className="d-flex gap-12">
-                            <a href="#">Deposit</a>
-                            <a onClick={TradeExchang} className="text-secondary">Crypto</a>
+                            <Link to="#">Deposit</Link>
+                            <Link onClick={TradeExchang} className="text-secondary">Crypto</Link>
                         </h3>
                         <i className="icon-funnel text-white" data-bs-toggle="modal" data-bs-target="#filter"></i>
                     </div>
@@ -523,7 +506,7 @@ const Deposite = () => {
                                 <div className="tab-content mt-8 mb-16">
                                     <div className="tab-pane fade show active" id="all" role="tabpanel">
                                         <div className="mt-4 mb-4 search-box box-input-field">
-                                            <a href="/home" className="icon-search"></a>
+                                            <Link to="/home" className="icon-search"></Link>
                                             <input
                                                 type="text"
                                                 placeholder="Search over 100+ tokens on more than 10 chains"
@@ -607,53 +590,53 @@ const Deposite = () => {
                     <div className="menubar-footer footer-fixed">
                         <ul className="inner-bar">
                             <li>
-                                <a href="/Home">
+                                <Link to="/Home">
                                     <i className="icon icon-home2"></i>
                                     Home
-                                </a>
+                                </Link>
                             </li>
                             <li className="">
-                                <a href="/Exchange">
+                                <Link to="/Exchange">
                                     <i className="icon icon-exchange"></i>
                                     Exchange
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="/Earn">
+                                <Link to="/Earn">
                                     <i className="icon icon-earn2"></i>
                                     Earn
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="Wallet">
+                                <Link to="/Wallet">
                                     <i className="icon icon-wallet"></i>
                                     Wallet
-                                </a>
+                                </Link>
                             </li>
                         </ul>
                     </div>
                 </> :
                 <>
                     <div className="header fixed-top bg-surface d-flex justify-content-center align-items-center">
-                        <a href="/deposite" className="left back-btn"><i className="icon-left-btn"></i></a>
+                        <Link to="/deposite" className="left back-btn"><i className="icon-left-btn"></i></Link>
                         <h3>QR code</h3>
-                        <a href="/buy" className="right">Buy Crypto <i className="bi bi-arrow-right p-1"></i></a>
+                        <Link to="/buy" className="right">Buy Crypto <i className="bi bi-arrow-right p-1"></i></Link>
                     </div>
                     <div className="pt-45 pb-16">
                         <div className="tf-container">
                             <div className="mt-40 text-center mt-1 banner-qr">
                                 <QRCode
                                     value={userAddress}
-                                    size={200} // Size of the QR code
-                                    level={"H"} // Error correction level: L, M, Q, H
-                                    includeMargin={true} // Optional: adds margin around QR code
+                                    size={200}
+                                    level={"H"} 
+                                    includeMargin={true} 
                                 />
                             </div>
                         </div>
                         <div className="accent-box-v6 mb-3 bg-dark p-0 " style={{ width: '100%' }}>
-                            <a href="#" className="coin-item style-1 gap-12 bg-surface">
+                            <Link to="#" className="coin-item style-1 gap-12 bg-surface">
 
-                            </a>
+                            </Link>
                             <div className="mt-12 accent-box-v6 mb-1 bg-dark">
                                 <p className="d-flex align-items-center mb-1 text-small gap-4"><i className="bi bi-link-45deg "></i> Wallet Address </p>
                                 <p className="mt-4 mb-4 text-xsmall text-light">
@@ -682,9 +665,9 @@ const Deposite = () => {
                                 </div>
 
                             </div>
-                            <a href="#" className="coin-item style-1 gap-12 bg-surface">
+                            <Link to="#" className="coin-item style-1 gap-12 bg-surface">
                                 <div style={{ marginTop: "-3px" }} className="mt-12 accent-box-v6 mb-1 bg-dark">
-                                    <a href="#" className="text-xsmall"><span style={{ color: '#25C866' }}>Notice:</span></a>
+                                    <Link to="#" className="text-xsmall"><span style={{ color: '#25C866' }}>Notice:</span></Link>
                                     <p className="mt-4 mb-4 text-xsmall">
                                         <b> In upholding the integrity and safety of our platform's trading enviroment, Bitclub is dedicated to combating financial crime and ensuring adherence to anti-money laundring measures.</b>
                                     </p>
@@ -701,7 +684,7 @@ const Deposite = () => {
                                         Warining: Do not use your Bitclub wallet to deposit address to receive validator rewards. Such transfer will not be credited or refunded.
                                     </p>
                                 </div>
-                            </a>
+                            </Link>
                             <div className="btm-group d-flex justify-content-center align-items-center">
                                 <button type="button" onClick={copyAddrress} className="btn btn-outline-light m-2 btn-sm text-light"><i className="bi m-1 bi-copy"></i>Copy Address</button>
                                 <button type="button" style={{ background: "#25C866", }} data-bs-toggle="modal" data-bs-target="#share" className="btn m-2 btn-sm"><i className="bi m-1 bi-share-fill"></i>Share Address</button>
@@ -865,7 +848,7 @@ const Deposite = () => {
                             <div className="top">
                                 <h3 className="d-flex align-items-center gap-8">{details.symbol.toUpperCase()}/USD<i className="icon-clockwise2 fs-16 text-secondary"></i></h3>
                                 <h2 className="mt-4">${details.current_price}</h2>
-                                {details.pricePercentage > 1 ? <p className="mt-4"><a className="text-primary">{details.pricePercentage}</a>&emsp;Last 24 hours</p> : <p className="mt-4"><a className="text-red">{details.pricePercentage}</a>&emsp;Last 24 hours</p>}
+                                {details.pricePercentage > 1 ? <p className="mt-4"><Link className="text-primary">{details.pricePercentage}</Link>&emsp;Last 24 hours</p> : <p className="mt-4"><Link className="text-red">{details.pricePercentage}</Link>&emsp;Last 24 hours</p>}
                             </div>
                             <div className="content">
                                 <div className="tab-content mt-8 mb-16">
@@ -890,22 +873,22 @@ const Deposite = () => {
                                 </div>
                                 <ul className="tab-time" role="tablist">
                                     <li className="nav-item">
-                                        <a href="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1h" role="tab" aria-controls="1h" aria-selected="false">1H</a>
+                                        <Link to="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1h" role="tab" aria-controls="1h" aria-selected="false">1H</Link>
                                     </li>
                                     <li className="nav-item active">
-                                        <a href="#" className="nav-link active" data-bs-toggle="tab" data-bs-target="#1d" role="tab" aria-controls="1d" aria-selected="true">1D</a>
+                                        <Link to="#" className="nav-link active" data-bs-toggle="tab" data-bs-target="#1d" role="tab" aria-controls="1d" aria-selected="true">1D</Link>
                                     </li>
                                     <li className="nav-item">
-                                        <a href="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1w" role="tab" aria-controls="1w" aria-selected="false">1W</a>
+                                        <Link to="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1w" role="tab" aria-controls="1w" aria-selected="false">1W</Link>
                                     </li>
                                     <li className="nav-item">
-                                        <a href="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1m" role="tab" aria-controls="1m" aria-selected="false">1M</a>
+                                        <Link to="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1m" role="tab" aria-controls="1m" aria-selected="false">1M</Link>
                                     </li>
                                     <li className="nav-item">
-                                        <a href="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#6m" role="tab" aria-controls="6m" aria-selected="false">6M</a>
+                                        <Link to="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#6m" role="tab" aria-controls="6m" aria-selected="false">6M</Link>
                                     </li>
                                     <li className="nav-item">
-                                        <a href="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1y" role="tab" aria-controls="1y" aria-selected="false">1Y</a>
+                                        <Link to="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1y" role="tab" aria-controls="1y" aria-selected="false">1Y</Link>
                                     </li>
                                 </ul>
                             </div>
@@ -913,22 +896,22 @@ const Deposite = () => {
                                 <h6 className="text-button">Token information</h6>
                                 <ul className="mt-16 d-flex gap-16">
                                     <li className="flex-1">
-                                        <a href="#" className="accent-box-v6 bg-surface d-flex justify-content-between align-items-center">
+                                        <Link to="#" className="accent-box-v6 bg-surface d-flex justify-content-between align-items-center">
                                             <div className="content">
                                                 <p className="text-small">{details.symbol.toLocaleUpperCase()} <span className="text-extra-small text-secondary">/ USD</span></p>
                                                 {details.pricePercentage > 1 ? <span className="d-inline-block mt-8 coin-btn increase">{details.pricePercentage}</span> : <span className="d-inline-block mt-8 coin-btn decrease">{details.pricePercentage}</span>}
                                             </div>
                                             <span className="icon-arr-right fs-12"></span>
-                                        </a>
+                                        </Link>
                                     </li>
                                     <li className="flex-1">
-                                        <a href="#" className="accent-box-v6 bg-surface d-flex justify-content-between align-items-center">
+                                        <Link to="#" className="accent-box-v6 bg-surface d-flex justify-content-between align-items-center">
                                             <div className="content">
                                                 <p className="text-small">{details.name}</p>
                                                 {details.ath_change_percentage > 1 ? <span className="d-inline-block mt-8 coin-btn increase">{details.ath_change_percentage}</span> : <span className="d-inline-block mt-8 coin-btn decrease">{details.ath_change_percentage}</span>}
                                             </div>
                                             <span className="icon-arr-right fs-12"></span>
-                                        </a>
+                                        </Link>
                                     </li>
                                 </ul>
                             </div>
@@ -944,30 +927,30 @@ const Deposite = () => {
                         <div className="box-detail-chart">
                             <h6 style={{ marginBottom: "-10px" }} className="text-button text-center mt-4">Choose a Chain Type</h6> <hr />
                             <div className="bottom" style={{ marginTop: '-20px' }}>
-                                <a href="#" onClick={depositBtc} className="accent-box-v6  bg-surface mb-2 d-flex justify-content-between align-items-center" data-bs-dismiss="modal">
+                                <Link to="#" onClick={depositBtc} className="accent-box-v6  bg-surface mb-2 d-flex justify-content-between align-items-center" data-bs-dismiss="modal">
                                     <div className="content">
                                         <span className="text-small">Bitcoin</span>
                                         <p className="text-extra-small text-secondary">1 block comfirmation</p>
                                         <p className="text-extra-small text-secondary">Min. deposit 0.000006 BTC</p>
                                         <p className="text-extra-small text-secondary">Est. arrival 41 mins</p>
                                     </div>
-                                </a>
-                                <a href="#" onClick={deposiEth} className="accent-box-v6 mb-2 bg-surface d-flex justify-content-between align-items-center" data-bs-dismiss="modal">
+                                </Link>
+                                <Link to="#" onClick={deposiEth} className="accent-box-v6 mb-2 bg-surface d-flex justify-content-between align-items-center" data-bs-dismiss="modal">
                                     <div className="content">
                                         <span className="text-small">Ethereum (ERC20)</span>
                                         <p className="text-extra-small text-secondary">6 block comfirmation</p>
                                         <p className="text-extra-small text-secondary">Min. deposit 0.00000002 BTC</p>
                                         <p className="text-extra-small text-secondary">Est. arrival 4 mins</p>
                                     </div>
-                                </a>
-                                <a href="#" onClick={depositBNB} className="accent-box-v6 mb-2 bg-surface d-flex justify-content-between align-items-center" data-bs-dismiss="modal">
+                                </Link>
+                                <Link to="#" onClick={depositBNB} className="accent-box-v6 mb-2 bg-surface d-flex justify-content-between align-items-center" data-bs-dismiss="modal">
                                     <div className="content">
                                         <span className="text-small">BNB Smart Chain (BEP20)</span>
                                         <p className="text-extra-small text-secondary">6 block comfirmation</p>
                                         <p className="text-extra-small text-secondary">Min. deposit 0.00000002 BTC</p>
                                         <p className="text-extra-small text-secondary">Est. arrival 4 mins</p>
                                     </div>
-                                </a>
+                                </Link>
                                 <p className="accent-box-v6 mb-3 bg-dark">
                                     <i className="bi text-warning m-1 bi-exclamation-circle"></i>
                                     Please note that only supported networks on Bitblub platform are shown, if you deposit via another Network your assets may lost.

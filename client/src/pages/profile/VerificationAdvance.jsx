@@ -1,19 +1,18 @@
-import React from 'react';
+import { Link } from "react-router-dom"
 
 const VerificationAdvance = () => {
-if (!localStorage.getItem('email')) { location.href = '/login'; }
   return (
     <>
      <div className="header fixed-top bg-surface d-flex justify-content-center align-items-center">
-        <a href="javascript:void(0);" className="left back-btn"><i className="icon-left-btn"></i></a>
+        <Link to="javascript:void(0);" className="left back-btn"><i className="icon-left-btn"></i></Link>
         <h3>Verification</h3>
     </div>
     <div className="pt-45 pb-16">
         <div className="tf-container">
-            <a href="javascript:void(0);" className="accent-box bg-menuDark mt-4 d-flex align-items-center justify-content-between">
+            <Link to="javascript:void(0);" className="accent-box bg-menuDark mt-4 d-flex align-items-center justify-content-between">
                 <h4>Basic verification (level 1)</h4>
                 <i className="icon-round-check md bg-primary flex-shrink-0 text-white"></i>
-            </a>
+            </Link>
             <div className="accent-box bg-menuDark mt-16">
                 <h4>Advanced verification (level 2)</h4>
                 <h5 className="mt-20">Features and limitations</h5>
@@ -34,7 +33,7 @@ if (!localStorage.getItem('email')) { location.href = '/login'; }
                     <p className="text-small text-white d-flex align-items-center gap-6"><i className="dot-md bg-secondary"></i> Selfies</p>
 
                 </div>
-                <a href="/VerificationComfirm" className="tf-btn xs primary mt-12">Verification</a>
+                <Link to="/VerificationComfirm" className="tf-btn xs primary mt-12">Verification</Link>
             </div>
         </div>
     </div>

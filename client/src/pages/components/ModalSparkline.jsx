@@ -4,7 +4,7 @@ const ModalSparkline = ({ width, height, data, priceChangePercent }) => {
   const containerRef = useRef(null);
   const [svgWidth, setSvgWidth] = useState(300);
 
-  // ✅ AUTO RESIZE BASED ON CONTAINER
+  // AUTO RESIZE BASED ON CONTAINER
   useEffect(() => {
     const updateWidth = () => {
       if (containerRef.current) {

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 
 const Market = () => {
@@ -41,13 +42,13 @@ const Market = () => {
           },
         }));
       } catch (e) {
-        console.error("❌ Invalid WS message:", e);
+        console.error("Invalid WS message:", e);
       }
     };
 
     socketTicker.onerror = (err) =>
-      console.error("❌ Ticker WebSocket error:", err);
-    socketTicker.onclose = () => console.warn("🔌 WebSocket disconnected");
+      console.error("Ticker WebSocket error:", err);
+    socketTicker.onclose = () => console.warn("WebSocket disconnected");
 
     return () => socketTicker.close();
   }, []);
@@ -105,7 +106,7 @@ const Market = () => {
 
         return (
           <li key={symbol} style={{ marginTop: "9px" }}>
-            <a
+            <Link
               data-bs-toggle="modal"
               data-bs-target="#detailChart"
               className="coin-item style-1 gap-12 bg-surface"
@@ -131,7 +132,7 @@ const Market = () => {
                   <p className={`text-end ${changeColor}`}>{formattedChange}</p>
                 </div>
               </div>
-            </a>
+            </Link>
           </li>
         );
       })}

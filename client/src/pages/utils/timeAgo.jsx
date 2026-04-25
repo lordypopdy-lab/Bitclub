@@ -1,5 +1,3 @@
-import React from 'react'
-
 // utils/timeAgo.js
 export function timeAgo(timestamp) {
     const now = new Date();

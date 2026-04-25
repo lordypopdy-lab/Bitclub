@@ -26,7 +26,7 @@ const Losers = () => {
     const connectTicker = () => {
       const ws = new WebSocket(import.meta.env.VITE_API_MARKET_TICKER);
 
-      ws.onopen = () => console.log("✅ Ticker WebSocket connected");
+      ws.onopen = () => console.log("Ticker WebSocket connected");
 
       ws.onmessage = (event) => {
         const msg = JSON.parse(event.data);
@@ -39,8 +39,8 @@ const Losers = () => {
         }));
       };
 
-      ws.onerror = (err) => console.error("❌ Ticker WebSocket error:", err);
-      ws.onclose = () => console.warn("🔌 Ticker WebSocket disconnected");
+      ws.onerror = (err) => console.error("Ticker WebSocket error:", err);
+      ws.onclose = () => console.warn("Ticker WebSocket disconnected");
 
       return () => ws.close();
     };
@@ -56,29 +56,28 @@ const Losers = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // ✅ LOSERS LIST (LIVE)
+  //"LOSERS LIST (LIVE)
   const losersList = Object.keys(pricesTicker)
     .filter((symbol) => pricesTicker[symbol]?.priceChangePercent < 0)
     .sort(
       (a, b) =>
-        pricesTicker[a].priceChangePercent -
-        pricesTicker[b].priceChangePercent
+        pricesTicker[a].priceChangePercent - pricesTicker[b].priceChangePercent,
     )
     .slice(0, 10);
 
-  // ✅ FALLBACK
+  //"FALLBACK
   const fallbackList = Object.keys(priceBackup)
     .filter((symbol) => priceBackup[symbol]?.price_change_percentage_24h < 0)
     .sort(
       (a, b) =>
         priceBackup[a].price_change_percentage_24h -
-        priceBackup[b].price_change_percentage_24h
+        priceBackup[b].price_change_percentage_24h,
     )
     .slice(0, 10);
 
   const finalList = losersList.length > 0 ? losersList : fallbackList;
 
-  // ✅ OPEN MODAL (FIXED LIKE GAINERS)
+  //"OPEN MODAL (FIXED LIKE GAINERS)
   const handleOpenModal = (symbol) => {
     const cleanSymbol = symbol.replace("USDT", "");
 
@@ -90,7 +89,7 @@ const Losers = () => {
     setIsModalOpen(true);
   };
 
-  // ✅ FORMATTERS
+  //"FORMATTERS
   const formatPrice = (symbol) => {
     const live = pricesTicker?.[symbol + "USDT"]?.lastPrice;
     const backup = priceBackup?.[symbol]?.current_price || 0;
@@ -105,10 +104,9 @@ const Losers = () => {
     const live = pricesTicker?.[symbol + "USDT"]?.priceChangePercent;
     const backup = priceBackup?.[symbol]?.price_change_percentage_24h;
 
-    const value =
-      !isNaN(Number(live))
-        ? Number(live)
-        : !isNaN(Number(backup))
+    const value = !isNaN(Number(live))
+      ? Number(live)
+      : !isNaN(Number(backup))
         ? Number(backup)
         : null;
 
@@ -125,7 +123,7 @@ const Losers = () => {
 
         return (
           <li key={symbol + refreshTrigger} style={{ marginTop: "18px" }}>
-            <a
+            <NavLink  
               className="coin-item justify-content-between"
               onClick={() => handleOpenModal(symbol)}
             >
@@ -135,29 +133,23 @@ const Losers = () => {
                 </h4>
 
                 <p>
-                  <span className="mb-4 text-button fw-6">
-                    {cleanSymbol}
-                  </span>
+                  <span className="mb-4 text-button fw-6">{cleanSymbol}</span>
                   <span className="text-secondary"> / USDT</span>
                 </p>
               </div>
 
               <div className="d-flex justify-content-between align-items-center flex-st2">
-                <span className="text-small">
-                  ${formatPrice(cleanSymbol)}
-                </span>
+                <span className="text-small">${formatPrice(cleanSymbol)}</span>
 
                 <div className="text-end">
-                  <span className="text-red">
-                    {change.text}
-                  </span>
+                  <span className="text-red">{change.text}</span>
 
                   <p className="mt-4 text-secondary">
                     ${formatPrice(cleanSymbol)}
                   </p>
                 </div>
               </div>
-            </a>
+            </NavLink>
           </li>
         );
       })}
@@ -171,7 +163,7 @@ const Losers = () => {
         </NavLink>
       </div>
 
-      {/* ✅ MODAL */}
+      {/*"MODAL */}
       {selectedCoin && (
         <DetailChartModal
           details={{
@@ -184,13 +176,11 @@ const Losers = () => {
             pricePercentage:
               pricesTicker?.[selectedCoin.symbol + "USDT"]
                 ?.priceChangePercent ??
-              priceBackup?.[selectedCoin.symbol]
-                ?.price_change_percentage_24h ??
+              priceBackup?.[selectedCoin.symbol]?.price_change_percentage_24h ??
               0,
 
             ath_change_percentage:
-              priceBackup?.[selectedCoin.symbol]
-                ?.ath_change_percentage ?? 0,
+              priceBackup?.[selectedCoin.symbol]?.ath_change_percentage ?? 0,
           }}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

@@ -5,6 +5,7 @@ import coin3 from "../../../images/coin/coin3.jpg";
 import market1 from "../../../images/coin/market1.jpg";
 import market3 from "../../../images/coin/market3.jpg";
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { Link } from 'react-router-dom';
 
 const HomeMenuSwiper = () => {
 
@@ -32,7 +33,7 @@ const HomeMenuSwiper = () => {
             //=======WebSocket Ticker Section========//
 
             socketTcker.onopen = () => {
-                console.log('✅ Ticker WebSocket connected')
+                console.log('Ticker WebSocket connected')
             }
 
             socketTcker.onmessage = (event) => {
@@ -53,11 +54,11 @@ const HomeMenuSwiper = () => {
             }
 
             socketTcker.onerror = ((err) => {
-                console.error('❌ Ticker WebSocket error:', err);
+                console.error('Ticker WebSocket error:', err);
             })
 
             socketTcker.onclose = () => {
-                console.warn('🔌 Ticker WebSocket disconnected');
+                console.warn('Ticker WebSocket disconnected');
             }
             return () => socketTcker.close();
         }
@@ -81,7 +82,7 @@ const HomeMenuSwiper = () => {
                     <h5>Market</h5>
                     <div className="swiper" >
                         <SwiperSlide>
-                            <a href="/Exchange" className="coin-box d-block">
+                            <Link to="/Exchange" className="coin-box d-block">
                                 <div className="coin-logo">
                                     <img src={market1} alt="img" className="logo" />
                                     <div className="title">
@@ -138,10 +139,10 @@ const HomeMenuSwiper = () => {
                                 <div className="blur bg1">
                                 </div>
 
-                            </a>
+                            </Link>
                         </SwiperSlide>
                         <SwiperSlide>
-                            <a href="/Exchange" className="coin-box d-block">
+                            <Link to="/Exchange" className="coin-box d-block">
                                 <div className="coin-logo">
                                     <img src={market3} alt="img" className="logo" />
                                     <div className="title">
@@ -194,10 +195,10 @@ const HomeMenuSwiper = () => {
                                 </div>
                                 <div className="blur bg2">
                                 </div>
-                            </a>
+                            </Link>
                         </SwiperSlide>
                         <SwiperSlide>
-                            <a href="/Exchange" className="coin-box d-block">
+                            <Link to="/Exchange" className="coin-box d-block">
                                 <div className="coin-logo">
                                     <img src={coin3} alt="img" className="logo" />
                                     <div className="title">
@@ -250,7 +251,7 @@ const HomeMenuSwiper = () => {
                                 </div>
                                 <div className="blur bg3">
                                 </div>
-                            </a>
+                            </Link>
                         </SwiperSlide>
                     </div>
                 </div>

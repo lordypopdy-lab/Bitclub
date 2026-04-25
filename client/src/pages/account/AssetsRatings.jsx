@@ -1,4 +1,5 @@
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 import { FreeMode } from 'swiper/modules';
 import { useEffect, useState } from "react";
 import FadeLoader from 'react-spinners/FadeLoader';
@@ -27,20 +28,6 @@ const AssetsRatings = () => {
 
     useEffect(() => {
         setLoading(true);
-
-        //////////////''''''''//////////TOKEN FETCHER////////////''''''''//////////////
-        const fetcher = async () => {
-            try {
-                const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd');
-                const datas = await response.json();
-                if (datas.length > 0) {
-                    localStorage.setItem('tokens', JSON.stringify(datas));
-                }
-            } catch (error) {
-                console.log(`Error fetching tokens:`, error);
-            }
-        }
-        fetcher();
         try {
             const getToken = async () => {
 
@@ -59,9 +46,9 @@ const AssetsRatings = () => {
                     }
                     return (
                         <li className="mt-20" key={index}>
-                            <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#tokenDetails" class="coin-item style-2 gap-12">
-                                <h4 class="text-primary">{index}</h4>
-                                <div class="content">
+                            <Link onClick={updateT} data-bs-toggle="modal" data-bs-target="#tokenDetails" className="coin-item style-2 gap-12">
+                                <h4 className="text-primary">{index}</h4>
+                                <div className="content">
                                     <p>
                                         <span class="mb-4 text-button fw-6">{token.symbol.toUpperCase()}</span>
                                         <span class="text-secondary">/ USDT</span>
@@ -74,7 +61,7 @@ const AssetsRatings = () => {
                                         {token.price_change_percentage_24h > 1 ? <span class="coin-btn increase">{token.price_change_percentage_24h}%</span> : <span class="coin-btn decrease">{token.price_change_percentage_24h}%</span>}
                                     </div>
                                 </div>
-                            </a>
+                            </Link>
                         </li>
                     )
                 })
@@ -94,7 +81,7 @@ const AssetsRatings = () => {
                     if (token.price_change_percentage_24h > 1) {
                         return (
                             <li className="mt-20" key={index}>
-                                <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#tokenDetails" class="coin-item style-2 gap-12">
+                                <Link onClick={updateT} data-bs-toggle="modal" data-bs-target="#tokenDetails" class="coin-item style-2 gap-12">
                                     <h4 class="text-primary">{index}</h4>
                                     <div class="content">
                                         <p>
@@ -109,7 +96,7 @@ const AssetsRatings = () => {
                                             {<span class="coin-btn increase">{token.price_change_percentage_24h}%</span>}
                                         </div>
                                     </div>
-                                </a>
+                                </Link>
                             </li>
                         )
                     }
@@ -129,7 +116,7 @@ const AssetsRatings = () => {
                     }
                     return (
                         <li className="mt-30" key={index}>
-                            <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#tokenDetails" class="coin-item style-2 gap-12">
+                            <Link onClick={updateT} data-bs-toggle="modal" data-bs-target="#tokenDetails" class="coin-item style-2 gap-12">
                                 <h4 class="text-primary">{index}</h4>
                                 <div class="content">
                                     <p>
@@ -144,7 +131,7 @@ const AssetsRatings = () => {
                                         {<span class="coin-btn increase">{token.price_change_percentage_24h}%</span>}
                                     </div>
                                 </div>
-                            </a>
+                            </Link>
                         </li>
                     )
                 })
@@ -163,7 +150,7 @@ const AssetsRatings = () => {
                     }
                     return (
                         <li className="mt-10" key={index}>
-                            <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#tokenDetails" class="coin-item style-2 gap-12">
+                            <Link onClick={updateT} data-bs-toggle="modal" data-bs-target="#tokenDetails" class="coin-item style-2 gap-12">
                                 <h4 class="text-primary">{index}</h4>
                                 <div class="content">
                                     <p>
@@ -178,7 +165,7 @@ const AssetsRatings = () => {
                                         {token.price_change_percentage_24h > 1 ? <span class="coin-btn increase">{token.price_change_percentage_24h}%</span> : <span class="coin-btn decrease">{token.price_change_percentage_24h}%</span>}
                                     </div>
                                 </div>
-                            </a>
+                            </Link>
                         </li>
                     )
                 })
@@ -197,7 +184,7 @@ const AssetsRatings = () => {
                     }
                     return (
                         <li key={index}>
-                            <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#tokenDetails" class="coin-item justify-content-between">
+                            <Link onClick={updateT} data-bs-toggle="modal" data-bs-target="#tokenDetails" class="coin-item justify-content-between">
                                 <div class="d-flex align-items-center gap-12 flex-1">
                                     <h4 class="text-primary">{index}</h4>
                                     <p>
@@ -212,7 +199,7 @@ const AssetsRatings = () => {
                                         <p class="mt-4 text-secondary">${token.current_price}</p>
                                     </div>
                                 </div>
-                            </a>
+                            </Link>
                         </li>
                     )
                 })
@@ -232,13 +219,11 @@ const AssetsRatings = () => {
             console.log(error)
         }
     }, [])
-
-    if (!localStorage.getItem('email')) { location.href = '/login'; }
     return (
         <>
 
             <div class="header fixed-top bg-surface d-flex justify-content-center align-items-center">
-                <a href="javascript:void(0);" class="left back-btn"><i class="icon-left-btn"></i></a>
+                <Link to="javascript:void(0);" class="left back-btn"><i class="icon-left-btn"></i></Link>
                 <h3>Cryptex rating</h3>
             </div>
             <div class="pt-45 pb-16">
@@ -290,10 +275,10 @@ const AssetsRatings = () => {
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex gap-12">
                                         <div class="d-flex align-items-center gap-4">
-                                            <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#filterCryptocurrency" class="dom-text">USDT</a><i class="icon-select-down"></i>
+                                            <Link to="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#filterCryptocurrency" class="dom-text">USDT</Link><i class="icon-select-down"></i>
                                         </div>
                                     </div>
-                                    <a href="javascript:void(0);" class="icon-funnel fs-20 text-white" data-bs-toggle="modal" data-bs-target="#filter"></a>
+                                    <Link to="javascript:void(0);" class="icon-funnel fs-20 text-white" data-bs-toggle="modal" data-bs-target="#filter"></Link>
                                 </div>
                                 <div class="d-flex justify-content-between text-xsmall mt-16">
                                     <span>Name</span>
@@ -317,13 +302,13 @@ const AssetsRatings = () => {
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex gap-12">
                                         <div class="d-flex align-items-center gap-4">
-                                            <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#filterCryptocurrency" class="dom-text">USDT</a><i class="icon-select-down"></i>
+                                            <Link to="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#filterCryptocurrency" class="dom-text">USDT</Link><i class="icon-select-down"></i>
                                         </div>
                                         <div class="d-flex align-items-center gap-4">
-                                            <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#filterTime" class="text-val-time">Today</a><i class="icon-select-down"></i>
+                                            <Link to="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#filterTime" class="text-val-time">Today</Link><i class="icon-select-down"></i>
                                         </div>
                                     </div>
-                                    <a href="javascript:void(0);" class="icon-funnel fs-20 text-white" data-bs-toggle="modal" data-bs-target="#filter"></a>
+                                    <Link to="javascript:void(0);" class="icon-funnel fs-20 text-white" data-bs-toggle="modal" data-bs-target="#filter"></Link>
                                 </div>
                                 <div class="d-flex justify-content-between text-xsmall mt-16">
                                     <span>Name</span>
@@ -340,10 +325,10 @@ const AssetsRatings = () => {
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex gap-12">
                                         <div class="d-flex align-items-center gap-4">
-                                            <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#filterCryptocurrency" class="dom-text">USDT</a><i class="icon-select-down"></i>
+                                            <Link to="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#filterCryptocurrency" class="dom-text">USDT</Link><i class="icon-select-down"></i>
                                         </div>
                                     </div>
-                                    <a href="javascript:void(0);" class="icon-funnel fs-20 text-white" data-bs-toggle="modal" data-bs-target="#filter"></a>
+                                    <Link to="javascript:void(0);" class="icon-funnel fs-20 text-white" data-bs-toggle="modal" data-bs-target="#filter"></Link>
                                 </div>
                                 <div class="d-flex justify-content-between text-xsmall mt-16">
                                     <span>Name</span>
@@ -359,9 +344,9 @@ const AssetsRatings = () => {
                             <div class="tab-pane fade" id="newToken" role="tabpanel">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex align-items-center gap-4">
-                                        <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#filterCryptocurrency" class="dom-text">USDT</a><i class="icon-select-down"></i>
+                                        <Link to="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#filterCryptocurrency" class="dom-text">USDT</Link><i class="icon-select-down"></i>
                                     </div>
-                                    <a href="javascript:void(0);" class="icon-funnel fs-20 text-white" data-bs-toggle="modal" data-bs-target="#filter"></a>
+                                    <Link to="javascript:void(0);" class="icon-funnel fs-20 text-white" data-bs-toggle="modal" data-bs-target="#filter"></Link>
                                 </div>
                                 <div class="d-flex justify-content-between text-xsmall mt-16">
                                     <span>Name</span>
@@ -384,13 +369,13 @@ const AssetsRatings = () => {
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex gap-12">
                                         <div class="d-flex align-items-center gap-4">
-                                            <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#filterCryptocurrency" class="dom-text">USDT</a><i class="icon-select-down"></i>
+                                            <Link to="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#filterCryptocurrency" class="dom-text">USDT</Link><i class="icon-select-down"></i>
                                         </div>
                                         <div class="d-flex align-items-center gap-4">
-                                            <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#filterTime2" class="text-val-currency">24H</a><i class="icon-select-down"></i>
+                                            <Link to="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#filterTime2" class="text-val-currency">24H</Link><i class="icon-select-down"></i>
                                         </div>
                                     </div>
-                                    <a href="javascript:void(0);" class="icon-funnel fs-20 text-white" data-bs-toggle="modal" data-bs-target="#filter"></a>
+                                    <Link to="javascript:void(0);" class="icon-funnel fs-20 text-white" data-bs-toggle="modal" data-bs-target="#filter"></Link>
                                 </div>
                                 <div class="d-flex justify-content-between text-xsmall mt-16">
                                     <p class="flex-1">Name</p>
@@ -419,30 +404,30 @@ const AssetsRatings = () => {
                         <div class="modal-body">
                             <div class="text-button fw-6 text-white">Time</div>
                             <ul class="grid-2 rcg-12-16 mt-16">
-                                <li><a href="javascript:void(0);" class="tf-btn xs line active text-secondary item-time">All</a></li>
-                                <li><a href="javascript:void(0);" class="tf-btn xs line text-secondary item-time">Top</a></li>
-                                <li><a href="javascript:void(0);" class="tf-btn xs line text-secondary item-time">Meme</a></li>
-                                <li><a href="javascript:void(0);" class="tf-btn xs line text-secondary item-time">Hong Kong Concept </a></li>
-                                <li><a href="javascript:void(0);" class="tf-btn xs line text-secondary item-time">GameFi</a></li>
-                                <li><a href="javascript:void(0);" class="tf-btn xs line text-secondary item-time">NFT</a></li>
-                                <li><a href="javascript:void(0);" class="tf-btn xs line text-secondary item-time">Layer 2</a></li>
-                                <li><a href="javascript:void(0);" class="tf-btn xs line text-secondary item-time">Storage</a></li>
-                                <li><a href="javascript:void(0);" class="tf-btn xs line text-secondary item-time">DeFi</a></li>
-                                <li><a href="javascript:void(0);" class="tf-btn xs line text-secondary item-time">Fan Token</a></li>
+                                <li><Link to="javascript:void(0);" class="tf-btn xs line active text-secondary item-time">All</Link></li>
+                                <li><Link to="javascript:void(0);" class="tf-btn xs line text-secondary item-time">Top</Link></li>
+                                <li><Link to="javascript:void(0);" class="tf-btn xs line text-secondary item-time">Meme</Link></li>
+                                <li><Link to="javascript:void(0);" class="tf-btn xs line text-secondary item-time">Hong Kong Concept </Link></li>
+                                <li><Link to="javascript:void(0);" class="tf-btn xs line text-secondary item-time">GameFi</Link></li>
+                                <li><Link to="javascript:void(0);" class="tf-btn xs line text-secondary item-time">NFT</Link></li>
+                                <li><Link to="javascript:void(0);" class="tf-btn xs line text-secondary item-time">Layer 2</Link></li>
+                                <li><Link to="javascript:void(0);" class="tf-btn xs line text-secondary item-time">Storage</Link></li>
+                                <li><Link to="javascript:void(0);" class="tf-btn xs line text-secondary item-time">DeFi</Link></li>
+                                <li><Link to="javascript:void(0);" class="tf-btn xs line text-secondary item-time">Fan Token</Link></li>
                             </ul>
                             <div class="text-button fw-6 text-white mt-16">Market capitalization ($)</div>
                             <ul class="grid-2 rcg-12-16 mt-16">
-                                <li><a href="javascript:void(0);" class="tf-btn xs line active text-secondary item-category">All</a></li>
-                                <li><a href="javascript:void(0);" class="tf-btn xs line text-secondary item-category"> 15 Billion</a></li>
-                                <li><a href="javascript:void(0);" class="tf-btn xs line text-secondary item-category">10-50 Billion</a></li>
-                                <li><a href="javascript:void(0);" class="tf-btn xs line text-secondary item-category">5-10 Billion</a></li>
-                                <li><a href="javascript:void(0);" class="tf-btn xs line text-secondary item-category">10-50 Billion</a></li>
-                                <li><a href="javascript:void(0);" class="tf-btn xs line text-secondary item-category">5-10 Billion</a></li>
+                                <li><Link to="javascript:void(0);" class="tf-btn xs line active text-secondary item-category">All</Link></li>
+                                <li><Link to="javascript:void(0);" class="tf-btn xs line text-secondary item-category"> 15 Billion</Link></li>
+                                <li><Link to="javascript:void(0);" class="tf-btn xs line text-secondary item-category">10-50 Billion</Link></li>
+                                <li><Link to="javascript:void(0);" class="tf-btn xs line text-secondary item-category">5-10 Billion</Link></li>
+                                <li><Link to="javascript:void(0);" class="tf-btn xs line text-secondary item-category">10-50 Billion</Link></li>
+                                <li><Link to="javascript:void(0);" class="tf-btn xs line text-secondary item-category">5-10 Billion</Link></li>
 
                             </ul>
                             <div class="mt-16 pt-16 line-t grid-2 gap-16">
-                                <a href="javascript:void(0);" class="tf-btn sm secondary" data-bs-dismiss="modal">Reset</a>
-                                <a href="javascript:void(0);" class="tf-btn sm primary" data-bs-dismiss="modal">Apply</a>
+                                <Link to="javascript:void(0);" class="tf-btn sm secondary" data-bs-dismiss="modal">Reset</Link>
+                                <Link to="javascript:void(0);" class="tf-btn sm primary" data-bs-dismiss="modal">Apply</Link>
                             </div>
                         </div>
                     </div>
@@ -514,8 +499,8 @@ const AssetsRatings = () => {
                             <h3 className="mt-4">Connect Wallet</h3>
                             <p className="mt-12 text-white text-large">Please connect by entering an existing wallet or create a new one.</p>
                             <div className="mt-32">
-                                <a href="javascript:void(0);" className="tf-btn sm secondary d-inline-flex" data-bs-toggle="modal" data-bs-target="#keyWallet">Create wallet</a>
-                                <a href="javascript:void(0);" className="mt-12 tf-btn sm dark d-inline-flex" data-bs-toggle="modal" data-bs-target="#keyWallet">Enter a wallet</a>
+                                <Link to="javascript:void(0);" className="tf-btn sm secondary d-inline-flex" data-bs-toggle="modal" data-bs-target="#keyWallet">Create wallet</Link>
+                                <Link to="javascript:void(0);" className="mt-12 tf-btn sm dark d-inline-flex" data-bs-toggle="modal" data-bs-target="#keyWallet">Enter a wallet</Link>
                             </div>
                         </div>
                     </div>
@@ -535,28 +520,28 @@ const AssetsRatings = () => {
                             <ul>
                                 <li className="accent-box-v3 bg-surface tf-list-item-v3" data-bs-toggle="modal" data-bs-target="#inflation">
                                     <div className="content">
-                                        <h5><a href="#">Keyless wallet</a></h5>
+                                        <h5><Link to="#">Keyless wallet</Link></h5>
                                         <p className="mt-8 text-small text">Create an MPC wallet with your platform account.</p>
                                     </div>
                                     <span className="icon icon-mpc"></span>
                                 </li>
                                 <li className="mt-8 accent-box-v3 bg-surface tf-list-item-v3" data-bs-toggle="modal" data-bs-target="#inflation">
                                     <div className="content">
-                                        <h5><a href="#">Seed phrase</a></h5>
+                                        <h5><Link to="#">Seed phrase</Link></h5>
                                         <p className="mt-8 text-small text">Create wallet using seed phrase</p>
                                     </div>
                                     <span className="icon icon-phrase"></span>
                                 </li>
                                 <li className="mt-8 accent-box-v3 bg-surface tf-list-item-v3" data-bs-toggle="modal" data-bs-target="#inflation">
                                     <div className="content">
-                                        <h5><a href="#">Hardware wallet connection</a></h5>
+                                        <h5><Link to="#">Hardware wallet connection</Link></h5>
                                         <p className="mt-8 text-small text">Connect hardware wallet via bluetooth</p>
                                     </div>
                                     <span className="icon icon-bluetooth"></span>
                                 </li>
                                 <li className="mt-8 accent-box-v3 bg-surface tf-list-item-v3" data-bs-toggle="modal" data-bs-target="#inflation">
                                     <div className="content">
-                                        <h5><a href="#">Private key</a></h5>
+                                        <h5><Link to="#">Private key</Link></h5>
                                         <p className="mt-8 text-small text">Paste or enter private key</p>
                                     </div>
                                     <span className="icon-key"></span>

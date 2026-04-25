@@ -26,7 +26,7 @@ const MarketCap = () => {
     const streamPrices = () => {
       const ws = new WebSocket(import.meta.env.VITE_API_MARKET_TICKER);
 
-      ws.onopen = () => console.log("✅ Ticker WebSocket connected");
+      ws.onopen = () => console.log(" Ticker WebSocket connected");
 
       ws.onmessage = (event) => {
         const msg = JSON.parse(event.data);
@@ -39,8 +39,8 @@ const MarketCap = () => {
         }));
       };
 
-      ws.onerror = (err) => console.error("❌ Ticker WebSocket error:", err);
-      ws.onclose = () => console.warn("🔌 Ticker WebSocket disconnected");
+      ws.onerror = (err) => console.error("Ticker WebSocket error:", err);
+      ws.onclose = () => console.warn("Ticker WebSocket disconnected");
     };
 
     tokenLoader();
@@ -62,7 +62,7 @@ const MarketCap = () => {
     .sort((a, b) => b[1].market_cap - a[1].market_cap)
     .slice(0, 10);
 
-  // ✅ OPEN MODAL (FIXED FOR SPARKLINE)
+  //  OPEN MODAL (FIXED FOR SPARKLINE)
   const handleOpenModal = (symbol) => {
     const backup = priceBackup[symbol] || {};
     const ticker = pricesTicker[symbol + "USDT"] || {};
@@ -72,9 +72,7 @@ const MarketCap = () => {
       ...backup,
       current_price: ticker.lastPrice || backup.current_price || 0,
       pricePercentage:
-        ticker.priceChangePercent ??
-        backup.price_change_percentage_24h ??
-        0,
+        ticker.priceChangePercent ?? backup.price_change_percentage_24h ?? 0,
       ath_change_percentage: backup.ath_change_percentage ?? 0,
     });
   };
@@ -87,12 +85,24 @@ const MarketCap = () => {
               <div className="coin-item style-2 gap-12 skeleton-loader">
                 <div className="content">
                   <div className="title">
-                    <div className="skeleton skeleton-text" style={{ width: "60px", height: "16px" }} />
+                    <div
+                      className="skeleton skeleton-text"
+                      style={{ width: "60px", height: "16px" }}
+                    />
                   </div>
                   <div className="d-flex align-items-center gap-12">
-                    <div className="skeleton skeleton-text" style={{ width: "70px", height: "14px" }} />
-                    <div className="skeleton skeleton-text" style={{ width: "50px", height: "14px" }} />
-                    <div className="skeleton skeleton-text" style={{ width: "80px", height: "14px" }} />
+                    <div
+                      className="skeleton skeleton-text"
+                      style={{ width: "70px", height: "14px" }}
+                    />
+                    <div
+                      className="skeleton skeleton-text"
+                      style={{ width: "50px", height: "14px" }}
+                    />
+                    <div
+                      className="skeleton skeleton-text"
+                      style={{ width: "80px", height: "14px" }}
+                    />
                   </div>
                 </div>
               </div>
@@ -101,12 +111,10 @@ const MarketCap = () => {
         : sortedByMarketCap.map(([symbol, data]) => {
             const ticker = pricesTicker[symbol + "USDT"] || {};
 
-            const lastPrice =
-              ticker?.lastPrice ?? data?.current_price ?? 0;
+            const lastPrice = ticker?.lastPrice ?? data?.current_price ?? 0;
 
             const change =
-              ticker?.priceChangePercent ??
-              data?.price_change_percentage_24h;
+              ticker?.priceChangePercent ?? data?.price_change_percentage_24h;
 
             const isUp = Number(change) >= 0;
 
@@ -121,8 +129,7 @@ const MarketCap = () => {
                   onClick={() => handleOpenModal(symbol)}
                 >
                   <div className="content" style={{ width: "100%" }}>
-                    
-                    {/* 🔥 HEADER */}
+                    {/* HEADER */}
                     <div
                       className="title"
                       style={{
@@ -150,7 +157,7 @@ const MarketCap = () => {
                       </span>
                     </div>
 
-                    {/* 🔥 BODY */}
+                    {/* BODY */}
                     <div
                       className="d-flex align-items-center justify-content-between"
                       style={{ marginTop: "6px" }}
@@ -173,7 +180,7 @@ const MarketCap = () => {
             );
           })}
 
-      {/* 🔥 VIEW MORE */}
+      {/*  VIEW MORE */}
       <div className="d-block m-2 coin-item p-2 text-center">
         <NavLink to="/wallet">
           <div className="align-items-center">
@@ -182,7 +189,7 @@ const MarketCap = () => {
         </NavLink>
       </div>
 
-      {/* 🔥 MODAL (FIXED) */}
+      {/*  MODAL (FIXED) */}
       {selectedCoin && (
         <DetailChartModal
           details={selectedCoin}

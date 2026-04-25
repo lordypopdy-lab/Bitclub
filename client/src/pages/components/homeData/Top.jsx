@@ -23,7 +23,7 @@ const Top = () => {
     const connectTicker = () => {
       const ws = new WebSocket(import.meta.env.VITE_API_MARKET_TICKER);
 
-      ws.onopen = () => console.log("✅ Ticker WebSocket connected");
+      ws.onopen = () => console.log("Ticker WebSocket connected");
       ws.onmessage = (event) => {
         const msg = JSON.parse(event.data);
         const symbol = msg.symbol?.toUpperCase();
@@ -34,8 +34,8 @@ const Top = () => {
           [symbol]: { ...prev[symbol], ...msg },
         }));
       };
-      ws.onerror = (err) => console.error("❌ Ticker WebSocket error:", err);
-      ws.onclose = () => console.warn("🔌 Ticker WebSocket disconnected");
+      ws.onerror = (err) => console.error("Ticker WebSocket error:", err);
+      ws.onclose = () => console.warn("Ticker WebSocket disconnected");
 
       return () => ws.close();
     };
@@ -71,7 +71,11 @@ const Top = () => {
   const formatChange = (symbol) => {
     const live = pricesTicker?.[symbol + "USDT"]?.priceChangePercent;
     const backup = priceBackup?.[symbol]?.price_change_percentage_24h;
-    const value = !isNaN(Number(live)) ? Number(live) : !isNaN(Number(backup)) ? Number(backup) : null;
+    const value = !isNaN(Number(live))
+      ? Number(live)
+      : !isNaN(Number(backup))
+        ? Number(backup)
+        : null;
     if (value === null) return { text: "--", isUp: true };
     return { text: value.toFixed(3) + "%", isUp: value >= 0 };
   };
@@ -83,27 +87,35 @@ const Top = () => {
         const change = formatChange(symbol);
         return (
           <li key={symbol} style={{ marginTop: "18px" }}>
-            <a
+            <NavLink
               className="coin-item justify-content-between"
               onClick={() => handleOpenModal(coin)}
             >
               <div className="d-flex align-items-center gap-12 flex-1">
-                <h4 className="text-primary">{index + 1 < 10 ? `0${index + 1}` : index + 1}</h4>
+                <h4 className="text-primary">
+                  {index + 1 < 10 ? `0${index + 1}` : index + 1}
+                </h4>
                 <p>
                   <span className="mb-4 text-button fw-6">{symbol}</span>
                   <span className="text-secondary">/ USDT</span>
                 </p>
               </div>
               <div className="d-flex justify-content-between align-items-center flex-st2">
-                <span className="text-small">{formatPrice(symbol, symbol === "DOGE" ? 5 : 2)}</span>
+                <span className="text-small">
+                  {formatPrice(symbol, symbol === "DOGE" ? 5 : 2)}
+                </span>
                 <div className="text-end">
-                  <span className={`text-button ${change.isUp ? "text-primary" : "text-red"}`}>
+                  <span
+                    className={`text-button ${change.isUp ? "text-primary" : "text-red"}`}
+                  >
                     {change.text}
                   </span>
-                  <p className="mt-4 text-secondary">${formatPrice(symbol, symbol === "DOGE" ? 5 : 2)}</p>
+                  <p className="mt-4 text-secondary">
+                    ${formatPrice(symbol, symbol === "DOGE" ? 5 : 2)}
+                  </p>
                 </div>
               </div>
-            </a>
+            </NavLink>
           </li>
         );
       })}
@@ -125,7 +137,8 @@ const Top = () => {
               priceBackup?.[selectedCoin.symbol]?.current_price ??
               0,
             pricePercentage:
-              pricesTicker?.[selectedCoin.symbol + "USDT"]?.priceChangePercent ??
+              pricesTicker?.[selectedCoin.symbol + "USDT"]
+                ?.priceChangePercent ??
               priceBackup?.[selectedCoin.symbol]?.price_change_percentage_24h ??
               0,
             ath_change_percentage:

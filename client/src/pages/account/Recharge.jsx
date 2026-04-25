@@ -1,7 +1,6 @@
-import React from 'react'
+import { Link } from "react-router-dom";
 import logo144 from "../../images/logo/logo144.png";
 const Recharge = () => {
-if(!localStorage.getItem('email')){ location.href = '/login'; }
     return (
 <>
 {/* <!-- preloade --> */}
@@ -12,7 +11,7 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
 </div>
 {/* <!-- /preload -->  */}
 <div className="header fixed-top bg-surface d-flex justify-content-center align-items-center">
-<a href="javascript:void(0);" className="left back-btn"><i className="icon-left-btn"></i></a>
+<Link to="javascript:void(0);" className="left back-btn"><i className="icon-left-btn"></i></Link>
 <h3>Recharge</h3>
 </div>
 <div className="pt-45 pb-90">
@@ -29,12 +28,12 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
     </div>
     <h5 className="mt-20">Amount Money</h5>
     <ul className="grid-3 gap-12 mt-16">
-        <li><a href="javascript:void(0);" className="tag-money active text-small">$50</a></li>
-        <li><a href="javascript:void(0);" className="tag-money text-small">$100</a></li>
-        <li><a href="javascript:void(0);" className="tag-money text-small">$200</a></li>
-        <li><a href="javascript:void(0);" className="tag-money text-small">$500</a></li>
-        <li><a href="javascript:void(0);" className="tag-money text-small">$1000</a></li>
-        <li><a href="javascript:void(0);" className="tag-money text-small">$2000</a></li>
+        <li><Link to="javascript:void(0);" className="tag-money active text-small">$50</Link></li>
+        <li><Link to="javascript:void(0);" className="tag-money text-small">$100</Link></li>
+        <li><Link to="javascript:void(0);" className="tag-money text-small">$200</Link></li>
+        <li><Link to="javascript:void(0);" className="tag-money text-small">$500</Link></li>
+        <li><Link to="javascript:void(0);" className="tag-money text-small">$1000</Link></li>
+        <li><Link to="javascript:void(0);" className="tag-money text-small">$2000</Link></li>
     </ul>
 
 </div>
@@ -42,7 +41,7 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
 
 <div className="menubar-footer footer-fixed bg-surface">
 <div className="inner-bar">
-    <a href="/PaymentComfirm" className="tf-btn lg primary">Confirm</a>
+    <Link to="/PaymentComfirm" className="tf-btn lg primary">Confirm</Link>
 </div>
 </div>
 </>

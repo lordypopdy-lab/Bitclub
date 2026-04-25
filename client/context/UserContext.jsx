@@ -13,17 +13,14 @@ export function UserContextProvider({ children }) {
                     axios.post('/profile', { email, pin }).then(({ data }) => {
                         if (data.error) {
                             console.log(data.error);
-                            localStorage.removeItem('pin');
-                            localStorage.removeItem('email');
-                            location.href = '/login'
+                           // localStorage.removeItem('pin');
+                           // localStorage.removeItem('email');
                         }
                         setUser(data);
                     }).catch((error) => {
-                        localStorage.removeItem('pin');
-                        localStorage.removeItem('email');
+                       // localStorage.removeItem('pin');
+                       // localStorage.removeItem('email');
                         console.log(error.message);
-                        location.href = '/login'
-                        
                     })
                 }
 

@@ -24,7 +24,7 @@ const Gainers = () => {
     const connectTicker = () => {
       const ws = new WebSocket(import.meta.env.VITE_API_MARKET_TICKER);
 
-      ws.onopen = () => console.log("✅ Ticker WebSocket connected");
+      ws.onopen = () => console.log(" Ticker WebSocket connected");
 
       ws.onmessage = (event) => {
         const msg = JSON.parse(event.data);
@@ -54,29 +54,28 @@ const Gainers = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // ✅ Get gainers (LIVE first)
+  //  Get gainers (LIVE first)
   const gainersList = Object.keys(pricesTicker)
     .filter((symbol) => pricesTicker[symbol]?.priceChangePercent > 0)
     .sort(
       (a, b) =>
-        pricesTicker[b].priceChangePercent -
-        pricesTicker[a].priceChangePercent
+        pricesTicker[b].priceChangePercent - pricesTicker[a].priceChangePercent,
     )
     .slice(0, 10);
 
-  // ✅ Fallback
+  //  Fallback
   const fallbackList = Object.keys(priceBackup)
     .filter((symbol) => priceBackup[symbol]?.price_change_percentage_24h > 0)
     .sort(
       (a, b) =>
         priceBackup[b].price_change_percentage_24h -
-        priceBackup[a].price_change_percentage_24h
+        priceBackup[a].price_change_percentage_24h,
     )
     .slice(0, 10);
 
   const finalList = gainersList.length > 0 ? gainersList : fallbackList;
 
-  // ✅ OPEN MODAL (FIXED)
+  //  OPEN MODAL (FIXED)
   const handleOpenModal = (symbol) => {
     const cleanSymbol = symbol.replace("USDT", ""); // 🔥 VERY IMPORTANT
 
@@ -88,7 +87,7 @@ const Gainers = () => {
     setIsModalOpen(true);
   };
 
-  // ✅ FORMATTERS (same as Top)
+  //  FORMATTERS (same as Top)
   const formatPrice = (symbol) => {
     const live = pricesTicker?.[symbol + "USDT"]?.lastPrice;
     const backup = priceBackup?.[symbol]?.current_price || 0;
@@ -103,10 +102,9 @@ const Gainers = () => {
     const live = pricesTicker?.[symbol + "USDT"]?.priceChangePercent;
     const backup = priceBackup?.[symbol]?.price_change_percentage_24h;
 
-    const value =
-      !isNaN(Number(live))
-        ? Number(live)
-        : !isNaN(Number(backup))
+    const value = !isNaN(Number(live))
+      ? Number(live)
+      : !isNaN(Number(backup))
         ? Number(backup)
         : null;
 
@@ -123,7 +121,7 @@ const Gainers = () => {
 
         return (
           <li key={symbol + refreshTrigger} style={{ marginTop: "18px" }}>
-            <a
+            <NavLink
               className="coin-item justify-content-between"
               onClick={() => handleOpenModal(symbol)}
             >
@@ -133,17 +131,13 @@ const Gainers = () => {
                 </h4>
 
                 <p>
-                  <span className="mb-4 text-button fw-6">
-                    {cleanSymbol}
-                  </span>
+                  <span className="mb-4 text-button fw-6">{cleanSymbol}</span>
                   <span className="text-secondary"> / USDT</span>
                 </p>
               </div>
 
               <div className="d-flex justify-content-between align-items-center flex-st2">
-                <span className="text-small">
-                  ${formatPrice(cleanSymbol)}
-                </span>
+                <span className="text-small">${formatPrice(cleanSymbol)}</span>
 
                 <div className="text-end">
                   <span
@@ -159,7 +153,7 @@ const Gainers = () => {
                   </p>
                 </div>
               </div>
-            </a>
+            </NavLink>
           </li>
         );
       })}
@@ -173,7 +167,7 @@ const Gainers = () => {
         </NavLink>
       </div>
 
-      {/* ✅ MODAL */}
+      {/* MODAL */}
       {selectedCoin && (
         <DetailChartModal
           details={{
@@ -186,13 +180,11 @@ const Gainers = () => {
             pricePercentage:
               pricesTicker?.[selectedCoin.symbol + "USDT"]
                 ?.priceChangePercent ??
-              priceBackup?.[selectedCoin.symbol]
-                ?.price_change_percentage_24h ??
+              priceBackup?.[selectedCoin.symbol]?.price_change_percentage_24h ??
               0,
 
             ath_change_percentage:
-              priceBackup?.[selectedCoin.symbol]
-                ?.ath_change_percentage ?? 0,
+              priceBackup?.[selectedCoin.symbol]?.ath_change_percentage ?? 0,
           }}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

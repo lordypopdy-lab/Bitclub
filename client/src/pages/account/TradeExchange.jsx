@@ -1,4 +1,4 @@
-import React from 'react'
+import { Link } from "react-router-dom";
 import coin3 from "../../images/coin/coin3.jpg";
 import coin5 from "../../images/coin/coin5.jpg";
 import coin6 from "../../images/coin/coin6.jpg";
@@ -10,8 +10,8 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
             <div className="app-wallet">
                 <div className="header-style2 fixed-top d-flex align-items-center justify-content-between bg-surface">
                     <h3 className="d-flex gap-12">
-                        <a href="/Exchange" className="text-secondary">Market</a>
-                        <a href="#">Trade</a>
+                        <Link to="/Exchange" className="text-secondary">Market</Link>
+                        <Link to="#">Trade</Link>
                     </h3>
                     <i className="icon-question text-white"></i>
                 </div>
@@ -47,7 +47,7 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
                                                 <img src={coin3} alt="img" className="img" />
                                                 <div className="content">
                                                     <div className="title">
-                                                        <h3 className="mb-4"><a href="#" className="d-flex align-items-center">ETH&nbsp;<i className="icon-select-down"></i></a></h3>
+                                                        <h3 className="mb-4"><Link to="#" className="d-flex align-items-center">ETH&nbsp;<i className="icon-select-down"></i></Link></h3>
                                                         <span>Ethereum</span>
                                                     </div>
                                                     <div className="box-price text-end">
@@ -70,7 +70,7 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
                                                 <img src={coin5} alt="img" className="img" />
                                                 <div className="content">
                                                     <div className="title">
-                                                        <h3 className="mb-4"><a href="#" className="d-flex align-items-center">USDC&nbsp;<i className="icon-select-down"></i></a></h3>
+                                                        <h3 className="mb-4"><Link to="#" className="d-flex align-items-center">USDC&nbsp;<i className="icon-select-down"></i></Link></h3>
                                                         <span>Ethereum</span>
                                                     </div>
                                                     <div className="box-price text-end">
@@ -81,7 +81,7 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
                                             </div>
                                         </div>
                                     </div>
-                                    <a href="javascript:void(0);" className="tf-btn lg mt-20 secondary" data-bs-toggle="modal" data-bs-target="#connectWallet">Connect Wallet</a>
+                                    <Link to="javascript:void(0);" className="tf-btn lg mt-20 secondary" data-bs-toggle="modal" data-bs-target="#connectWallet">Connect Wallet</Link>
                                     <ul className="mt-20 accent-box line-border">
                                         <li className="trade-list-item">
                                             <p className="d-flex align-items-center text-small gap-4">Reference <i className="icon-question fs-16 text-secondary"></i> </p>
@@ -93,16 +93,16 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
                                         </li>
                                         <li className="trade-list-item mt-16">
                                             <p className="d-flex align-items-center text-small gap-4">Acceptable slippage<i className="icon-question fs-16 text-secondary"></i> </p>
-                                            <a href="#" className="d-flex align-items-center gap-8">1% <i className="icon-arr-right fs-8"></i></a>
+                                            <Link to="#" className="d-flex align-items-center gap-8">1% <i className="icon-arr-right fs-8"></i></Link>
                                         </li>
                                         <li className="trade-list-item mt-16">
                                             <p className="d-flex align-items-center text-small gap-4">X Routing <i className="icon-question fs-16 text-secondary"></i> </p>
-                                            <a href="#" className="d-flex gap-4 align-items-center">
+                                            <Link to="#" className="d-flex gap-4 align-items-center">
                                                 <img src={coin3} alt="img" className="img" />
                                                     <i className="icon-select-right"></i>
                                                     <img src={coin5} alt="img" className="img" />
                                                         <i className="icon-arr-right fs-8"></i>
-                                                    </a>
+                                                    </Link>
                                                 </li>
                                             </ul>
 
@@ -115,7 +115,7 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
                                                         <img src={coin6} alt="img" className="img" />
                                                         <div className="content">
                                                             <div className="title">
-                                                                <h3 className="mb-4"><a href="#" className="d-flex align-items-center">ETH&nbsp;<i className="icon-select-down"></i></a></h3>
+                                                                <h3 className="mb-4"><Link to="#" className="d-flex align-items-center">ETH&nbsp;<i className="icon-select-down"></i></Link></h3>
                                                                 <span>Ethereum</span>
                                                             </div>
                                                             <div className="box-price text-end">
@@ -132,7 +132,7 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
                                                         <img src={coin5} alt="img" className="img" />
                                                         <div className="content">
                                                             <div className="title">
-                                                                <h3 className="mb-4"><a href="#" className="d-flex align-items-center">USDC&nbsp;<i className="icon-select-down"></i></a></h3>
+                                                                <h3 className="mb-4"><Link to="#" className="d-flex align-items-center">USDC&nbsp;<i className="icon-select-down"></i></Link></h3>
                                                                 <span>Ethereum</span>
                                                             </div>
                                                             <div className="box-price text-end">
@@ -157,27 +157,27 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
 
                                                 </li>
                                                 <li className="mt-16">
-                                                    <a href="#" className="trade-list-item" data-bs-toggle="modal" data-bs-target="#filterDay">
+                                                    <Link to="#" className="trade-list-item" data-bs-toggle="modal" data-bs-target="#filterDay">
                                                         <span className="text-secondary">Due later</span>
                                                         <span className="text-white">1 Day <i className="icon-arr-right fs-8 text-secondary"></i></span>
-                                                    </a>
+                                                    </Link>
                                                 </li>
 
                                             </ul>
-                                            <a href="#" className="mt-20 tf-btn lg dark text-secondary">Not enough ETH balance in wallet</a>
+                                            <Link to="#" className="mt-20 tf-btn lg dark text-secondary">Not enough ETH balance in wallet</Link>
                                         </div>
                                 </div>
 
                             </div>
                             <div className="mt-16 footer-fixed-v2" data-bs-toggle="modal" data-bs-target="#detailChart">
-                                <a href="#" className="trade-money-box">
+                                <Link to="#" className="trade-money-box">
                                     <p>ETH/USDC</p>
                                     <p className="d-flex align-items-center gap-8">
                                         <span>1.876,251425</span>
                                         <span className="text-red">-2,62</span>
                                         <i className="icon-arr-right fs-12"></i>
                                     </p>
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -185,28 +185,28 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
                     <div className="menubar-footer footer-fixed">
                         <ul className="inner-bar">
                             <li>
-                                <a href="/Home">
+                                <Link to="/Home">
                                     <i className="icon icon-home2"></i>
                                     Home
-                                </a>
+                                </Link>
                             </li>
                             <li className="active">
-                                <a href="/Exchange">
+                                <Link to="/Exchange">
                                     <i className="icon icon-exchange"></i>
                                     Exchange
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="/Earn">
+                                <Link to="/Earn">
                                     <i className="icon icon-earn2"></i>
                                     Earn
-                                </a>
+                                </Link>
                             </li>
                             <li>
-                                <a href="/Wallet">
+                                <Link to="/Wallet">
                                     <i className="icon icon-wallet"></i>
                                     Wallet
-                                </a>
+                                </Link>
                             </li>
                         </ul>
                     </div>
@@ -223,8 +223,8 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
                                     <h3 className="mt-4">Connect Wallet</h3>
                                     <p className="mt-12 text-white text-large">Please connect by entering an existing wallet or create a new one.</p>
                                     <div className="mt-32">
-                                        <a href="javascript:void(0);" className="tf-btn sm secondary d-inline-flex" data-bs-toggle="modal" data-bs-target="#keyWallet">Create wallet</a>
-                                        <a href="javascript:void(0);" className="mt-12 tf-btn sm dark d-inline-flex" data-bs-toggle="modal" data-bs-target="#keyWallet">Enter a wallet</a>
+                                        <Link to="javascript:void(0);" className="tf-btn sm secondary d-inline-flex" data-bs-toggle="modal" data-bs-target="#keyWallet">Create wallet</Link>
+                                        <Link to="javascript:void(0);" className="mt-12 tf-btn sm dark d-inline-flex" data-bs-toggle="modal" data-bs-target="#keyWallet">Enter a wallet</Link>
                                     </div>
                                 </div>
                             </div>
@@ -244,28 +244,28 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
                                     <ul>
                                         <li className="accent-box-v3 bg-surface tf-list-item-v3" data-bs-toggle="modal" data-bs-target="#inflation">
                                             <div className="content">
-                                                <h5><a href="#">Keyless wallet</a></h5>
+                                                <h5><Link to="#">Keyless wallet</Link></h5>
                                                 <p className="mt-8 text-small text">Create an MPC wallet with your platform account.</p>
                                             </div>
                                             <span className="icon icon-mpc"></span>
                                         </li>
                                         <li className="mt-8 accent-box-v3 bg-surface tf-list-item-v3" data-bs-toggle="modal" data-bs-target="#inflation">
                                             <div className="content">
-                                                <h5><a href="#">Seed phrase</a></h5>
+                                                <h5><Link to="#">Seed phrase</Link></h5>
                                                 <p className="mt-8 text-small text">Create wallet using seed phrase</p>
                                             </div>
                                             <span className="icon icon-phrase"></span>
                                         </li>
                                         <li className="mt-8 accent-box-v3 bg-surface tf-list-item-v3" data-bs-toggle="modal" data-bs-target="#inflation">
                                             <div className="content">
-                                                <h5><a href="#">Hardware wallet connection</a></h5>
+                                                <h5><Link to="#">Hardware wallet connection</Link></h5>
                                                 <p className="mt-8 text-small text">Connect hardware wallet via bluetooth</p>
                                             </div>
                                             <span className="icon icon-bluetooth"></span>
                                         </li>
                                         <li className="mt-8 accent-box-v3 bg-surface tf-list-item-v3" data-bs-toggle="modal" data-bs-target="#inflation">
                                             <div className="content">
-                                                <h5><a href="#">Private key</a></h5>
+                                                <h5><Link to="#">Private key</Link></h5>
                                                 <p className="mt-8 text-small text">Paste or enter private key</p>
                                             </div>
                                             <span className="icon-key"></span>
@@ -288,15 +288,15 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
                                 <div className="modal-body">
                                     <ul>
                                         <li className="accent-box-v3 bg-surface">
-                                            <h5><a href="#">Automatic (1%)</a></h5>
+                                            <h5><Link to="#">Automatic (1%)</Link></h5>
                                             <p className="mt-8 text-small text">automatically set slippage for successful trading. The value set automatically changes in real time depending on the price.</p>
                                         </li>
                                         <li className="mt-8 accent-box-v3 bg-surface">
-                                            <h5><a href="#">Custom (Single String)</a></h5>
+                                            <h5><Link to="#">Custom (Single String)</Link></h5>
                                             <p className="mt-8 text-small text">slippage rate affects the chances of a successful trade and the final price</p>
                                         </li>
                                     </ul>
-                                    <a href="/ExchangeTradeApprove" className="mt-32 tf-btn sm secondary">Confirm</a>
+                                    <Link to="/ExchangeTradeApprove" className="mt-32 tf-btn sm secondary">Confirm</Link>
                                 </div>
                             </div>
 
@@ -311,7 +311,7 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
                                     <div className="top">
                                         <h3 className="d-flex align-items-center gap-8">ETH/USDC <i className="icon-clockwise2 fs-16 text-secondary"></i></h3>
                                         <h2 className="mt-4">1.845,9128</h2>
-                                        <p className="mt-4"><a className="text-red">-0,92</a>&emsp;Last 24 hours</p>
+                                        <p className="mt-4"><Link className="text-red">-0,92</Link>&emsp;Last 24 hours</p>
                                     </div>
                                     <div className="content">
                                         <div className="tab-content mt-8 mb-16">
@@ -336,22 +336,22 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
                                         </div>
                                         <ul className="tab-time" role="tablist">
                                             <li className="nav-item">
-                                                <a href="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1h" role="tab" aria-controls="1h" aria-selected="false">1H</a>
+                                                <Link to="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1h" role="tab" aria-controls="1h" aria-selected="false">1H</Link>
                                             </li>
                                             <li className="nav-item active">
-                                                <a href="#" className="nav-link active" data-bs-toggle="tab" data-bs-target="#1d" role="tab" aria-controls="1d" aria-selected="true">1D</a>
+                                                <Link to="#" className="nav-link active" data-bs-toggle="tab" data-bs-target="#1d" role="tab" aria-controls="1d" aria-selected="true">1D</Link>
                                             </li>
                                             <li className="nav-item">
-                                                <a href="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1w" role="tab" aria-controls="1w" aria-selected="false">1W</a>
+                                                <Link to="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1w" role="tab" aria-controls="1w" aria-selected="false">1W</Link>
                                             </li>
                                             <li className="nav-item">
-                                                <a href="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1m" role="tab" aria-controls="1m" aria-selected="false">1M</a>
+                                                <Link to="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1m" role="tab" aria-controls="1m" aria-selected="false">1M</Link>
                                             </li>
                                             <li className="nav-item">
-                                                <a href="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#6m" role="tab" aria-controls="6m" aria-selected="false">6M</a>
+                                                <Link to="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#6m" role="tab" aria-controls="6m" aria-selected="false">6M</Link>
                                             </li>
                                             <li className="nav-item">
-                                                <a href="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1y" role="tab" aria-controls="1y" aria-selected="false">1Y</a>
+                                                <Link to="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1y" role="tab" aria-controls="1y" aria-selected="false">1Y</Link>
                                             </li>
                                         </ul>
                                     </div>
@@ -359,22 +359,22 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
                                         <h6 className="text-button">Token information</h6>
                                         <ul className="mt-16 d-flex gap-16">
                                             <li className="flex-1">
-                                                <a href="#" className="accent-box-v6 bg-surface d-flex justify-content-between align-items-center">
+                                                <Link to="#" className="accent-box-v6 bg-surface d-flex justify-content-between align-items-center">
                                                     <div className="content">
                                                         <p className="text-small">ETH <span className="text-extra-small text-secondary">/ Ethereum</span></p>
                                                         <span className="d-inline-block mt-8 coin-btn decrease">+1,62%</span>
                                                     </div>
                                                     <span className="icon-arr-right fs-12"></span>
-                                                </a>
+                                                </Link>
                                             </li>
                                             <li className="flex-1">
-                                                <a href="#" className="accent-box-v6 bg-surface d-flex justify-content-between align-items-center">
+                                                <Link to="#" className="accent-box-v6 bg-surface d-flex justify-content-between align-items-center">
                                                     <div className="content">
                                                         <p className="text-small">USDC </p>
                                                         <span className="d-inline-block mt-8 coin-btn increase">+1,62%</span>
                                                     </div>
                                                     <span className="icon-arr-right fs-12"></span>
-                                                </a>
+                                                </Link>
                                             </li>
                                         </ul>
                                     </div>
@@ -405,7 +405,7 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
                                     <li className="mt-4"><div className="d-flex  justify-content-between gap-8 text-large item-check">3 month <i className="icon icon-check-circle"></i></div></li>
                                     <li className="mt-4"><div className="d-flex  justify-content-between gap-8 text-large item-check">Custom <i className="icon icon-check-circle"></i></div></li>
                                 </ul>
-                                <a href="javascript:void(0);" className="item-check text-center text-button fw-6" data-bs-dismiss="modal">Cancel</a>
+                                <Link to="javascript:void(0);" className="item-check text-center text-button fw-6" data-bs-dismiss="modal">Cancel</Link>
                             </div>
                         </div>
                     </div>

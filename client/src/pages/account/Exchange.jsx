@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 import FadeLoader from 'react-spinners/FadeLoader';
 
 import logo144 from '../../images/logo/logo144.png';
@@ -19,7 +20,6 @@ import coin12 from "../../images/coin/coin12.jpg";
 import coin13 from "../../images/coin/coin13.jpg";
 
 const Exchange = () => {
-if (!localStorage.getItem('email')) { location.href = '/login'; }
 const [loading, setLoading] = useState(false);
 const [list1, setList1] = useState(null);
 const [list2, setList2] = useState(null);
@@ -42,20 +42,6 @@ ath_change_percentage: ''
 
 useEffect(() => {
     setLoading(true);
-
-    //////////////''''''''//////////TOKEN FETCHER////////////''''''''//////////////
-    const fetcher = async () => {
-        try {
-            const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd');
-            const datas = await response.json();
-            if (datas.length > 0) {
-                localStorage.setItem('tokens', JSON.stringify(datas));
-            }
-        } catch (error) {
-            console.log(`Error fetching tokens:`, error);
-        }
-    }
-    fetcher();
     try {
         const tokenGetter = localStorage.getItem('tokens');
         const datas = JSON.parse(tokenGetter);
@@ -75,7 +61,7 @@ useEffect(() => {
 
             return (
                 <li key={index} style={{ marginTop: '18px' }}>
-                    <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
+                    <Link onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
                         <img src={token.image} alt="img" className="img" />
                         <div className="content">
                             <div className="title">
@@ -87,7 +73,7 @@ useEffect(() => {
                                 {token.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{token.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{token.price_change_percentage_24h}2%</span>}
                             </div>
                         </div>
-                    </a>
+                    </Link>
                 </li>
             )
         })
@@ -108,7 +94,7 @@ useEffect(() => {
 
             return (
                 <li key={index} style={{ marginTop: '18px' }}>
-                    <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
+                    <Link onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
                         <img src={token.image} alt="img" className="img" />
                         <div className="content">
                             <div className="title">
@@ -120,7 +106,7 @@ useEffect(() => {
                                 {token.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{token.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{token.price_change_percentage_24h}2%</span>}
                             </div>
                         </div>
-                    </a>
+                    </Link>
                 </li>
             )
         })
@@ -141,7 +127,7 @@ useEffect(() => {
 
             return (
                 <li key={index} style={{ marginTop: '18px' }}>
-                    <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
+                    <Link onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
                         <img src={token.image} alt="img" className="img" />
                         <div className="content">
                             <div className="title">
@@ -153,7 +139,7 @@ useEffect(() => {
                                 {token.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{token.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{token.price_change_percentage_24h}2%</span>}
                             </div>
                         </div>
-                    </a>
+                    </Link>
                 </li>
             )
         })
@@ -173,7 +159,7 @@ useEffect(() => {
             }
             return (
                 <li key={index} style={{ marginTop: '18px' }}>
-                    <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
+                    <Link onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
                         <div className="d-flex align-items-center gap-12 flex-1">
                             <h4 className="text-primary">{index}</h4>
                             <p>
@@ -188,7 +174,7 @@ useEffect(() => {
                                 <p className="mt-4 text-secondary">${token.current_price}</p>
                             </div>
                         </div>
-                    </a>
+                    </Link>
                 </li>
             )
         })
@@ -208,7 +194,7 @@ useEffect(() => {
             }
             return (
                 <li key={index} style={{ marginTop: '18px' }}>
-                    <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
+                    <Link onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item justify-content-between">
                         <div className="d-flex align-items-center gap-12 flex-1">
                             <h4 className="text-primary">{index}</h4>
                             <p>
@@ -223,7 +209,7 @@ useEffect(() => {
                                 <p className="mt-4 text-secondary">${token.current_price}</p>
                             </div>
                         </div>
-                    </a>
+                    </Link>
                 </li>
             )
         })
@@ -266,7 +252,7 @@ const tokenList1 = filteredItem.map((filteredItem, index) => {
 
     return (
         <li key={index} style={{ marginTop: '18px' }}>
-            <a onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
+            <Link onClick={updateT} data-bs-toggle="modal" data-bs-target="#detailChart" className="coin-item style-2 gap-12">
                 <img src={filteredItem.image} alt="img" className="img" />
                 <div className="content">
                     <div className="title">
@@ -278,7 +264,7 @@ const tokenList1 = filteredItem.map((filteredItem, index) => {
                         {filteredItem.price_change_percentage_24h > 1 ? <span className="coin-btn increase">{filteredItem.price_change_percentage_24h}2%</span> : <span className="coin-btn decrease">{filteredItem.price_change_percentage_24h}2%</span>}
                     </div>
                 </div>
-            </a>
+            </Link>
         </li>
     )
 })
@@ -302,8 +288,8 @@ toast.success("Trade Exchange is Comming Soon!");
 {/* <!-- /preload End -->  */}
 <div className="header-style2 fixed-top d-flex align-items-center justify-content-between bg-surface">
     <h3 className="d-flex gap-12">
-        <a href="#">Market</a>
-        <a onClick={TradeExchang} className="text-secondary">Trade</a>
+        <Link to="#">Market</Link>
+        <Link onClick={TradeExchang} className="text-secondary">Trade</Link>
     </h3>
     <i className="icon-funnel text-white" data-bs-toggle="modal" data-bs-target="#filter"></i>
 </div>
@@ -336,7 +322,7 @@ toast.success("Trade Exchange is Comming Soon!");
             <div className="tab-content mt-8 mb-16">
                 <div className="tab-pane fade show active" id="all" role="tabpanel">
                     <div className="mt-4 search-box box-input-field">
-                        <a href="/home" className="icon-search mb-3"></a>
+                        <Link to="/home" className="icon-search mb-3"></Link>
                         <input
                             type="text"
                             placeholder="Swap over 100+ tokens on more than 10 chains"
@@ -420,28 +406,28 @@ toast.success("Trade Exchange is Comming Soon!");
 <div className="menubar-footer footer-fixed">
     <ul className="inner-bar">
         <li>
-            <a href="/Home">
+            <Link to="/Home">
                 <i className="icon icon-home2"></i>
                 Home
-            </a>
+            </Link>
         </li>
         <li className="active">
-            <a href="/Exchange">
+            <Link to="/Exchange">
                 <i className="icon icon-exchange"></i>
                 Exchange
-            </a>
+            </Link>
         </li>
         <li>
-            <a href="/Earn">
+            <Link to="/Earn">
                 <i className="icon icon-earn2"></i>
                 Earn
-            </a>
+            </Link>
         </li>
         <li>
-            <a href="Wallet">
+            <Link to="Wallet">
                 <i className="icon icon-wallet"></i>
                 Wallet
-            </a>
+            </Link>
         </li>
     </ul>
 </div>
@@ -454,7 +440,7 @@ toast.success("Trade Exchange is Comming Soon!");
                 <div className="top">
                     <h3 className="d-flex align-items-center gap-8">{details.symbol.toUpperCase()}/USD<i className="icon-clockwise2 fs-16 text-secondary"></i></h3>
                     <h2 className="mt-4">${details.current_price}</h2>
-                    {details.pricePercentage > 1 ? <p className="mt-4"><a className="text-primary">{details.pricePercentage}</a>&emsp;Last 24 hours</p> : <p className="mt-4"><a className="text-red">{details.pricePercentage}</a>&emsp;Last 24 hours</p>}
+                    {details.pricePercentage > 1 ? <p className="mt-4"><Link className="text-primary">{details.pricePercentage}</Link>&emsp;Last 24 hours</p> : <p className="mt-4"><Link className="text-red">{details.pricePercentage}</Link>&emsp;Last 24 hours</p>}
                 </div>
                 <div className="content">
                     <div className="tab-content mt-8 mb-16">
@@ -479,22 +465,22 @@ toast.success("Trade Exchange is Comming Soon!");
                     </div>
                     <ul className="tab-time" role="tablist">
                         <li className="nav-item">
-                            <a href="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1h" role="tab" aria-controls="1h" aria-selected="false">1H</a>
+                            <Link to="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1h" role="tab" aria-controls="1h" aria-selected="false">1H</Link>
                         </li>
                         <li className="nav-item active">
-                            <a href="#" className="nav-link active" data-bs-toggle="tab" data-bs-target="#1d" role="tab" aria-controls="1d" aria-selected="true">1D</a>
+                            <Link to="#" className="nav-link active" data-bs-toggle="tab" data-bs-target="#1d" role="tab" aria-controls="1d" aria-selected="true">1D</Link>
                         </li>
                         <li className="nav-item">
-                            <a href="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1w" role="tab" aria-controls="1w" aria-selected="false">1W</a>
+                            <Link to="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1w" role="tab" aria-controls="1w" aria-selected="false">1W</Link>
                         </li>
                         <li className="nav-item">
-                            <a href="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1m" role="tab" aria-controls="1m" aria-selected="false">1M</a>
+                            <Link to="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1m" role="tab" aria-controls="1m" aria-selected="false">1M</Link>
                         </li>
                         <li className="nav-item">
-                            <a href="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#6m" role="tab" aria-controls="6m" aria-selected="false">6M</a>
+                            <Link to="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#6m" role="tab" aria-controls="6m" aria-selected="false">6M</Link>
                         </li>
                         <li className="nav-item">
-                            <a href="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1y" role="tab" aria-controls="1y" aria-selected="false">1Y</a>
+                            <Link to="#" className="nav-link" data-bs-toggle="tab" data-bs-target="#1y" role="tab" aria-controls="1y" aria-selected="false">1Y</Link>
                         </li>
                     </ul>
                 </div>
@@ -502,22 +488,22 @@ toast.success("Trade Exchange is Comming Soon!");
                     <h6 className="text-button">Token information</h6>
                     <ul className="mt-16 d-flex gap-16">
                         <li className="flex-1">
-                            <a href="#" className="accent-box-v6 bg-surface d-flex justify-content-between align-items-center">
+                            <Link to="#" className="accent-box-v6 bg-surface d-flex justify-content-between align-items-center">
                                 <div className="content">
                                     <p className="text-small">{details.symbol.toLocaleUpperCase()} <span className="text-extra-small text-secondary">/ USD</span></p>
                                     {details.pricePercentage > 1 ? <span className="d-inline-block mt-8 coin-btn increase">{details.pricePercentage}</span> : <span className="d-inline-block mt-8 coin-btn decrease">{details.pricePercentage}</span>}
                                 </div>
                                 <span className="icon-arr-right fs-12"></span>
-                            </a>
+                            </Link>
                         </li>
                         <li className="flex-1">
-                            <a href="#" className="accent-box-v6 bg-surface d-flex justify-content-between align-items-center">
+                            <Link to="#" className="accent-box-v6 bg-surface d-flex justify-content-between align-items-center">
                                 <div className="content">
                                     <p className="text-small">{details.name}</p>
                                     {details.ath_change_percentage > 1 ? <span className="d-inline-block mt-8 coin-btn increase">{details.ath_change_percentage}</span> : <span className="d-inline-block mt-8 coin-btn decrease">{details.ath_change_percentage}</span>}
                                 </div>
                                 <span className="icon-arr-right fs-12"></span>
-                            </a>
+                            </Link>
                         </li>
                     </ul>
                 </div>

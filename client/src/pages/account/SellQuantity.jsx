@@ -1,13 +1,16 @@
-import React from 'react'
+import { Link } from "react-router-dom";
 import coin1 from "../../images/coin/coin1.jpg";
 
 const SellQuantity = () => {
-if(!localStorage.getItem('email')){ location.href = '/login'; }
   return (
    <>
    <div class="header fixed-top bg-surface d-flex justify-content-between align-items-center">
-        <a href="javascript:void(0);" class="left back-btn"><i class="icon-left-btn"></i></a>
-        <a href="/home" class="right"><i class="icon-home2 fs-20"></i></a>
+        <Link to="javascript:void(0);" class="left back-btn">
+          <i class="icon-left-btn"></i>
+        </Link>
+        <Link to="/home" class="right">
+          <i class="icon-home2 fs-20"></i>
+        </Link>
     </div>
     <div class="pt-45 pb-16">
         <div class="tf-container">
@@ -30,20 +33,20 @@ if(!localStorage.getItem('email')){ location.href = '/login'; }
           </div>
           <ul class="mt-8 d-flex gap-8">
             <li>
-              <a href="#" class="tag-sm dark">25%</a>
+              <Link to="#" class="tag-sm dark">25%</Link>
             </li>
             <li>
-              <a href="#" class="tag-sm dark">50%</a>
+              <Link to="#" class="tag-sm dark">50%</Link>
             </li>
             <li>
-              <a href="#" class="tag-sm dark">75%</a>
+              <Link to="#" class="tag-sm dark">75%</Link>
             </li>
             <li>
-              <a href="#" class="tag-sm dark">100%</a>
+              <Link to="#" class="tag-sm dark">100%</Link>
             </li>
           </ul>
           <p class="mt-8">188.308-300.000,000 USD</p>
-          <a href="/ChoosePayment" class="tf-btn lg primary mt-40">Sell</a>
+          <Link to="/ChoosePayment" class="tf-btn lg primary mt-40">Sell</Link>
         </div>
     </div>
 
