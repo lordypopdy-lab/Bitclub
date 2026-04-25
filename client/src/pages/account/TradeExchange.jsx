@@ -4,7 +4,6 @@ import coin5 from "../../images/coin/coin5.jpg";
 import coin6 from "../../images/coin/coin6.jpg";
 
 const TradeExchange = () => {
-if(!localStorage.getItem('email')){ location.href = '/login'; }
     return (
         <>
             <div className="app-wallet">
