@@ -1,3 +1,4 @@
+const axios = require("axios");
 const User = require("../models/user");
 const { hashPassword, comparePassword } = require("../helpers/auth");
 const jwt = require("jsonwebtoken");
@@ -223,6 +224,127 @@ Thanks.`,
 /////////////////////////---------------------------------------///////////////////////////////
 /////////////////////////---------------------------------------///////////////////////////////
 /////////////////////////---------------------------------------///////////////////////////////
+
+const getAccounts = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+
+    console.log("Get Accounts Request:", email);
+
+    // ⚡ Fetch wallets in parallel
+    const [erc20, btc, bnb] = await Promise.all([
+      Erc20Wallet.findOne({ email }),
+      BtcWallet.findOne({ email }),
+      BNBWallet.findOne({ email }),
+    ]);
+
+    const accounts = [];
+
+    // ================= ERC20 (ETH) =================
+    if (erc20?.walletAddress) {
+      let balance = 0;
+
+      try {
+        const resEth = await axios.get(
+          `https://api.etherscan.io/api`,
+          {
+            params: {
+              module: "account",
+              action: "balance",
+              address: erc20.walletAddress,
+              tag: "latest",
+              apikey: process.env.ETHERSCAN_API_KEY,
+            },
+          }
+        );
+
+        balance = resEth.data.result / 1e18;
+      } catch (err) {
+        console.log("ETH balance error:", err.message);
+      }
+
+      accounts.push({
+        type: "ERC20",
+        address: erc20.walletAddress,
+        balance,
+        currency: "ETH",
+      });
+    }
+
+    // ================= BTC =================
+    if (btc?.walletAddress) {
+      let balance = 0;
+
+      try {
+        const resBtc = await axios.get(
+          `https://blockchain.info/q/addressbalance/${btc.walletAddress}`
+        );
+
+        balance = resBtc.data / 1e8; // satoshi → BTC
+      } catch (err) {
+        console.log("BTC balance error:", err.message);
+      }
+
+      accounts.push({
+        type: "BTC",
+        address: btc.walletAddress,
+        balance,
+        currency: "BTC",
+      });
+    }
+
+    // ================= BNB =================
+    if (bnb?.walletAddress) {
+      let balance = 0;
+
+      try {
+        const resBnb = await axios.get(
+          `https://api.bscscan.com/api`,
+          {
+            params: {
+              module: "account",
+              action: "balance",
+              address: bnb.walletAddress,
+              tag: "latest",
+              apikey: process.env.BSCSCAN_API_KEY,
+            },
+          }
+        );
+
+        balance = resBnb.data.result / 1e18;
+      } catch (err) {
+        console.log("BNB balance error:", err.message);
+      }
+
+      accounts.push({
+        type: "BNB",
+        address: bnb.walletAddress,
+        balance,
+        currency: "BNB",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      accounts,
+    });
+
+  } catch (error) {
+    console.log("Get Accounts Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
 
 const Erc20WalletAuth = async (req, res) => {
   const { email } = req.body;
@@ -1736,6 +1858,7 @@ module.exports = {
   fetchKyc,
   fetchOTP,
   verifyOtp,
+  getAccounts,
   BNBWalletAuth,
   getProfitOne,
   getProfitTwo,

@@ -56,6 +56,7 @@ const {
   createPin,
   tokenViews,
   getProfile,
+  getAccounts,
   getHistory,
   contractOne,
   getContractOne,
@@ -110,6 +111,7 @@ router.post("/citizenId", citizenId);
 router.post("/createPin", createPin);
 router.post("/pinVerify", pinVerify);
 router.post("/profile", getProfile);
+router.post("/getAccounts", getAccounts);
 router.post("/loginGoogle", googleLogin);
 router.post("/getHistory", getHistory);
 router.post("/contractOne", contractOne);
