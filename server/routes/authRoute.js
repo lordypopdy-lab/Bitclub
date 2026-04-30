@@ -4,11 +4,11 @@ const cors = require("cors");
 const router = express.Router();
 
 const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:5173',
-  'https://kyc-rho.vercel.app',
-  'https://bitclub.vercel.app',
-  'https://apex-investment.vercel.app'
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "https://kyc-rho.vercel.app",
+  "https://bitclub.vercel.app",
+  "https://apex-investment.vercel.app",
 ];
 
 const corsOptions = {
@@ -18,28 +18,28 @@ const corsOptions = {
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     } else {
-      return callback(new Error('Not allowed by CORS'));
+      return callback(new Error("Not allowed by CORS"));
     }
   },
   credentials: true,
-  methods: 'GET,POST,PUT,DELETE,OPTIONS',
-  allowedHeaders: 'Content-Type,Authorization',
+  methods: "GET,POST,PUT,DELETE,OPTIONS",
+  allowedHeaders: "Content-Type,Authorization",
 };
 
 router.use(cors(corsOptions));
-router.options('*', cors(corsOptions));
+router.options("*", cors(corsOptions));
 
 // Optional manual headers (if needed for non-cors middleware)
 router.use((req, res, next) => {
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
+    res.header("Access-Control-Allow-Origin", origin);
   }
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
 
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return res.sendStatus(200);
   }
 
@@ -88,7 +88,7 @@ const {
   fetchAllKyc,
   Erc20WalletAuth,
   BtcWalletAuth,
-  BNBWalletAuth
+  BNBWalletAuth,
 } = require("../controllers/authController");
 
 router.post("/login", loginUser);
@@ -121,8 +121,8 @@ router.post("/nameUpdate", updateUserName);
 router.post("/getContractOne", getContractOne);
 router.post("/getContractTwo", getContractTwo);
 router.post("/changePassword", changePassword);
-router.post('/BtcWalletAuth',  BtcWalletAuth);
-router.post('/Erc20WalletAuth', Erc20WalletAuth);
+router.post("/BtcWalletAuth", BtcWalletAuth);
+router.post("/Erc20WalletAuth", Erc20WalletAuth);
 router.post("/notification", createNotification);
 router.post("/getNotification", getNotification);
 router.post("/pauseContractOne", pauseContractOne);
