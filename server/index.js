@@ -73,7 +73,7 @@ app.use(express.urlencoded({ extended: true }));
 // ROUTES
 // =========================
 app.use("/", require("./routes/authRoute"));
-app.use("/api", require("./routes/newsRoute")); // 🔥 NEWS ROUTE ADDED
+app.use("/api", require("./routes/newsRoute"));
 
 // =========================
 // DATABASE
