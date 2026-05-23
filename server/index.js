@@ -11,14 +11,10 @@ const http = require("http");
 const app = express();
 const server = http.createServer(app);
 
-// =========================
-// WEB SOCKET (NEWS ENGINE)
-// =========================
+app.set("trust proxy", 1);
+
 const startNewsSocket = require("./ws/newsSocket");
 
-// =========================
-// CORS CONFIG
-// =========================
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:5173",
@@ -28,72 +24,60 @@ const allowedOrigins = [
   "https://apex-investment.vercel.app",
 ];
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-  methods: "GET,POST,PUT,DELETE,OPTIONS",
-  allowedHeaders: "Content-Type,Authorization",
-};
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
 
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
 
-// =========================
-// OPTIONAL MANUAL HEADERS (SAFE)
-// =========================
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
+    credentials: true,
 
-  if (allowedOrigins.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin);
-  }
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+    ],
+  })
+);
 
-  if (req.method === "OPTIONS") return res.sendStatus(200);
-
-  next();
-});
-
-// =========================
-// MIDDLEWARE
-// =========================
 app.use(express.json());
-app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
 
-// =========================
-// ROUTES
-// =========================
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
+
+app.use(cookieParser());
+
 app.use("/", require("./routes/authRoute"));
 app.use("/api", require("./routes/newsRoute"));
 
-// =========================
-// DATABASE
-// =========================
+app.get("/", (req, res) => {
+  res.send("Bitclub API running...");
+});
+
 mongoose
   .connect(process.env.MONGO_URL)
-  .then(() => console.log("✅ Database Connected successfully!"))
-  .catch((error) => console.log("❌ Database not connected:", error));
+  .then(() => {
+    console.log("Database Connected successfully!");
+  })
+  .catch((error) => {
+    console.log("Database not connected:", error);
+  });
 
-// =========================
-// START SERVER
-// =========================
 const PORT = process.env.PORT || 8080;
 
 server.listen(PORT, () => {
-  console.log(`🚀 Bitclub running at http://localhost:${PORT}`);
+  console.log(`🚀 Bitclub running at port ${PORT}`);
 
-  // =========================
-  // START NEWS WEBSOCKET ENGINE
-  // =========================
   startNewsSocket(server);
 });
