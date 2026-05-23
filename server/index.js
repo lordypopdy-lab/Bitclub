@@ -24,6 +24,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://kyc-rho.vercel.app",
   "https://bitclub.vercel.app",
+  "https://bitclub-spa.vercel.app",
   "https://apex-investment.vercel.app",
 ];
 
