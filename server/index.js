@@ -26,26 +26,22 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
+    origin: (origin, callback) => {
+      console.log("REQUEST ORIGIN:", origin);
 
-      if (allowedOrigins.includes(origin)) {
+      if (!origin) {
         return callback(null, true);
-      } else {
-        return callback(new Error("Not allowed by CORS"));
       }
+
+      if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+        return callback(null, true);
+      }
+
+      return callback(null, true); 
     },
 
     credentials: true,
-
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-      "X-Requested-With",
-    ],
-  })
+  }),
 );
 
 app.use(express.json());
@@ -53,7 +49,7 @@ app.use(express.json());
 app.use(
   express.urlencoded({
     extended: true,
-  })
+  }),
 );
 
 app.use(cookieParser());
